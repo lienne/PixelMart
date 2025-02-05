@@ -1,0 +1,42 @@
+/* .dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.dashboard-sidebar {
+    width: 220px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+}
+
+.dashboard-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dashboard-sidebar li {
+    margin-bottom: 15px;
+}
+
+.dashboard-sidebar li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+}
+
+.dashboard-sidebar li a:hover {
+    color: #007bff;
+}
+
+.dashboard-sidebar a.active-link {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.dashboard-content {
+    flex: 1;
+    padding: 20px;
+}
+ */
