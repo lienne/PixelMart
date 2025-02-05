@@ -60,6 +60,7 @@ PixelMart is a Single Page Application (SPA) built with React on the frontend an
 
 Below is a high-level overview of the project structure:
 
+```
 PixelMart/
 ├── backend/
 │ ├── controllers/
@@ -89,6 +90,7 @@ PixelMart/
 │ │ └── main.tsx
 │ └── .env
 └── README.md
+```
 
 ## Usage
 
