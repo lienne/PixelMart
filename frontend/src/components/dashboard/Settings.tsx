@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
     Container,
     Box,
@@ -14,16 +14,18 @@ import {
     DialogActions
 } from '@mui/material';
 import { useAuth0 } from "@auth0/auth0-react";
+import { ProfileContext } from "../../context/ProfileContext";
 
 function Settings() {
-    const [name, setName] = useState("Jane Doe");
+    const { profile, setProfile } = useContext(ProfileContext);
+    const [name, setName] = useState(profile?.name || "Jane Doe");
+    const [avatarUrl, setAvatarUrl] = useState(profile?.avatar || '');
     const [message, setMessage] = useState('');
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const [openDialog, setOpenDialog] = useState(false);
     const { user } = useAuth0();
 
     const handleSave = async () => {
-        // console.log("Updated settings:", { name, notificationsEnabled });
         if (!user?.sub) {
             setMessage('User not authenticated.');
             return;
@@ -36,7 +38,7 @@ function Settings() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ name })
+                body: JSON.stringify({ name, avatar: avatarUrl })
             });
             if (!response.ok) {
                 throw new Error('Failed to update profile.');
@@ -44,6 +46,7 @@ function Settings() {
             const data = await response.json();
             setMessage('Profile updated successfully!');
             console.log('Updated user:', data.user);
+            setProfile(data.user);
         } catch (err) {
             console.error('Error updating profile:', err);
             setMessage('Error updating profile.');
@@ -84,6 +87,14 @@ function Settings() {
                  fullWidth
                  value="jane.doe@example.com"
                  disabled
+                />
+                <TextField
+                  label="Avatar URL"
+                  variant="outlined"
+                  fullWidth
+                  value={avatarUrl}
+                  onChange={(e) => setAvatarUrl(e.target.value)}
+                  placeholder="https://i.pinimg.com/736x/1b/2e/31/1b2e314e767a957a44ed8f992c6d9098.jpg"
                 />
 
                 {/* Basic Preferences */}

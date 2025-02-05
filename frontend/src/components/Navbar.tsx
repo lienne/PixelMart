@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import {
   AppBar,
@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link as RouterLink } from 'react-router-dom';
+import { ProfileContext } from '../context/ProfileContext';
 
 interface NavbarProps {
   brandName: string;
@@ -49,6 +50,8 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
 
   // State for handling mobile drawer
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const { profile } = useContext(ProfileContext);
 
   const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -176,8 +179,8 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
           <>
             <IconButton onClick={handleAvatarClick} color="inherit">
               <Avatar
-                src={user?.picture || "https://i.pinimg.com/736x/1b/2e/31/1b2e314e767a957a44ed8f992c6d9098.jpg"}
-                alt={user?.name || "User Avatar"}
+                src={profile?.avatar || user?.picture || "https://i.pinimg.com/736x/1b/2e/31/1b2e314e767a957a44ed8f992c6d9098.jpg"}
+                alt={profile?.name || user?.name || "User Avatar"}
               />
             </IconButton>
             <Menu
@@ -198,6 +201,9 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
               </MenuItem>
               <MenuItem component={RouterLink} to={`/profile/${user?.sub}`} onClick={handleMenuClose}>
                 My Profile
+              </MenuItem>
+              <MenuItem component={RouterLink} to={"/dashboard/settings"} onClick={handleMenuClose}>
+                Settings
               </MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
