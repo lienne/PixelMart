@@ -60,7 +60,35 @@ PixelMart is a Single Page Application (SPA) built with React on the frontend an
 
 Below is a high-level overview of the project structure:
 
-PixelMart/ ├── backend/ │ ├── controllers/ │ │ ├── userController.ts │ ├── models/ │ │ └── userModel.ts │ ├── routes/ │ │ └── userRoutes.ts │ ├── database.ts │ ├── index.ts │ └── .env # Backend environment variables ├── frontend/ │ ├── public/ │ │ └── index.html │ ├── src/ │ │ ├── components/ │ │ │ ├── About.tsx │ │ │ ├── Auth.tsx │ │ │ ├── Dashboard.tsx │ │ │ ├── Home.tsx │ │ │ ├── LockLogin.tsx # If using Auth0 Lock │ │ │ ├── Navbar.tsx │ │ │ ├── Profile.tsx │ │ │ └── Settings.tsx │ │ ├── api/ │ │ │ ├── profile.ts # Contains fetchUserProfile function │ │ ├── App.tsx │ │ └── main.tsx │ └── .env # Frontend environment variables (VITE\_ prefixed) └── README.md
+PixelMart/
+├── backend/
+│ ├── controllers/
+│ │ ├── userController.ts
+│ ├── models/
+│ │ └── userModel.ts
+│ ├── routes/
+│ │ └── userRoutes.ts
+│ ├── database.ts
+│ ├── index.ts
+│ └── .env
+├── frontend/
+│ ├── public/
+│ │ └── index.html
+│ ├── src/
+│ │ ├── components/
+│ │ │ ├── About.tsx
+│ │ │ ├── Auth.tsx
+│ │ │ ├── Dashboard.tsx
+│ │ │ ├── Home.tsx
+│ │ │ ├── Navbar.tsx
+│ │ │ ├── Profile.tsx
+│ │ │ └── Settings.tsx
+│ │ ├── api/
+│ │ │ ├── profile.ts
+│ │ ├── App.tsx
+│ │ └── main.tsx
+│ └── .env
+└── README.md
 
 ## Usage
 
