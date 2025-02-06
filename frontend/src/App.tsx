@@ -15,6 +15,7 @@ import Settings from './components/dashboard/Settings';
 import Profile from './components/Profile';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect } from 'react';
+import NotFound from './components/NotFound';
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
@@ -62,7 +63,8 @@ function App() {
           <Route path="wishlist" element={<Wishlist />} />
           <Route path="settings" element={<Settings />} />
         </Route>
-        <Route path="/profile/:userId" element={<Profile />} />
+        <Route path="/profile/:auth0Id" element={<Profile />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

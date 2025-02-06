@@ -1,5 +1,6 @@
-import { createContext, useState, ReactNode } from "react";
-import { UserProfile } from "../api/profile";
+import { createContext, useState, useEffect, ReactNode } from "react";
+import { fetchUserProfile, UserProfile } from "../api/profile";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface ProfileContextType {
     profile: UserProfile | null;
@@ -12,7 +13,16 @@ export const ProfileContext = createContext<ProfileContextType>({
 });
 
 export const ProfileProvider = ({ children }: { children: ReactNode }) => {
+    const { user, isAuthenticated } = useAuth0();
     const [profile, setProfile] = useState<UserProfile | null>(null);
+
+    useEffect(() => {
+        if (isAuthenticated && user && user.sub) {
+            fetchUserProfile(user.sub)
+                .then((data) => setProfile(data))
+                .catch((err) => console.error('Error fetching profile:', err));
+        }
+    }, [isAuthenticated, user]);
 
     return (
         <ProfileContext.Provider value={{ profile, setProfile }}>

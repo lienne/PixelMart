@@ -85,7 +85,7 @@ function Settings() {
                  label="Email"
                  variant="outlined"
                  fullWidth
-                 value="jane.doe@example.com"
+                 value={user?.email || ""}
                  disabled
                 />
                 <TextField

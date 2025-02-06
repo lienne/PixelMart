@@ -18,20 +18,22 @@ export const syncUser = async (req: Request, res: Response) => {
             user = await findUserByEmail(email);
 
             if (user) {
-                // Update the user record if details have changed
-                user = await updateUser(auth0_id, { email, name, avatar });
+                // Only update fields if they are null or empty, otherwise leave them alone
+                const updatedData = {
+                    email,
+                    name: user.name ? user.name : name,
+                    avatar: user.avatar ? user.avatar : avatar,
+                };
+                user = await updateUserProfileByAuthId(auth0_id, updatedData);
             } else {
-                // Create a new user record
                 user = await createUser(email, auth0_id, name, avatar);
             }
-        } else {
-            user = await updateUser(auth0_id, { email, name, avatar });
         }
 
         res.status(200).json({ user });
         return;
     } catch (err) {
-        console.error(err);
+        console.error('Error syncing user data:', err);
         res.status(500).json({ message: 'Error syncing user data.' });
         return;
     }

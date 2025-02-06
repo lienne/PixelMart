@@ -95,7 +95,7 @@ PixelMart/
 ## Usage
 
 - **Authentication:**  
-  Users will be redirected to Auth0’s Universal Login (or use Auth0 Lock if you choose) for sign-up and login.
+  Users will be redirected to Auth0’s Universal Login for sign-up and login.
 
 - **Dashboard:**  
   Once authenticated, users can access their dashboard, update their profile, and manage their listings.

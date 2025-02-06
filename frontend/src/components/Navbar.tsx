@@ -196,7 +196,7 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
                 horizontal: 'right',
               }}
             >
-              <MenuItem component={RouterLink} to="/dashboard" onClick={handleMenuClose}>
+              <MenuItem component={RouterLink} to="/dashboard/overview" onClick={handleMenuClose}>
                 Dashboard
               </MenuItem>
               <MenuItem component={RouterLink} to={`/profile/${user?.sub}`} onClick={handleMenuClose}>

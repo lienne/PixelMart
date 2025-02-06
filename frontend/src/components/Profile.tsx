@@ -11,20 +11,22 @@ import {
   Avatar,
 } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { fetchUserProfile, UserProfile } from '../api/profile';
+import { ProfileContext } from '../context/ProfileContext';
 
 function Profile() {
-  const { userId } = useParams<{ userId: string}>();
+  const { auth0Id } = useParams<{ auth0Id: string}>();
+  const { profile } = useContext(ProfileContext);
   const [ profileData, setProfileData ] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    if (userId) {
-        fetchUserProfile(userId)
+    if (auth0Id) {
+        fetchUserProfile(auth0Id)
             .then((data) => setProfileData(data))
             .catch((err) => console.error('Error fetching profile: ', err));
     }
-  }, [userId]);
+  }, [auth0Id]);
 
   if (!profileData) {
     return <Typography>Loading profile...</Typography>;
@@ -67,8 +69,8 @@ function Profile() {
         >
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <Avatar
-              src={profileData.avatar}
-              alt={profileData.name}
+              src={profile?.avatar || profileData.avatar}
+              alt={profile?.name || profileData.name}
               sx={{ width: 80, height: 80, mr: 2 }}
             />
             <Typography variant="h4">{profileData.name}</Typography>
@@ -101,7 +103,7 @@ function Profile() {
           <Grid container spacing={3}>
             {itemsForSale.map((item) => (
               <Grid item xs={12} sm={6} md={4} key={item.id}>
-                <Card>
+                <Card sx={{ height: 300 }}>
                   {item.image && (
                     <CardMedia
                       component="img"
@@ -110,7 +112,15 @@ function Profile() {
                       alt={item.title}
                     />
                   )}
-                  <CardContent>
+                  <CardContent
+                    sx={{
+                        // height: 'calc(100% - 140px)',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                    }}
+                  >
                     <Typography variant="h6" component="div">
                       {item.title}
                     </Typography>
