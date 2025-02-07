@@ -19,6 +19,7 @@ import NotFound from './components/NotFound';
 import ItemPage from './components/ItemPage';
 
 function App() {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { isAuthenticated, user } = useAuth0();
 
   useEffect(() => {
@@ -30,7 +31,7 @@ function App() {
         avatar: user.picture,
       };
 
-      fetch('http://localhost:3000/api/users/sync', {
+      fetch(`${API_BASE_URL}/users/sync`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(syncData),

@@ -43,22 +43,6 @@ export const findUserByUsername = async(username: string): Promise<User | null> 
 //     return result.rows[0] || null;
 // }
 
-export const updateUser = async(
-    auth0_id: string,
-    updates: { email?: string, name?: string, avatar?: string}
-): Promise<User> => {
-    const { email, name, avatar } = updates;
-    const result = await pool.query(
-        `UPDATE users
-        SET auth0_id = $1, name = $3, avatar = $4
-        WHERE email = $2
-        RETURNING *`,
-        [auth0_id, email, name, avatar]
-    );
-
-    return result.rows[0];
-}
-
 export const updateUserProfileByAuthId = async(
     auth0_id: string,
     updates: { name?: string, avatar?: string, username?: string}

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createUser, findUserByAuth0Id, findUserByUsername, findUserByEmail, updateUser, updateUserProfileByAuthId, User } from "../models/userModel";
+import { createUser, findUserByAuth0Id, findUserByUsername, findUserByEmail, updateUserProfileByAuthId, User } from "../models/userModel";
 
 export const syncUser = async (req: Request, res: Response) => {
     const { auth0_id, email, name, avatar } = req.body;
@@ -97,5 +97,24 @@ export const updateUserProfile = async (req: Request, res: Response) => {
 
         console.error('Error updating user profile:', err);
         res.status(500).json({ message: 'Error updating user profile.' });
+    }
+};
+
+export const checkUsernameAvailability = async (req: Request, res: Response) => {
+    const { username } = req.params;
+
+    try {
+        const user = await findUserByUsername(username);
+        if (user) {
+            // Username is taken
+            res.status(200).json({ available: false });
+            return;
+        } else {
+            // Username is available
+            res.status(200).json({ available: true });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error checking username availability.' });
     }
 };

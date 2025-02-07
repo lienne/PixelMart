@@ -17,14 +17,38 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { ProfileContext } from "../../context/ProfileContext";
 
 function Settings() {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
     const { user } = useAuth0();
     const { profile, setProfile } = useContext(ProfileContext);
     const [name, setName] = useState(profile?.name || "Jane Doe");
     const [username, setUsername] = useState(profile?.username || "");
+    const [usernameAvailableMsg, setUsernameAvailableMsg] = useState('');
     const [avatarUrl, setAvatarUrl] = useState(profile?.avatar || '');
     const [message, setMessage] = useState('');
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const [openDialog, setOpenDialog] = useState(false);
+
+    const checkUsernameAvailability = async () => {
+        if (!username.trim()) {
+            setUsernameAvailableMsg('Please enter a username.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/username-availability/${encodeURIComponent(username)}`);
+            const data = await response.json();
+
+            if (data.available) {
+                setUsernameAvailableMsg('Username is available!');
+            } else {
+                setUsernameAvailableMsg('This username is already taken.');
+            }
+        } catch (err) {
+            console.error('Error checking username availability:', err);
+            setUsernameAvailableMsg('Error checking username.');
+        }
+    };
 
     const handleSave = async () => {
         if (!user?.sub) {
@@ -34,7 +58,7 @@ function Settings() {
 
         try {
             const auth0Id = user.sub;
-            const response = await fetch(`http://localhost:3000/api/users/profile/${auth0Id}`, {
+            const response = await fetch(`${API_BASE_URL}/users/profile/${auth0Id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -92,14 +116,19 @@ function Settings() {
                   value={user?.email || ""}
                   disabled
                 />
-                <TextField
-                  label="Username"
-                  variant="outlined"
-                  fullWidth
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Choose a unique username"
-                />
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <TextField
+                      label="Username"
+                      variant="outlined"
+                      fullWidth
+                      value={username}
+                      onChange={(e) => { setUsername(e.target.value); setUsernameAvailableMsg(''); }}
+                      placeholder="Choose a unique username"
+                    />
+                    <Button variant="outlined" onClick={checkUsernameAvailability}>Check</Button>
+                </Box>
+                {usernameAvailableMsg && <Typography variant="body2">{usernameAvailableMsg}</Typography>}
+
                 <TextField
                   label="Avatar URL"
                   variant="outlined"
