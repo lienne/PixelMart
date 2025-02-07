@@ -63,6 +63,6 @@ function ItemPage() {
             {/* Additional actions go here, like Buy Now, Add to Card, etc */}
         </Container>
     );
-};
+}
 
 export default ItemPage;

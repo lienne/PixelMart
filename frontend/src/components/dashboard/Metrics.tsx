@@ -3,6 +3,6 @@ function Metrics() {
         <>
         </>
     );
-};
+}
 
 export default Metrics;

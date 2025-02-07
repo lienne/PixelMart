@@ -2,7 +2,7 @@ import { Container, Box, Typography, Link } from '@mui/material';
 
 function About() {
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{ py: 4, pt: 14 }}>
       <Box component="header" sx={{ textAlign: 'center', mb: 4 }}>
         <Typography variant="h3" component="h1">
           About PixelMart

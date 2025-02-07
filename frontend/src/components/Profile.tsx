@@ -55,7 +55,7 @@ function Profile() {
   ];
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4, pt: 14 }}>
       <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
         {/* Left Panel: Profile Info */}
         <Box
@@ -136,6 +136,6 @@ function Profile() {
       </Box>
     </Container>
   );
-};
+}
 
 export default Profile;

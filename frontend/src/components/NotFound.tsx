@@ -15,6 +15,6 @@ function NotFound() {
             </Button>
         </Container>
     );
-};
+}
 
 export default NotFound;

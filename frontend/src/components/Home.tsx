@@ -42,7 +42,7 @@ function Home() {
   ];
   
   return (
-    <Container sx={{ py: 4 }}>
+    <Container sx={{ py: 4, pt: 14 }}>
       {/* Header Section */}
       <Box
         component="header"

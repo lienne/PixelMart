@@ -175,6 +175,6 @@ function Overview() {
           </Box>
         </Container>
       );
-};
+}
 
 export default Overview;

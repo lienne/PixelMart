@@ -46,7 +46,7 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
   const isMobileMenuOpen = Boolean(mobileAnchorEl);
   const { profile } = useContext(ProfileContext);
 
-  const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleAvatarMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setProfileAnchorEl(event.currentTarget);
   };
 
@@ -95,7 +95,7 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="sticky" sx={{ backgroundColor: '#fff', color: 'black' }}>
+      <AppBar position="fixed" sx={{ backgroundColor: '#fff', color: 'black' }}>
         <Toolbar sx={{ display: "flex", alignItems: "center" }}>
           <Box sx={{ display: { xs: 'flex', md: 'none '} }}>
             <IconButton
@@ -177,7 +177,7 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
             {/* Right side: Authenticated vs. Login */}
             {isAuthenticated ? (
               <>
-                <IconButton onClick={handleAvatarClick} color="inherit">
+                <IconButton onClick={handleAvatarMenuOpen} color="inherit">
                   <Avatar
                     src={profile?.avatar || user?.picture || "https://i.pinimg.com/736x/1b/2e/31/1b2e314e767a957a44ed8f992c6d9098.jpg"}
                     alt={profile?.name || user?.name || "User Avatar"}
@@ -232,6 +232,6 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
       {renderMobileMenu}
     </Box>
   );
-};
+}
 
 export default Navbar;

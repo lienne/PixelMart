@@ -41,6 +41,6 @@ function Listings() {
             {/* Map to render listings */}
         </Container>
     );
-};
+}
 
 export default Listings;

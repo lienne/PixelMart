@@ -181,6 +181,6 @@ function Settings() {
             </Dialog>
         </Container>
     );
-};
+}
 
 export default Settings;
