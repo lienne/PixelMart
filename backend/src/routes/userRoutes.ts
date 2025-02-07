@@ -4,7 +4,7 @@ import { syncUser, getUserProfile, updateUserProfile } from "../controllers/user
 const router = Router();
 
 router.post('/sync', syncUser);
-router.get('/profile/:auth0Id', getUserProfile);
+router.get('/profile/:identifier', getUserProfile);
 router.put('/profile/:auth0Id', updateUserProfile);
 
 export default router;

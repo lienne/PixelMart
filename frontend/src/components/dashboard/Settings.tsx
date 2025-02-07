@@ -17,13 +17,14 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { ProfileContext } from "../../context/ProfileContext";
 
 function Settings() {
+    const { user } = useAuth0();
     const { profile, setProfile } = useContext(ProfileContext);
     const [name, setName] = useState(profile?.name || "Jane Doe");
+    const [username, setUsername] = useState(profile?.username || "");
     const [avatarUrl, setAvatarUrl] = useState(profile?.avatar || '');
     const [message, setMessage] = useState('');
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const [openDialog, setOpenDialog] = useState(false);
-    const { user } = useAuth0();
 
     const handleSave = async () => {
         if (!user?.sub) {
@@ -32,24 +33,27 @@ function Settings() {
         }
 
         try {
-            const auth0Id = user?.sub;
+            const auth0Id = user.sub;
             const response = await fetch(`http://localhost:3000/api/users/profile/${auth0Id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ name, avatar: avatarUrl })
+                body: JSON.stringify({ name, avatar: avatarUrl, username })
             });
+
             if (!response.ok) {
-                throw new Error('Failed to update profile.');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update profile.');
             }
+
             const data = await response.json();
             setMessage('Profile updated successfully!');
             console.log('Updated user:', data.user);
             setProfile(data.user);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error updating profile:', err);
-            setMessage('Error updating profile.');
+            setMessage(err.message || 'Error updating profile.');
         }
     };
 
@@ -82,11 +86,19 @@ function Settings() {
                   onChange={(e) => setName(e.target.value)}
                 />
                 <TextField
-                 label="Email"
-                 variant="outlined"
-                 fullWidth
-                 value={user?.email || ""}
-                 disabled
+                  label="Email"
+                  variant="outlined"
+                  fullWidth
+                  value={user?.email || ""}
+                  disabled
+                />
+                <TextField
+                  label="Username"
+                  variant="outlined"
+                  fullWidth
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Choose a unique username"
                 />
                 <TextField
                   label="Avatar URL"

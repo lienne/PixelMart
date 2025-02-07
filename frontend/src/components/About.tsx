@@ -53,6 +53,13 @@ function About() {
         </Typography>
 
         <Typography variant="h5" component="h3" gutterBottom>
+          <b>Q:</b> Are you going to continue improving the website?
+        </Typography>
+        <Typography variant="body1" paragraph>
+          Yes, this is a ongoing project and I plan on continuing to add features and improve it as time goes on.
+        </Typography>
+
+        <Typography variant="h5" component="h3" gutterBottom>
           <b>Q:</b> Who are you?
         </Typography>
         <Typography variant="body1" paragraph>

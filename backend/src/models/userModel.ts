@@ -5,8 +5,10 @@ export interface User {
   auth0_id?: string;
   email: string;
   name?: string;
+  username?: string;
   avatar?: string;
   created_at: Date;
+  username_changed_at: Date;
 }
 
 export const createUser = async (
@@ -28,6 +30,11 @@ export const findUserByEmail = async (email: string): Promise<User | null> => {
 
 export const findUserByAuth0Id = async(auth0_id: string): Promise<User | null> => {
     const result = await pool.query('SELECT * FROM users WHERE auth0_id = $1', [auth0_id]);
+    return result.rows[0] || null;
+}
+
+export const findUserByUsername = async(username: string): Promise<User | null> => {
+    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
     return result.rows[0] || null;
 }
 
@@ -54,15 +61,21 @@ export const updateUser = async(
 
 export const updateUserProfileByAuthId = async(
     auth0_id: string,
-    updates: { name?: string, avatar?: string}
+    updates: { name?: string, avatar?: string, username?: string}
 ): Promise<User | null> => {
-    const { name, avatar } = updates;
+    const { name, avatar, username } = updates;
     const result = await pool.query(
         `UPDATE users
-        SET name = $2, avatar = $3
+        SET name = COALESCE($2, name),
+            avatar = COALESCE($3, avatar),
+            username =  COALESCE($4, username),
+            username_changed_at = CASE
+                                    WHEN $4 IS NOT NULL THEN NOW()
+                                    ELSE username_changed_at
+                                END
         WHERE auth0_id = $1
         RETURNING *`,
-        [auth0_id, name, avatar]
+        [auth0_id, name, avatar, username]
     );
     return result.rows[0] || null;
 }

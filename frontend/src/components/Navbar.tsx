@@ -199,7 +199,7 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
               <MenuItem component={RouterLink} to="/dashboard/overview" onClick={handleMenuClose}>
                 Dashboard
               </MenuItem>
-              <MenuItem component={RouterLink} to={`/profile/${user?.sub}`} onClick={handleMenuClose}>
+              <MenuItem component={RouterLink} to={`/profile/${profile?.username || user?.sub}`} onClick={handleMenuClose}>
                 My Profile
               </MenuItem>
               <MenuItem component={RouterLink} to={"/dashboard/settings"} onClick={handleMenuClose}>

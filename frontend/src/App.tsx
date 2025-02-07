@@ -16,6 +16,7 @@ import Profile from './components/Profile';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect } from 'react';
 import NotFound from './components/NotFound';
+import ItemPage from './components/ItemPage';
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
@@ -64,6 +65,7 @@ function App() {
           <Route path="settings" element={<Settings />} />
         </Route>
         <Route path="/profile/:auth0Id" element={<Profile />} />
+        <Route path="/item/:itemId" element={<ItemPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
