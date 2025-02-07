@@ -111,7 +111,7 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
           </Box>
 
           {/* Left side: Logo and Brand */}
-          <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center" }}>
+          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
             <Button
               component={RouterLink}
               to="/"
@@ -149,13 +149,13 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
 
           {/* Center: Search bar */}
           {!isMobile && (
-              <Box sx={{ flexGrow: 2, display: 'flex', justifyContent: 'center' }}>
+              <Box sx={{ flexGrow: 2, display: 'flex' }}>
                   <TextField
                   variant="outlined"
                   placeholder="Search"
                   size="small"
                   sx={{
-                      width: { xs: '250px', sm: '300px', md: '350px' },
+                      width: { xs: '650px', sm: '700px', md: '750px' },
                       marginRight: 2,
                   }}
                   inputProps={{ 'aria-label': 'search' }}
@@ -163,7 +163,7 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
               </Box>
           )}
 
-          <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
             {/* Right side: Cart Button */}
             <Button
               component={RouterLink}

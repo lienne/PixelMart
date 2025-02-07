@@ -6,7 +6,7 @@ import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded';
 import InboxRoundedIcon from '@mui/icons-material/InboxRounded';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
-import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+// import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
 import { NavLink } from "react-router-dom";
 
@@ -25,7 +25,7 @@ const secondaryListItems = [
     { label: 'Feedback', path: '/feedback', icon: <HelpRoundedIcon /> },
 ];
 
-function MenuContent () {
+function MenuContent ({ handleDrawerToggle }: { handleDrawerToggle: () => void }) {
     return (
         <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
             <List dense>
@@ -34,6 +34,7 @@ function MenuContent () {
                         <ListItemButton
                           component={NavLink}
                           to={item.path}
+                          onClick={handleDrawerToggle}
                           sx={{
                             '&.active': {
                                 bgcolor: 'primary.main',
@@ -53,6 +54,7 @@ function MenuContent () {
                         <ListItemButton
                           component={NavLink}
                           to={item.path}
+                          onClick={handleDrawerToggle}
                         >
                             <ListItemIcon>{item.icon}</ListItemIcon>
                             <ListItemText primary={item.label} />

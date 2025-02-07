@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 function NotFound() {
     return (
-        <Container sx={{ py: 4, textAlign: 'center' }}>
+        <Container sx={{ py: 4, textAlign: 'center', pt: 14 }}>
             <Typography variant="h3" gutterBottom>
                 404 - Page Not Found
             </Typography>

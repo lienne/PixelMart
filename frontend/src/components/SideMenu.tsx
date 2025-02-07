@@ -1,4 +1,4 @@
-import { Box, styled } from "@mui/material";
+import { Box, styled, useMediaQuery, useTheme } from "@mui/material";
 import MuiDrawer, { drawerClasses } from '@mui/material/Drawer';
 import MenuContent from "./MenuContent";
 
@@ -18,28 +18,53 @@ const Drawer = styled(MuiDrawer)({
     },
 });
 
-function SideMenu () {
+function SideMenu ({ mobileOpen, handleDrawerToggle }: { mobileOpen: boolean, handleDrawerToggle: () => void }) {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    
     return (
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', md: 'block' },
-            [`& .${drawerClasses.paper}`]: {
-                backgroundColor: 'background.paper',
-            },
-          }}
-        >
-            <Box
-              sx={{
-                overflow: 'auto',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-                <MenuContent />
-            </Box>
-        </Drawer>
+        <>
+            {isMobile ? (
+                /* Mobile Drawer (Temporary) */
+                <MuiDrawer
+                  variant="temporary"
+                  open={mobileOpen}
+                  onClose={handleDrawerToggle}
+                  ModalProps={{
+                    keepMounted: true,
+                  }}
+                  sx={{
+                    [`& .${drawerClasses.paper}`]: {
+                        width: drawerWidth,
+                    },
+                  }}
+                >
+                    <MenuContent handleDrawerToggle={handleDrawerToggle} />
+                </MuiDrawer>
+            ) : (
+                /* Desktop Drawer (Permanent) */
+                <Drawer
+                  variant="permanent"
+                  sx={{
+                    display: { xs: 'none', md: 'block' },
+                    [`& .${drawerClasses.paper}`]: {
+                        backgroundColor: 'background.paper',
+                    },
+                  }}
+                >
+                    <Box
+                      sx={{
+                        overflow: 'auto',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
+                    >
+                        <MenuContent handleDrawerToggle={() => {}} />
+                    </Box>
+                </Drawer>
+            )}
+        </>
     );
 }
 
