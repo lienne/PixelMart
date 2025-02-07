@@ -1,10 +1,11 @@
 import { useContext, useState } from "react";
-import { Box, Button, Card, CardContent, CardMedia, Container, IconButton, Typography } from "@mui/material";
+import { Avatar, Box, Button, Card, CardContent, CardMedia, Container, IconButton, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useAuth0 } from "@auth0/auth0-react";
 import { ProfileContext } from "../../context/ProfileContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 
 function Overview() {
@@ -44,12 +45,11 @@ function Overview() {
             {/* Left Column: Profile Card and Most Popular Items Card */}
             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
               {/* Profile Card */}
-              <Card sx={{ flex: '1 1 auto' }}>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image={profile?.avatar || user?.picture || 'https://i.pinimg.com/736x/1b/2e/31/1b2e314e767a957a44ed8f992c6d9098.jpg'}
+              <Card sx={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3 }}>
+                <Avatar
+                  src={profile?.avatar || user?.picture || 'https://i.pinimg.com/736x/1b/2e/31/1b2e314e767a957a44ed8f992c6d9098.jpg'}
                   alt={profile?.name || user?.name || 'User Avatar'}
+                  sx={{ width: 100, height: 100, mb: 2 }}
                 />
                 <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h5">
@@ -69,17 +69,30 @@ function Overview() {
               
               {/* Most Popular Items Card */}
               <Card sx={{ flex: '1 1 auto', position: 'relative' }}>
-                <CardMedia
-                  component="img"
-                  height="200"
-                  image={popularItems[currentPopularIndex].image}
-                  alt={popularItems[currentPopularIndex].title}
-                />
-                <CardContent>
-                  <Typography variant="h6">
-                    {popularItems[currentPopularIndex].title}
-                  </Typography>
-                </CardContent>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={popularItems[currentPopularIndex].id}
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                    style={{ width: "100%" }}
+                  >
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={popularItems[currentPopularIndex].image}
+                      alt={popularItems[currentPopularIndex].title}
+                      sx={{ objectFit: 'cover', width: "100%" }}
+                    />
+                    <CardContent>
+                      <Typography variant="h6">
+                        {popularItems[currentPopularIndex].title}
+                      </Typography>
+                    </CardContent>
+                  </motion.div>
+                </AnimatePresence>
+
                 {/* Navigation Arrows */}
                 <IconButton
                   onClick={handlePrev}
@@ -89,6 +102,7 @@ function Overview() {
                     left: 0,
                     transform: 'translateY(-50%)',
                     backgroundColor: 'rgba(255,255,255,0.7)',
+                    zIndex: 1,
                   }}
                 >
                   <ArrowBackIosIcon fontSize="small" />
@@ -101,20 +115,22 @@ function Overview() {
                     right: 0,
                     transform: 'translateY(-50%)',
                     backgroundColor: 'rgba(255,255,255,0.7)',
+                    zIndex: 1,
                   }}
                 >
                   <ArrowForwardIosIcon fontSize="small" />
                 </IconButton>
+
                 <Box sx={{ textAlign: 'right', p: 2 }}>
-                <Button
-                  component={RouterLink}
-                  to="/"
-                  variant="text"
-                  color="primary"
-                >
-                  See all
-                </Button>
-              </Box>
+                  <Button
+                    component={RouterLink}
+                    to="/"
+                    variant="text"
+                    color="primary"
+                  >
+                    See all
+                  </Button>
+                </Box>
               </Card>
             </Box>
     

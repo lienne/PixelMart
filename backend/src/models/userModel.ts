@@ -52,7 +52,7 @@ export const updateUserProfileByAuthId = async(
         `UPDATE users
         SET name = COALESCE($2, name),
             avatar = COALESCE($3, avatar),
-            username =  COALESCE($4, username),
+            username = COALESCE($4, username),
             username_changed_at = CASE
                                     WHEN $4 IS NOT NULL THEN NOW()
                                     ELSE username_changed_at
