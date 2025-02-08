@@ -6,17 +6,21 @@ import {
   Grid,
   Button,
   Avatar,
+  Alert,
+  CircularProgress,
 } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { fetchUserProfile, UserProfile } from '../api/profile';
 import { ProfileContext } from '../context/ProfileContext';
 import ItemCard from './ItemCard';
+import useMultipleItemsFetch from '../hooks/useMultipleItemsFetch';
 
 function Profile() {
   const { auth0Id } = useParams<{ auth0Id: string}>();
   const { profile } = useContext(ProfileContext);
   const [ profileData, setProfileData ] = useState<UserProfile | null>(null);
+  const { products, isLoading, error } = useMultipleItemsFetch();
 
   useEffect(() => {
     if (auth0Id) {
@@ -27,33 +31,12 @@ function Profile() {
   }, [auth0Id]);
 
   if (!profileData) {
-    return <Typography>Loading profile...</Typography>;
+    return (
+      <Container sx={{ py: 4, pt: 14 }}>
+        <Typography>Loading profile...</Typography>
+      </Container>
+    );
   }
-
-  // Placeholder items list – fetch these from backend
-  const itemsForSale = [
-    {
-      id: 1,
-      title: 'Digital EBook on Crochet Patterns',
-      price: '$9.99',
-      images: ['https://i.etsystatic.com/48975160/r/il/39a732/6163941225/il_570xN.6163941225_jszk.jpg'],
-      thumbnail: 'https://i.etsystatic.com/48975160/r/il/39a732/6163941225/il_570xN.6163941225_jszk.jpg'
-    },
-    {
-      id: 2,
-      title: 'Video Course: Learn Knitting',
-      price: '$29.99',
-      images: ['https://i.ytimg.com/vi/hM5M2Fu0RtY/sddefault.jpg'],
-      thumbnail: 'https://i.ytimg.com/vi/hM5M2Fu0RtY/sddefault.jpg'
-    },
-    {
-      id: 3,
-      title: 'Printable Planner',
-      price: '$4.99',
-      images: ['https://worldofprintables.com/wp-content/uploads/2024/11/2025-planner-1024x576.jpg'],
-      thumbnail: 'https://worldofprintables.com/wp-content/uploads/2024/11/2025-planner-1024x576.jpg'
-    },
-  ];
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, pt: 14 }}>
@@ -101,39 +84,31 @@ function Profile() {
           <Typography variant="h4" gutterBottom>
             Listings
           </Typography>
-          <Grid container spacing={3}>
-            {itemsForSale.map((item) => (
-              <Grid item xs={12} sm={6} md={4} key={item.id}>
-                {/* <Card sx={{ height: 300 }}>
-                  {item.image && (
-                    <CardMedia
-                      component="img"
-                      height="140"
-                      image={item.image}
-                      alt={item.title}
-                    />
-                  )}
-                  <CardContent
-                    sx={{
-                        // height: 'calc(100% - 140px)',
-                        overflow: 'hidden',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                    }}
-                  >
-                    <Typography variant="h6" component="div">
-                      {item.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {item.price}
-                    </Typography>
-                  </CardContent>
-                </Card> */}
-                <ItemCard item={item} />
-              </Grid>
-            ))}
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              Error loading products. Please try again later.
+            </Alert>
+          )}
+
+          {/* Product Listings */}
+          {isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <Grid container spacing={3}>
+            {products.length > 0 ? (
+              products.map((item) => (
+                <Grid item xs={12} sm={6} md={4} key={item.id}>
+                  <ItemCard item={item} />
+                </Grid>
+              ))
+            ) : (
+              !error && <Typography>No items for sale.</Typography>
+            )}
           </Grid>
+          )}
         </Box>
       </Box>
     </Container>

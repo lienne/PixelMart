@@ -1,16 +1,21 @@
 import { useContext, useState } from "react";
-import { Avatar, Box, Button, Card, CardContent, CardMedia, Container, IconButton, Typography } from "@mui/material";
+import { Alert, Avatar, Box, Button, Card, CardContent, CircularProgress, Container, IconButton, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useAuth0 } from "@auth0/auth0-react";
 import { ProfileContext } from "../../context/ProfileContext";
 import { motion, AnimatePresence } from "framer-motion";
-// import ItemCard from "../ItemCard";
+import ItemCard from "../ItemCard";
+import useMultipleItemsFetch from "../../hooks/useMultipleItemsFetch";
 
 function Overview() {
     const { user } = useAuth0();
     const { profile } = useContext(ProfileContext);
+    const { products, isLoading, error } = useMultipleItemsFetch();
+    const [currentPopularIndex, setCurrentPopularIndex] = useState(0);
+
+    const popularItems = products.slice(0, 5);
 
     // Mock data for recent orders
     const recentOrders = [
@@ -18,14 +23,6 @@ function Overview() {
         { id: 2, title: 'Order #2', date: '2023-01-05', amount: '$14.99' },
         { id: 3, title: 'Order #3', date: '2023-01-10', amount: '$4.99' },
     ];
-
-    // Mock data for popular items
-    const popularItems = [
-        { id: 1, title: 'Item 1', price: '$9.99', image: 'https://i.etsystatic.com/48975160/r/il/39a732/6163941225/il_570xN.6163941225_jszk.jpg' },
-        { id: 2, title: 'Item 2', price: '$9.99', image: 'https://i.ytimg.com/vi/hM5M2Fu0RtY/sddefault.jpg' },
-        { id: 3, title: 'Item 3', price: '$9.99', image: 'https://worldofprintables.com/wp-content/uploads/2024/11/2025-planner-1024x576.jpg' },
-    ];
-    const [currentPopularIndex, setCurrentPopularIndex] = useState(0);
 
     const handlePrev = () => {
         setCurrentPopularIndex((prev) =>
@@ -69,33 +66,30 @@ function Overview() {
               
               {/* Most Popular Items Card */}
               <Card sx={{ flex: '1 1 auto', position: 'relative' }}>
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={popularItems[currentPopularIndex].id}
-                    initial={{ opacity: 0, x: 100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -100 }}
-                    transition={{ duration: 0.5, ease: "easeInOut" }}
-                    style={{ width: "100%" }}
-                  >
-                    <CardMedia
-                      component="img"
-                      height="200"
-                      image={popularItems[currentPopularIndex].image}
-                      alt={popularItems[currentPopularIndex].title}
-                      sx={{ objectFit: 'cover', width: "100%" }}
-                    />
-                    <CardContent>
-                      <Typography variant="h6">
-                        {popularItems[currentPopularIndex].title}
-                      </Typography>
-                      <Typography>
-                        {popularItems[currentPopularIndex].price}
-                      </Typography>
-                    </CardContent>
-                    {/* <ItemCard item={popularItems[currentPopularIndex]} /> */}
-                  </motion.div>
-                </AnimatePresence>
+                {isLoading ? (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                    <CircularProgress />
+                  </Box>
+                ) : error ? (
+                  <Alert severity="error" sx={{ m: 2 }}>
+                    Error loading popular items. Please try again later.
+                  </Alert>
+                ) : popularItems.length > 0 ? (
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={popularItems[currentPopularIndex].id}
+                      initial={{ opacity: 0, x: 100 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -100 }}
+                      transition={{ duration: 0.5, ease: "easeInOut" }}
+                      style={{ width: "100%" }}
+                    >
+                      <ItemCard item={popularItems[currentPopularIndex]} noShadow={true} />
+                    </motion.div>
+                  </AnimatePresence>
+                ) : (
+                  <Typography sx={{ p: 3 }}>No popular items available.</Typography>
+                )}
 
                 {/* Navigation Arrows */}
                 <IconButton

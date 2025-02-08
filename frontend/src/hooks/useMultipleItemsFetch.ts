@@ -10,7 +10,7 @@ function useMultipleItemsFetch() {
 
     useEffect(() => {
         fetchData();
-    })
+    }, []);
 
     async function fetchData() {
         try {
@@ -19,13 +19,12 @@ function useMultipleItemsFetch() {
             if (response.ok) {
                 const data = await response.json();
                 setProducts(data.products);
-                setIsLoading(false);
             } else {
                 setError(true);
-                setIsLoading(false);
             }
         } catch (err) {
             setError(true);
+        } finally {
             setIsLoading(false);
         }
     }
