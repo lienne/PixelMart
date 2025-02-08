@@ -1,53 +1,15 @@
 import { Alert, Box, Button, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
 import useLocalStorageState from 'use-local-storage-state';
 import { Link as RouterLink } from 'react-router-dom';
 import ItemCard from "./ItemCard";
-
-const API_URL = 'https://dummyjson.com/products';
-
-export type Product = {
-    id: number;
-    title: string;
-    price: string;
-    images: string[];
-    thumbnail?: string;
-    quantity?: number;
-}
-
-export interface CartProps {
-    [productId: string]: Product;
-}
+import useMultipleItemsFetch from '../hooks/useMultipleItemsFetch';
+import { Item, CartProps } from "../types";
 
 function Products () {
-    const [isLoading, setIsLoading] = useState(true);
-    const [products, setProducts] = useState<Product[]>([]);
-    const [error, setError] = useState(false);
+    const { products, isLoading, error } = useMultipleItemsFetch();
     const [cart, setCart] = useLocalStorageState<CartProps>('cart', {});
 
-    useEffect(() => {
-        fetchData(API_URL);
-    }, []);
-
-    async function fetchData(url: string) {
-        try {
-            const response = await fetch(url);
-
-            if (response.ok) {
-                const data = await response.json();
-                setProducts(data.products);
-                setIsLoading(false);
-            } else {
-                setError(true);
-                setIsLoading(false);
-            }
-        } catch (err) {
-            setError(true);
-            setIsLoading(false);
-        }
-    }
-
-    const addToCart = (product: Product) => {
+    const addToCart = (product: Item) => {
         const updatedProduct = { ...product, quantity: 1};
 
         setCart((prevCart) => ({

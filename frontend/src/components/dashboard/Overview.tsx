@@ -8,7 +8,6 @@ import { ProfileContext } from "../../context/ProfileContext";
 import { motion, AnimatePresence } from "framer-motion";
 // import ItemCard from "../ItemCard";
 
-
 function Overview() {
     const { user } = useAuth0();
     const { profile } = useContext(ProfileContext);
