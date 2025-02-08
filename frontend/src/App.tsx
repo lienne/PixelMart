@@ -17,6 +17,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect } from 'react';
 import NotFound from './components/NotFound';
 import ItemPage from './components/ItemPage';
+import UploadItem from './components/dashboard/UploadItem';
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -60,6 +61,7 @@ function App() {
           <Route path="overview" element={<Overview />} />
           <Route path="orders" element={<Orders />} />
           <Route path="listings" element={<Listings />} />
+          <Route path="upload" element={<UploadItem />} />
           <Route path="metrics" element={<Metrics />} />
           <Route path="inbox" element={<Inbox />} />
           <Route path="wishlist" element={<Wishlist />} />

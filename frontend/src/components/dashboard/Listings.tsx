@@ -25,7 +25,7 @@ function Listings() {
                   variant="contained"
                   color="primary"
                   component={RouterLink}
-                  to="/upload"
+                  to="/dashboard/upload"
                 >
                     List Something
                 </Button>
