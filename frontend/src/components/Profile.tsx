@@ -4,9 +4,6 @@ import {
   Typography,
   TextField,
   Grid,
-  Card,
-  CardMedia,
-  CardContent,
   Button,
   Avatar,
 } from '@mui/material';
@@ -14,6 +11,7 @@ import { useParams } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { fetchUserProfile, UserProfile } from '../api/profile';
 import { ProfileContext } from '../context/ProfileContext';
+import ItemCard from './ItemCard';
 
 function Profile() {
   const { auth0Id } = useParams<{ auth0Id: string}>();
@@ -38,26 +36,29 @@ function Profile() {
       id: 1,
       title: 'Digital EBook on Crochet Patterns',
       price: '$9.99',
-      image: 'https://i.etsystatic.com/48975160/r/il/39a732/6163941225/il_570xN.6163941225_jszk.jpg',
+      images: ['https://i.etsystatic.com/48975160/r/il/39a732/6163941225/il_570xN.6163941225_jszk.jpg'],
+      thumbnail: 'https://i.etsystatic.com/48975160/r/il/39a732/6163941225/il_570xN.6163941225_jszk.jpg'
     },
     {
       id: 2,
       title: 'Video Course: Learn Knitting',
       price: '$29.99',
-      image: 'https://i.ytimg.com/vi/hM5M2Fu0RtY/sddefault.jpg',
+      images: ['https://i.ytimg.com/vi/hM5M2Fu0RtY/sddefault.jpg'],
+      thumbnail: 'https://i.ytimg.com/vi/hM5M2Fu0RtY/sddefault.jpg'
     },
     {
       id: 3,
       title: 'Printable Planner',
       price: '$4.99',
-      image: 'https://worldofprintables.com/wp-content/uploads/2024/11/2025-planner-1024x576.jpg',
+      images: ['https://worldofprintables.com/wp-content/uploads/2024/11/2025-planner-1024x576.jpg'],
+      thumbnail: 'https://worldofprintables.com/wp-content/uploads/2024/11/2025-planner-1024x576.jpg'
     },
   ];
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, pt: 14 }}>
       <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-        {/* Left Panel: Profile Info */}
+        {/* Profile Info */}
         <Box
           sx={{
             flexBasis: { xs: '100%', md: '25%' },
@@ -80,7 +81,7 @@ function Profile() {
           </Button>
         </Box>
 
-        {/* Right Panel: Search and Listings */}
+        {/* Search and Listings */}
         <Box sx={{ flexBasis: { xs: '100%', md: '70%' } }}>
           {/* Search Bar aligned to the right */}
           <Box
@@ -103,7 +104,7 @@ function Profile() {
           <Grid container spacing={3}>
             {itemsForSale.map((item) => (
               <Grid item xs={12} sm={6} md={4} key={item.id}>
-                <Card sx={{ height: 300 }}>
+                {/* <Card sx={{ height: 300 }}>
                   {item.image && (
                     <CardMedia
                       component="img"
@@ -128,7 +129,8 @@ function Profile() {
                       {item.price}
                     </Typography>
                   </CardContent>
-                </Card>
+                </Card> */}
+                <ItemCard item={item} />
               </Grid>
             ))}
           </Grid>

@@ -1,4 +1,6 @@
-import { Container, Box, Typography, TextField, Grid, Card, CardMedia, CardContent, CardActions, Button } from '@mui/material';
+import { Container, Box, Typography, TextField, Grid } from '@mui/material';
+import ItemCard from './ItemCard';
+import Products from './Products';
 
 function Home() {
 
@@ -83,33 +85,14 @@ function Home() {
         <Typography variant="h4" gutterBottom>
           Popular Items
         </Typography>
-        <Grid container spacing={3}>
+        {/* <Grid container spacing={3}>
           {popularItems.map(item => (
             <Grid item xs={12} sm={6} md={4} key={item.id}>
-              <Card>
-                {item.image && (
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    image={item.image}
-                    alt={item.title}
-                  />
-                )}
-                <CardContent>
-                  <Typography variant="h6">
-                    {item.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {item.price}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small">Buy Now</Button>
-                </CardActions>
-              </Card>
+              <ItemCard item={item} />
             </Grid>
           ))}
-        </Grid>
+        </Grid> */}
+        <Products />
       </Box>
     </Container>
   );

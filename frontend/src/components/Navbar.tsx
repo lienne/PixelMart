@@ -12,9 +12,11 @@ import {
   Menu,
   MenuItem,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Divider
 } from '@mui/material';
 import MoreIcon from '@mui/icons-material/MoreVert';
+import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
 import { Link as RouterLink } from 'react-router-dom';
 import { ProfileContext } from '../context/ProfileContext';
 
@@ -35,16 +37,17 @@ const navItems: NavItem[] = [
 
 function Navbar({ brandName, imageSrcPath }: NavbarProps) {
 //   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+  const { profile } = useContext(ProfileContext);
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // breakpoint for small screens
 
-  // State for handling the avatar dropdown menu
   const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileAnchorEl, setMobileAnchorEl] = useState<null | HTMLElement>(null);
+  const [cartAnchorEl, setCartAnchorEl] = useState<null | HTMLElement>(null);
   const openAvatar = Boolean(profileAnchorEl);
-  const isMobileMenuOpen = Boolean(mobileAnchorEl);
-  const { profile } = useContext(ProfileContext);
+  const openCart = Boolean(cartAnchorEl);
+  const openMobileMenu = Boolean(mobileAnchorEl);
 
   const handleAvatarMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setProfileAnchorEl(event.currentTarget);
@@ -53,6 +56,14 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
   const handleAvatarMenuClose = () => {
     setProfileAnchorEl(null);
   };
+
+  const handleCartMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setCartAnchorEl(event.currentTarget);
+  }
+  
+  const handleCartMenuClose = () => {
+    setCartAnchorEl(null);
+  }
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileAnchorEl(event.currentTarget);
@@ -81,7 +92,7 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
         vertical: 'top',
         horizontal: 'right',
       }}
-      open={isMobileMenuOpen}
+      open={openMobileMenu}
       onClose={handleMobileMenuClose}
     >
       <MenuItem component={RouterLink} to="/" onClick={handleMobileMenuClose}>
@@ -165,14 +176,49 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
 
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
             {/* Right side: Cart Button */}
-            <Button
-              component={RouterLink}
-              to="/cart"
+            <IconButton
+              onClick={handleCartMenuOpen}
               color="inherit"
-              sx={{ textTransform: 'none', marginRight: 2 }}
+              sx={{
+                marginRight: 2,
+                width: 40,
+                height: 40,
+                alignSelf: 'center'
+              }}
             >
-              Cart
-            </Button>
+              <ShoppingCartRoundedIcon />
+            </IconButton>
+            <Menu
+              anchorEl={cartAnchorEl}
+              open={openCart}
+              onClose={handleCartMenuClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              sx={{ mt: 1 }}
+            >
+              <Box
+                sx={{
+                  padding: 2,
+                  minWidth: 200
+                }}
+              >
+                <Typography variant="h6" sx={{ fontWeight: 'bold', textAlign: 'left' }}>
+                  Cart
+                </Typography>
+              </Box>
+              <Divider />
+              <Box sx={{ padding: 2, textAlign: 'center' }}>
+                <Typography variant="body1" color="textSecondary">
+                  Your cart is empty.
+                </Typography>
+              </Box>
+            </Menu>
 
             {/* Right side: Authenticated vs. Login */}
             {isAuthenticated ? (

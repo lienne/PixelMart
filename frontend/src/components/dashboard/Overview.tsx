@@ -6,6 +6,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useAuth0 } from "@auth0/auth0-react";
 import { ProfileContext } from "../../context/ProfileContext";
 import { motion, AnimatePresence } from "framer-motion";
+// import ItemCard from "../ItemCard";
 
 
 function Overview() {
@@ -21,9 +22,9 @@ function Overview() {
 
     // Mock data for popular items
     const popularItems = [
-        { id: 1, title: 'Item 1', image: 'https://i.etsystatic.com/48975160/r/il/39a732/6163941225/il_570xN.6163941225_jszk.jpg' },
-        { id: 2, title: 'Item 2', image: 'https://i.ytimg.com/vi/hM5M2Fu0RtY/sddefault.jpg' },
-        { id: 3, title: 'Item 3', image: 'https://worldofprintables.com/wp-content/uploads/2024/11/2025-planner-1024x576.jpg' },
+        { id: 1, title: 'Item 1', price: '$9.99', image: 'https://i.etsystatic.com/48975160/r/il/39a732/6163941225/il_570xN.6163941225_jszk.jpg' },
+        { id: 2, title: 'Item 2', price: '$9.99', image: 'https://i.ytimg.com/vi/hM5M2Fu0RtY/sddefault.jpg' },
+        { id: 3, title: 'Item 3', price: '$9.99', image: 'https://worldofprintables.com/wp-content/uploads/2024/11/2025-planner-1024x576.jpg' },
     ];
     const [currentPopularIndex, setCurrentPopularIndex] = useState(0);
 
@@ -89,7 +90,11 @@ function Overview() {
                       <Typography variant="h6">
                         {popularItems[currentPopularIndex].title}
                       </Typography>
+                      <Typography>
+                        {popularItems[currentPopularIndex].price}
+                      </Typography>
                     </CardContent>
+                    {/* <ItemCard item={popularItems[currentPopularIndex]} /> */}
                   </motion.div>
                 </AnimatePresence>
 
