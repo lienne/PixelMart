@@ -155,6 +155,9 @@ function UploadItem() {
                     <TextField
                         label="File Name"
                         fullWidth
+                        slotProps={{
+                            htmlInput: { maxLength: 255 }
+                        }}
                         required
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
@@ -164,9 +167,13 @@ function UploadItem() {
                         fullWidth
                         multiline
                         rows={3}
+                        slotProps={{
+                            htmlInput: { maxLength: 2000 }
+                        }}
                         required
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
+                        helperText={`${description.length}/2000 characters`}
                     />
                 </Box>
             </Box>

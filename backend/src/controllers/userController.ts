@@ -86,7 +86,7 @@ export const updateUserProfile = async (req: Request, res: Response) => {
         }
 
         // If a username update is requested, check the last update time
-        if (username) {
+        if (username && username !== user.username) {
             const lastChanged = user.username_changed_at;
             const now = new Date();
 
