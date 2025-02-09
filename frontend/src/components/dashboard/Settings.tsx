@@ -19,7 +19,7 @@ import { ProfileContext } from "../../context/ProfileContext";
 function Settings() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-    const { user } = useAuth0();
+    const { user, logout } = useAuth0();
     const { profile, setProfile } = useContext(ProfileContext);
     const [name, setName] = useState(profile?.name || "Jane Doe");
     const [username, setUsername] = useState(profile?.username || "");
@@ -28,6 +28,7 @@ function Settings() {
     const [message, setMessage] = useState('');
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
     const [openDialog, setOpenDialog] = useState(false);
+    const [showDeletedPopup, setShowDeletedPopup] = useState(false);
 
     const checkUsernameAvailability = async () => {
         if (!username.trim()) {
@@ -85,9 +86,41 @@ function Settings() {
         setOpenDialog(true);
     };
 
-    const confirmDeleteaccount = () => {
-        console.log("Account deleted.");
-        setOpenDialog(false);
+    const handleCloseSuccessDialog = () => {
+        setShowDeletedPopup(false);
+        logout({ logoutParams: { returnTo: window.location.origin } });
+    };
+
+    const confirmDeleteaccount = async () => {
+        if (!user?.sub) {
+            console.error("User not authenticated.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/users/delete/${user.sub}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-type": "application/json"
+                }
+            });
+
+            if (response.ok) {
+                setOpenDialog(false);
+                setShowDeletedPopup(true);
+            } else {
+                throw new Error("Failed to delete account.");
+            }
+            
+            setOpenDialog(false);
+            setShowDeletedPopup(true);
+
+            // Logout the user after account deletion
+            logout({ logoutParams: { returnTo: window.location.origin } });
+        } catch (err) {
+            console.error("Error deleting account:", err);
+            alert("An error occurred while deleting your account.");
+        }
     };
 
     const cancelDeleteAccount = () => {
@@ -162,12 +195,12 @@ function Settings() {
                 </Button>
             </Box>
 
-            {/* Confirmation Dialog */}
+            {/* Confirmation Dialog for Account Deletion */}
             <Dialog open={openDialog} onClose={cancelDeleteAccount}>
                 <DialogTitle>Confirm Account Deletion</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to delete your account? This action cannot be undone.
+                        Are you sure you want to delete your account?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -179,6 +212,23 @@ function Settings() {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Success Dialog for Account Deletion */}
+            {showDeletedPopup && (
+            <Dialog open={showDeletedPopup} onClose={handleCloseSuccessDialog}>
+                <DialogTitle>Account Deleted</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Your account has been deleted successfully. You will now be redirected to the homepage.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseSuccessDialog} color="primary">
+                        OK
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        )}
         </Container>
     );
 }

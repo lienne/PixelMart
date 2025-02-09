@@ -9,6 +9,7 @@ export interface User {
   avatar?: string;
   created_at: Date;
   username_changed_at: Date;
+  is_deleted: boolean;
 }
 
 export const createUser = async (
@@ -23,25 +24,21 @@ export const createUser = async (
     return result.rows[0];
 }
 
-export const findUserByEmail = async (email: string): Promise<User | null> => {
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    return result.rows[0] || null;
-}
-
 export const findUserByAuth0Id = async(auth0_id: string): Promise<User | null> => {
-    const result = await pool.query('SELECT * FROM users WHERE auth0_id = $1', [auth0_id]);
+    const result = await pool.query(
+        'SELECT * FROM users WHERE auth0_id = $1',
+        [auth0_id]
+    );
     return result.rows[0] || null;
 }
 
 export const findUserByUsername = async(username: string): Promise<User | null> => {
-    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+    const result = await pool.query(
+        'SELECT * FROM users WHERE username = $1',
+        [username]
+    );
     return result.rows[0] || null;
 }
-
-// export const findUserById = async (userId: string): Promise<User | null> => {
-//     const result = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
-//     return result.rows[0] || null;
-// }
 
 export const updateUserProfileByAuthId = async(
     auth0_id: string,
@@ -60,6 +57,23 @@ export const updateUserProfileByAuthId = async(
         WHERE auth0_id = $1
         RETURNING *`,
         [auth0_id, name, avatar, username]
+    );
+    return result.rows[0] || null;
+}
+
+export const deleteUserByAuth0Id = async (auth0Id: string): Promise<User | null> => {
+    const result = await pool.query(
+        // "DELETE FROM users WHERE auth0_id = $1 RETURNING *",
+        "UPDATE users SET is_deleted = TRUE WHERE auth0_id = $1",
+        [auth0Id]
+    );
+    return result.rows[0] || null;
+}
+
+export const reactivateUserByAuth0Id = async (auth0Id: string): Promise<User | null> => {
+    const result = await pool.query(
+        "UPDATE users SET is_deleted = FALSE WHERE auth0_id = $1",
+        [auth0Id]
     );
     return result.rows[0] || null;
 }

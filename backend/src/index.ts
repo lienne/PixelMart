@@ -25,7 +25,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   
 
 // Use product routes
-app.use('/api/auth', productRoutes);
+// app.use('/api/auth', productRoutes);
 app.use('/api/users', userRoutes);
 
 app.get('/', (req, res) => {

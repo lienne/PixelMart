@@ -21,7 +21,7 @@ import UploadItem from './components/dashboard/UploadItem';
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-  const { isAuthenticated, user } = useAuth0();
+  const { isAuthenticated, user, logout } = useAuth0();
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -37,9 +37,19 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(syncData),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (res.status === 403) {
+            console.warn("User account is deleted. Logging out...");
+            logout({ logoutParams: { returnTo: window.location.origin } }); // Force logout the user
+            return;
+          }
+
+          return res.json()
+        })
         .then((data) => {
-          console.log('Used synced: ', data.user);
+          if (data?.user) {
+            console.log('Used synced: ', data.user);
+          }
         })
         .catch((err) => {
           console.error('Error syncing user: ', err);

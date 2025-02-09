@@ -186,7 +186,7 @@ function UploadItem() {
 
             </Box>
 
-            {/* 🔥 Submit Button */}
+            {/* Submit Button */}
             <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 3 }} onClick={handleSubmit} disabled={uploading || !file}>
                 {uploading ? "Uploading..." : "Submit"}
             </Button>

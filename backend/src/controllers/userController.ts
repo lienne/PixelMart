@@ -1,17 +1,30 @@
 import { Request, Response } from "express";
-import { createUser, findUserByAuth0Id, findUserByUsername, findUserByEmail, updateUserProfileByAuthId, User } from "../models/userModel";
+import {
+    User,
+    createUser,
+    findUserByAuth0Id,
+    findUserByUsername,
+    updateUserProfileByAuthId,
+    deleteUserByAuth0Id,
+    reactivateUserByAuth0Id
+} from "../models/userModel";
 
 export const syncUser = async (req: Request, res: Response) => {
     const { auth0_id, email, name, avatar } = req.body;
 
     if (!auth0_id || !email) {
-        res.status(400).json({ message: 'Missing required fields.' });
+        res.status(400).json({ message: "Missing required fields." });
         return;
     }
 
     try {
         // Check if a user with this Auth0 ID already exists
         let user = await findUserByAuth0Id(auth0_id);
+
+        if (user && user.is_deleted) {
+            res.status(403).json({ message: "Your account is deactivated. Please reactivate it to continue." });
+            return;
+        }
 
         if (user) {
             const updatedData = {
@@ -28,8 +41,8 @@ export const syncUser = async (req: Request, res: Response) => {
         res.status(200).json({ user });
         return;
     } catch (err) {
-        console.error('Error syncing user data:', err);
-        res.status(500).json({ message: 'Error syncing user data.' });
+        console.error("Error syncing user data:", err);
+        res.status(500).json({ message: "Error syncing user data." });
         return;
     }
 };
@@ -118,3 +131,45 @@ export const checkUsernameAvailability = async (req: Request, res: Response) => 
         res.status(500).json({ message: 'Error checking username availability.' });
     }
 };
+
+// Soft delete user
+export const deleteUser = async (req: Request, res: Response) => {
+    const { auth0Id } = req.params;
+
+    try {
+        const user = await findUserByAuth0Id(auth0Id);
+
+        if (!user) {
+            res.status(404).json({ message: "User not found." });
+            return;
+        }
+
+        await deleteUserByAuth0Id(auth0Id);
+
+        res.status(200).json({ message: "User deleted successfully." });
+    } catch (err) {
+        console.error("Error deleting user:", err);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+export const reactivateUser = async (req: Request, res: Response) => {
+    const { auth0Id } = req.params;
+
+    try {
+        const user = await findUserByAuth0Id(auth0Id);
+
+        if (!user) {
+            res.status(404).json({ message: "User not found." });
+            return;
+        }
+
+        // Reactivate account by setting is_deleted = FALSE
+        await reactivateUserByAuth0Id(auth0Id);
+
+        res.status(200).json({ message: " Your account has been restored successfully." });
+    } catch (err) {
+        console.error("Error reactivating user:", err);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
