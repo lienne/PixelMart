@@ -9,6 +9,26 @@ import {
     getShowcaseImagesByFileId,
     deleteFile
 } from "../models/fileModel";
+import multer from "multer";
+import { uploadFileToS3 } from "../services/s3Service";
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+export const uploadFileToS3Controller = async (req: Request, res: Response) => {
+    try {
+        if (!req.file) {
+            res.status(400).json({ message: "No file uploaded." });
+            return;
+        }
+
+        const result = await uploadFileToS3(req.file.buffer, req.file.originalname, req.file.mimetype);
+
+        res.status(200).json({ message: "File uploaded successfully.", url: result.Location });
+    } catch (err) {
+        console.error("Upload error:", err);
+        res.status(500).json({ message: "Error uploading file." });
+    }
+};
 
 export const uploadFile = async (req: Request, res: Response) => {
     const { user_id, file_url, file_type, file_size, title, description, price, currency, is_public, category } = req.body;
@@ -108,3 +128,6 @@ export const deleteFileAndMetadata = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
+
+// Export multer upload middleware
+export const uploadMiddleware = upload.single("file");
