@@ -172,4 +172,4 @@ export const reactivateUser = async (req: Request, res: Response) => {
         console.error("Error reactivating user:", err);
         res.status(500).json({ message: "Internal server error." });
     }
-}
+};

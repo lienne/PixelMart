@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import About from './components/About';
@@ -18,6 +18,7 @@ import { useEffect } from 'react';
 import NotFound from './components/NotFound';
 import ItemPage from './components/ItemPage';
 import UploadItem from './components/dashboard/UploadItem';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -67,15 +68,18 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         {/* <Route path="/auth" element={<Login />} /> */}
-        <Route path="/dashboard/*" element={<Dashboard />}>
-          <Route path="overview" element={<Overview />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="listings" element={<Listings />} />
-          <Route path="upload" element={<UploadItem />} />
-          <Route path="metrics" element={<Metrics />} />
-          <Route path="inbox" element={<Inbox />} />
-          <Route path="wishlist" element={<Wishlist />} />
-          <Route path="settings" element={<Settings />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard/*" element={<Dashboard />}>
+            <Route index element={<Navigate to="overview" replace />} />
+            <Route path="overview" element={<Overview />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="listings" element={<Listings />} />
+            <Route path="upload" element={<UploadItem />} />
+            <Route path="metrics" element={<Metrics />} />
+            <Route path="inbox" element={<Inbox />} />
+            <Route path="wishlist" element={<Wishlist />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
         </Route>
         <Route path="/profile/:auth0Id" element={<Profile />} />
         <Route path="/item/:itemId" element={<ItemPage />} />

@@ -1,10 +1,11 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import productRoutes from './routes/productRoutes';
+// import productRoutes from './routes/productRoutes';
 // import authRoutes from './routes/authRoutes';
 import dotenv from 'dotenv';
-import pool, { testConnection } from './database';
+import { testConnection } from './database';
 import userRoutes from './routes/userRoutes';
+import fileRoutes from './routes/fileRoutes';
 
 console.log('Database module imported.');
 testConnection();
@@ -27,6 +28,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 // Use product routes
 // app.use('/api/auth', productRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/files', fileRoutes);
 
 app.get('/', (req, res) => {
     res.send('Welcome to the Digital Marketplace PixelMart!');
