@@ -1,4 +1,5 @@
 import pool from "../database";
+import { v4 as uuidv4 } from "uuid";
 
 export interface FileMetadata {
     id: string; // UUID
@@ -34,17 +35,19 @@ export const insertFileMetadata = async (
     file_type: string,
     file_size: number
 ): Promise<FileMetadata> => {
+    const newFileId = uuidv4(); // Generate UUID for file_metadata.id
+    
     const result = await pool.query(
-        `INSERT INTO files_metadata (user_id, file_url, file_type, file_size)
-        VALUES ($1, $2, $3, $4)
+        `INSERT INTO files_metadata (id, user_id, file_url, file_type, file_size)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING *`,
-        [user_id, file_url, file_type, file_size]
+        [newFileId, user_id, file_url, file_type, file_size]
     );
     return result.rows[0];
 };
 
 export const insertFileDetails = async (
-    id: string, // UUID from files_metadata
+    file_id: string, // UUID from files_metadata
     user_id: string,
     title: string,
     description: string,
@@ -57,7 +60,7 @@ export const insertFileDetails = async (
         `INSERT INTO files_details (id, user_id, title, description, price, currency, is_public, category)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING *`,
-        [id, user_id, title, description, price, currency, is_public, category]
+        [file_id, user_id, title, description, price, currency, is_public, category]
     );
     return result.rows[0];
 };

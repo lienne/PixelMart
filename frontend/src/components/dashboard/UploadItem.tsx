@@ -1,17 +1,21 @@
-import { useState, useEffect } from "react";
-import { Container, TextField, Button, Typography, Box, Paper, Alert } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Container, TextField, Button, Typography, Box, Alert } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useDropzone } from "react-dropzone";
+import { useFileUpload } from "../../hooks/useFileUpload";
+import FileDropzone from "./FileDropzone";
+import ShowcaseUploader from "./ShowcaseUploader";
 
 function UploadItem() {
-    const { user, isAuthenticated, isLoading } = useAuth0();
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+    const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [file, setFile] = useState<File | null>(null);
-    const [preview, setPreview] = useState<string | null>(null);
+    const [price, setPrice] = useState("");
     const [showcaseImages, setShowcaseImages] = useState<File[]>([]);
     const [uploading, setUploading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    
+    const { file, preview, error, getRootProps, getInputProps } = useFileUpload();
 
     // Redirect if not logged in
     useEffect(() => {
@@ -20,41 +24,6 @@ function UploadItem() {
         }
     }, [isAuthenticated, isLoading]);
 
-    // Handle File Validation & Upload
-    const { getRootProps, getInputProps } = useDropzone({
-        accept: {
-            "image/png": [],
-            "image/jpeg": [],
-            "video/mp4": [],
-            "application/pdf": [],
-            "text/plain": []
-        },
-        maxSize: 50 * 1024 * 1024, // 50MB
-        onDrop: (acceptedFiles) => {
-            if (acceptedFiles.length > 0) {
-                const newFile = acceptedFiles[0];
-                setFile(newFile);
-                setError(null);
-
-                // Generate preview if possible
-                const fileType = newFile.type;
-                if (fileType.includes("image")) {
-                    setPreview(URL.createObjectURL(newFile));
-                } else if (fileType === "application/pdf") {
-                    setPreview("pdf"); // PDF icon or generic preview
-                } else if (fileType.includes("video")) {
-                    setPreview(URL.createObjectURL(newFile));
-                } else {
-                    setPreview(null);
-                }
-            }
-        },
-        onDropRejected: () => {
-            setError("Invalid file type or size. Only images, PDFs, videos, and text files up to 50MB are allowed.");
-        }
-    });
-
-    // Handle Showcase Image Upload
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
             const files = Array.from(event.target.files);
@@ -69,35 +38,59 @@ function UploadItem() {
         }
     };
 
+    const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        // Allow only numbers and decimal points
+        if (/^\d*\.?\d{0,2}$/.test(value) || value === "") {
+            setPrice(value);
+        }
+    };
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         setUploading(true);
 
+        if (!user) {
+            console.error("User not authenticated.");
+            return;
+        }
+
         const formData = new FormData();
-        formData.append("user_id", user?.sub || "");
+        formData.append("auth0_id", user?.sub || "");
         formData.append("title", title);
         formData.append("description", description);
+        formData.append("price", price);
+        formData.append("currency", "USD");
+        formData.append("is_public", "true"); // Default to public for now
+
         if (file) formData.append("file", file);
         showcaseImages.forEach((img) => formData.append("showcase_images", img));
 
         try {
-            const response = await fetch("https://my-api.com/upload", { // update with API when written
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${API_BASE_URL}/files/upload`, {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
                 body: formData,
             });
 
-            if (response.ok) {
-                alert("File uploaded successfully!");
-                setTitle("");
-                setDescription("");
-                setFile(null);
-                setPreview(null);
-                setShowcaseImages([]);
-            } else {
-                alert("Upload failed");
+            const data = await response.json();
+            if (!response.ok) {
+                console.error("Upload failed:", data);
+                alert("Upload failed: " + data.message || "Unknown error");
+                return;
             }
+
+            alert("File uploaded successfully!");
+            setTitle("");
+            setDescription("");
+            setPrice("");
+            setShowcaseImages([]);
         } catch (error) {
             console.error("Upload error:", error);
+            alert("An error occurred while attempting to upload your file.");
         } finally {
             setUploading(false);
         }
@@ -113,42 +106,7 @@ function UploadItem() {
 
             <Box sx={{ display: "flex", gap: 4, alignItems: "center" }}>
                 {/* Drag & Drop File Upload */}
-                <Paper
-                    {...getRootProps()}
-                    sx={{
-                        width: "50%",
-                        height: 200,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        border: "2px dashed #aaa",
-                        borderRadius: 2,
-                        cursor: "pointer",
-                        textAlign: "center",
-                        p: 2
-                    }}
-                >
-                    <input {...getInputProps()} />
-                    <Typography variant="body1">Drag & Drop a file here</Typography>
-                    <Button variant="outlined" sx={{ mt: 2 }}>Browse Files</Button>
-                    <Typography variant="caption" sx={{ mt: 1, color: "text.secondary" }}>
-                        Max file size: 50MB
-                    </Typography>
-
-                    {/* File Preview */}
-                    {preview && (
-                        <Box sx={{ mt: 2 }}>
-                            {preview === "pdf" ? (
-                                <Typography>📄 PDF Selected</Typography>
-                            ) : preview.includes("video") ? (
-                                <video src={preview} width="100%" controls />
-                            ) : (
-                                <img src={preview} alt="Preview" style={{ maxWidth: "100%", maxHeight: 100 }} />
-                            )}
-                        </Box>
-                    )}
-                </Paper>
+                <FileDropzone getRootProps={getRootProps} getInputProps={getInputProps} preview={preview} error={error} />
 
                 {/* Form Fields */}
                 <Box sx={{ width: "50%", display: "flex", flexDirection: "column", gap: 2 }}>
@@ -175,23 +133,27 @@ function UploadItem() {
                         onChange={(e) => setDescription(e.target.value)}
                         helperText={`${description.length}/2000 characters`}
                     />
+                    <TextField
+                      label="Price (USD)"
+                      fullWidth
+                      required
+                      value={price}
+                      onChange={handlePriceChange}
+                      placeholder="Enter price"
+                      slotProps={{
+                        input: {
+                            inputProps: {
+                                inputMode: "decimal",
+                                pattern: "[0-9]*[.,]?[0-9]*",
+                            }
+                        }
+                      }}
+                    />
                 </Box>
             </Box>
 
             {/* Showcase Images Upload */}
-            <Box sx={{ mt: 4 }}>
-                <Typography variant="h6">Upload Showcase Images</Typography>
-                <input type="file" accept="image/png, image/jpeg" multiple onChange={handleImageUpload} />
-                <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-                    {showcaseImages.map((img, index) => (
-                        <img key={index} src={URL.createObjectURL(img)} alt={`Showcase ${index}`} style={{ width: 100, height: 100, borderRadius: 4 }} />
-                    ))}
-                </Box>
-                <Typography variant="body2" color="text.secondary">
-                    {showcaseImages.length}/5 images uploaded
-                </Typography>
-
-            </Box>
+            <ShowcaseUploader showcaseImages={showcaseImages} handleImageUpload={handleImageUpload} />
 
             {/* Submit Button */}
             <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 3 }} onClick={handleSubmit} disabled={uploading || !file}>

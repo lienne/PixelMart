@@ -1,7 +1,7 @@
 import pool from "../database";
 
 export interface User {
-  id: number;
+  id: string;
   auth0_id?: string;
   email: string;
   name?: string;
@@ -57,6 +57,14 @@ export const updateUserProfileByAuthId = async(
         WHERE auth0_id = $1
         RETURNING *`,
         [auth0_id, name, avatar, username]
+    );
+    return result.rows[0] || null;
+}
+
+export const getUserIdByAuth0Id = async (auth0Id: string): Promise<User | null> => {
+    const result = await pool.query(
+        `SELECT id FROM users WHERE auth0_id = $1`,
+        [auth0Id]
     );
     return result.rows[0] || null;
 }
