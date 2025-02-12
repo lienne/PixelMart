@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { Container, Typography, Grid } from "@mui/material";
+import { Container, Typography, Grid, CircularProgress } from "@mui/material";
 import useLocalStorageState from 'use-local-storage-state';
 import { CartProps } from "../types/cartTypes";
 import { useSingleItemFetch } from "../hooks/useSingleItemFetch";
@@ -8,7 +8,7 @@ import ItemImageCarousel from "./ItemImageCarousel";
 
 function ItemPage() {
     const { itemId } = useParams<{ itemId: string }>();
-    const { item } = useSingleItemFetch(itemId);
+    const { item, loading, error } = useSingleItemFetch(itemId);
     const [cart, setCart] = useLocalStorageState<CartProps>('cart', { defaultValue: {} });
 
     // Handle adding to cart
@@ -21,10 +21,27 @@ function ItemPage() {
         }
     };
 
-    if (!item) {
+    if (loading) {
         return (
             <Container sx={{ py: 4, pt: 14 }}>
                 <Typography>Loading item details...</Typography>
+                <CircularProgress />
+            </Container>
+        );
+    }
+
+    if (error) {
+        return (
+            <Container sx={{ py: 4, pt: 14 }}>
+                <Typography color="error">Error: {error}</Typography>
+            </Container>
+        );
+    }
+
+    if (!item) {
+        return (
+            <Container sx={{ py: 4, pt: 14 }}>
+                <Typography>Item not found.</Typography>
             </Container>
         );
     }
@@ -34,7 +51,7 @@ function ItemPage() {
             <Grid container spacing={4}>
                 {/* Left side: Image Carousel */}
                 <Grid item xs={12} md={6}>
-                    <ItemImageCarousel images={item.images} />
+                    <ItemImageCarousel images={item.showcase_img_urls} />
                 </Grid>
 
                 {/* Right side: item Details */}
