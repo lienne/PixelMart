@@ -12,13 +12,19 @@ const s3 = new AWS.S3({
 /**
  * Upload file to S3
  */
-export const uploadFileToS3 = async (fileBuffer: Buffer, fileName: string, fileType: string) => {
+export const uploadFileToS3 = async (
+    fileBuffer: Buffer,
+    fileName: string,
+    fileType: string,
+    isPublic: boolean
+) => {
+    const folder = isPublic ? "public" : "private";
+
     const params = {
         Bucket: process.env.S3_BUCKET_NAME!,
-        Key: `uploads/${fileName}`,
+        Key: `${folder}/${fileName}`,
         Body: fileBuffer,
         ContentType: fileType,
-        ACL: "private",
     };
 
     return s3.upload(params).promise();

@@ -7,9 +7,10 @@ import {
     getFileMetadataById,
     getFileDetailsById,
     getShowcaseImagesByFileId,
-    deleteFile
+    deleteFile,
+    getPopularItems
 } from "../models/fileModel";
-import { getUserIdByAuth0Id } from "../models/userModel";
+import { findUserByUsername, getUserIdByAuth0Id } from "../models/userModel";
 import multer from "multer";
 import { uploadFileToS3 } from "../services/s3Service";
 
@@ -47,32 +48,32 @@ export const uploadFile = async (req: Request, res: Response) => {
         const user_id = user.id;
 
         // Upload main file to S3 first
-        const s3Result = await uploadFileToS3(uploadedFile.buffer, uploadedFile.originalname, uploadedFile.mimetype);
+        const s3Result = await uploadFileToS3(uploadedFile.buffer, uploadedFile.originalname, uploadedFile.mimetype, false /* isPublic */);
         const file_url = s3Result.Location;
 
         // Store file metadata
         const fileMetadata = await insertFileMetadata(user_id, file_url, uploadedFile.mimetype, uploadedFile.size);
 
-        // Store file details linked to the metadata ID
-        const fileDetails = await insertFileDetails(fileMetadata.id, user_id, title, description, price, currency, is_public, category);
-
         // Handle showcase images
         let showcaseImagesMetadata = [];
-
+        let showcaseImgUrls: string[] = [];
         if (req.files["showcase_images"]) {
             const showcaseImages = req.files["showcase_images"] as Express.Multer.File[];
 
             for (const image of showcaseImages) {
                 // Upload showcase image to S3
-                const s3ShowcaseResult = await uploadFileToS3(image.buffer, image.originalname, image.mimetype);
+                const s3ShowcaseResult = await uploadFileToS3(image.buffer, image.originalname, image.mimetype, true /* isPublic */);
                 const image_url = s3ShowcaseResult.Location;
+                showcaseImgUrls.push(image_url);
 
                 // Store showcase image metadata
                 const showcaseImage = await insertShowcaseImage(fileMetadata.id, image_url);
-
                 showcaseImagesMetadata.push(showcaseImage);
             }
         }
+
+        // Store file details linked to the metadata ID
+        const fileDetails = await insertFileDetails(fileMetadata.id, user_id, title, description, price, currency, is_public, category, showcaseImgUrls);
 
         res.status(201).json({ fileMetadata, fileDetails, showcaseImagesMetadata });
     } catch (err) {
@@ -81,46 +82,54 @@ export const uploadFile = async (req: Request, res: Response) => {
     }
 };
 
-export const uploadShowcaseImage = async (req: Request, res: Response) => {
+export const getUserFiles = async (req: Request, res: Response) => {
+    const { user_id: auth0_id } = req.params;
+
     try {
-        if (!req.file) {
-            res.status(400).json({ message: "No showcase image uploaded." });
+        const user = await getUserIdByAuth0Id(auth0_id);
+        if (!user) {
+            res.status(404).json({ message: "User not found." });
             return;
         }
-
-        const { file_id } = req.body;
-
-        if (!file_id) {
-            res.status(400).json({ message: "Missing file_id." });
-            return;
-        }
-
-        // Upload image to S3
-        const s3Result = await uploadFileToS3(req.file.buffer, req.file.originalname, req.file.mimetype);
-        const image_url = s3Result.Location;
-
-        console.log("S3 Showcase Image Url: ", image_url);
-
-        // Store showcase images metadata
-        const showcaseImage = await insertShowcaseImage(file_id, image_url);
-
-        console.log("Inserted Showcase Image: ", showcaseImage);
-
-        res.status(201).json({ showcaseImage });
+        
+        const files = await getUserFilesByUserId(user.id);
+        res.status(200).json({ files });
     } catch (err) {
-        console.error("Error uploading showcase image:", err);
+        console.error("Error fetching user's files:", err);
         res.status(500).json({ message: "Internal server error." });
     }
 };
 
-export const getUserFiles = async (req: Request, res: Response) => {
-    const { user_id } = req.params;
+export const getPublicUserFiles = async (req: Request, res: Response) => {
+    const { identifier } = req.params;
 
     try {
-        const files = await getUserFilesByUserId(user_id);
-        res.status(200).json({ files });
+        let user;
+
+        user = await findUserByUsername(identifier);
+        console.log(user);
+        if (!user) {
+            user = await getUserIdByAuth0Id(identifier);
+        }
+        if (!user) {
+            res.status(404).json({ message: "User not found." });
+            return;
+        }
+
+        const listings = await getUserFilesByUserId(user.id);
+        res.status(200).json({ user, files: listings });
     } catch (err) {
-        console.error("Error fetching user's files:", err);
+        console.error("Error fetching public user's files: ", err);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+export const getPopularItemsController = async (req: Request, res: Response) => {
+    try {
+        const popularItems = await getPopularItems();
+        res.status(200).json({ files: popularItems });
+    } catch (err) {
+        console.error("Error fetching popular items: ", err);
         res.status(500).json({ message: "Internal server error." });
     }
 };

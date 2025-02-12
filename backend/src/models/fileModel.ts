@@ -36,7 +36,7 @@ export const insertFileMetadata = async (
     file_size: number
 ): Promise<FileMetadata> => {
     const newFileId = uuidv4(); // Generate UUID for file_metadata.id
-    
+
     const result = await pool.query(
         `INSERT INTO files_metadata (id, user_id, file_url, file_type, file_size)
         VALUES ($1, $2, $3, $4, $5)
@@ -54,13 +54,14 @@ export const insertFileDetails = async (
     price: number,
     currency: string,
     is_public: boolean,
-    category: string
+    category: string,
+    showcase_img_urls: string[] = []
 ): Promise<FileDetails> => {
     const result = await pool.query(
-        `INSERT INTO files_details (id, user_id, title, description, price, currency, is_public, category)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `INSERT INTO files_details (id, user_id, title, description, price, currency, is_public, category, showcase_img_urls)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *`,
-        [file_id, user_id, title, description, price, currency, is_public, category]
+        [file_id, user_id, title, description, price, currency, is_public, category, showcase_img_urls]
     );
     return result.rows[0];
 };
@@ -77,6 +78,16 @@ export const insertShowcaseImage = async (
     );
     return result.rows[0];
 };
+
+export const getPopularItems = async (): Promise<FileDetails[]> => {
+    const result = await pool.query(
+        `SELECT * FROM files_details
+        WHERE is_public = true
+        ORDER BY created_at DESC
+        LIMIT 100`
+    );
+    return result.rows;
+}
 
 export const getUserFilesByUserId = async (user_id: string): Promise<FileDetails[]> => {
     const result = await pool.query(

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Container, TextField, Button, Typography, Box, Alert } from "@mui/material";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useFileUpload } from "../../hooks/useFileUpload";
@@ -14,6 +14,7 @@ function UploadItem() {
     const [price, setPrice] = useState("");
     const [showcaseImages, setShowcaseImages] = useState<File[]>([]);
     const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     
     const { file, preview, error, getRootProps, getInputProps } = useFileUpload();
 
@@ -35,6 +36,15 @@ function UploadItem() {
             }
 
             setShowcaseImages([...showcaseImages, ...files]);
+        }
+    };
+
+    const handleRemoveImage = (index: number) => {
+        setShowcaseImages((prevImages) => prevImages.filter((_, i) => i !== index));
+
+        // Reset the file input so users can re-add the same image
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
         }
     };
 
@@ -153,7 +163,7 @@ function UploadItem() {
             </Box>
 
             {/* Showcase Images Upload */}
-            <ShowcaseUploader showcaseImages={showcaseImages} handleImageUpload={handleImageUpload} />
+            <ShowcaseUploader showcaseImages={showcaseImages} handleImageUpload={handleImageUpload} handleRemoveImage={handleRemoveImage} fileInputRef={fileInputRef} />
 
             {/* Submit Button */}
             <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 3 }} onClick={handleSubmit} disabled={uploading || !file}>

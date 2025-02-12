@@ -7,15 +7,15 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { ProfileContext } from "../../context/ProfileContext";
 import { motion, AnimatePresence } from "framer-motion";
 import ItemCard from "../ItemCard";
-import useMultipleItemsFetch from "../../hooks/useMultipleItemsFetch";
+import usePopularItemsFetch from "../../hooks/usePopularItemsFetch";
 
 function Overview() {
     const { user } = useAuth0();
     const { profile } = useContext(ProfileContext);
-    const { products, isLoading, error } = useMultipleItemsFetch();
+    const { popularItems, isLoading, error } = usePopularItemsFetch();
     const [currentPopularIndex, setCurrentPopularIndex] = useState(0);
 
-    const popularItems = products.slice(0, 5);
+    const displayPopularItems = popularItems.length > 5 ? popularItems.slice(0,5) : popularItems;
 
     // Mock data for recent orders
     const recentOrders = [
@@ -74,7 +74,7 @@ function Overview() {
                   <Alert severity="error" sx={{ m: 2 }}>
                     Error loading popular items. Please try again later.
                   </Alert>
-                ) : popularItems.length > 0 ? (
+                ) : displayPopularItems.length > 0 ? (
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={popularItems[currentPopularIndex].id}
@@ -84,7 +84,7 @@ function Overview() {
                       transition={{ duration: 0.5, ease: "easeInOut" }}
                       style={{ width: "100%" }}
                     >
-                      <ItemCard item={popularItems[currentPopularIndex]} noShadow={true} />
+                      <ItemCard item={displayPopularItems[currentPopularIndex]} noShadow={true} />
                     </motion.div>
                   </AnimatePresence>
                 ) : (

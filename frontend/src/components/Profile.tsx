@@ -17,18 +17,18 @@ import ItemCard from './ItemCard';
 import useMultipleItemsFetch from '../hooks/useMultipleItemsFetch';
 
 function Profile() {
-  const { auth0Id } = useParams<{ auth0Id: string}>();
+  const { identifier } = useParams<{ identifier: string}>();
   const { profile } = useContext(ProfileContext);
   const [ profileData, setProfileData ] = useState<UserProfile | null>(null);
-  const { products, isLoading, error } = useMultipleItemsFetch();
+  const { products, isLoading, error } = useMultipleItemsFetch(identifier || "");
 
   useEffect(() => {
-    if (auth0Id) {
-        fetchUserProfile(auth0Id)
+    if (identifier) {
+        fetchUserProfile(identifier)
             .then((data) => setProfileData(data))
             .catch((err) => console.error('Error fetching profile: ', err));
     }
-  }, [auth0Id]);
+  }, [identifier]);
 
   if (!profileData) {
     return (

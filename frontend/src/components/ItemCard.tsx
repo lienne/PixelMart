@@ -14,8 +14,9 @@ function ItemCard({ item, noShadow }: ItemCardProps) {
     const [cart, setCart] = useLocalStorageState<CartProps>('cart',{ defaultValue: {} });
     const [wishlist, setWishlist] = useLocalStorageState<{ [key: number]: Item }>('wishlist', { defaultValue: {} });
 
-    console.log("Cart state:", cart);
-    console.log("Wishlist state:", wishlist);
+    // console.log("Cart state:", cart);
+    // console.log("Wishlist state:", wishlist);
+    // console.log("Item showcase images: ", item.showcase_img_urls);
 
     const addToCart = (product: Item) => {
         const updatedProduct = { ...product, quantity: 1};
@@ -52,7 +53,7 @@ function ItemCard({ item, noShadow }: ItemCardProps) {
                     <CardMedia
                       component="img"
                       height="140"
-                      image={item.thumbnail}
+                      image={item.showcase_img_urls && item.showcase_img_urls.length > 0 ? item.showcase_img_urls[0] : 'fallback-image-url.jpg'}
                       alt={item.title}
                     />
                 )}

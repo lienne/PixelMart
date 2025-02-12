@@ -3,7 +3,7 @@ export interface Item {
     title: string;
     description: string;
     price: string;
-    images: string[];
-    thumbnail?: string;
-    quantity?: number;
+    currency?: number;
+    category?: string;
+    showcase_img_urls: string[];
 }

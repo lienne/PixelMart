@@ -71,7 +71,7 @@ const CartDropdown = () => {
           cartItems.map((item: Item) => (
             <MenuItem key={item.id} sx={{ display: "flex", justifyContent: "space-between" }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <img src={item.thumbnail} alt={item.title} width="40" height="40" />
+                <img src={item.showcase_img_urls && item.showcase_img_urls.length > 0 ? item.showcase_img_urls[0] : 'fallback-image-url.jpg'} alt={item.title} width="40" height="40" />
                 <Typography variant="body2">{item.title}</Typography>
               </Box>
               <Button

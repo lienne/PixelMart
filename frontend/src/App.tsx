@@ -22,41 +22,48 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-  const { isAuthenticated, user, logout } = useAuth0();
+  const { isAuthenticated, user, logout, getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
-    if (isAuthenticated && user) {
-      const syncData = {
-        auth0_id: user.sub,
-        email: user.email,
-        name: user.name,
-        avatar: user.picture,
-      };
+    const syncUser = async () => {
+      if (isAuthenticated && user) {
+        try {
+          const token = await getAccessTokenSilently();
 
-      fetch(`${API_BASE_URL}/users/sync`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(syncData),
-      })
-        .then((res) => {
-          if (res.status === 403) {
+          const syncData = {
+            auth0_id: user.sub,
+            email: user.email,
+            name: user.name,
+            avatar: user.picture,
+          };
+
+          const response = await fetch(`${API_BASE_URL}/users/sync`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify(syncData),
+          });
+
+          if (response.status === 403) {
             console.warn("User account is deleted. Logging out...");
-            logout({ logoutParams: { returnTo: window.location.origin } }); // Force logout the user
+            logout({ logoutParams: { returnTo: window.location.origin } });
             return;
           }
 
-          return res.json()
-        })
-        .then((data) => {
+          const data = await response.json();
           if (data?.user) {
-            console.log('Used synced: ', data.user);
+            console.log("User synced: ", data.user);
           }
-        })
-        .catch((err) => {
-          console.error('Error syncing user: ', err);
-        });
-    }
-  }, [isAuthenticated, user]);
+        } catch (err) {
+          console.error("Error syncing user: ", err);
+        }
+      }
+    };
+
+    syncUser();
+  }, [isAuthenticated, user, getAccessTokenSilently, logout]);
 
   return (
     <div className="App">
@@ -81,7 +88,7 @@ function App() {
             <Route path="settings" element={<Settings />} />
           </Route>
         </Route>
-        <Route path="/profile/:auth0Id" element={<Profile />} />
+        <Route path="/profile/:identifier" element={<Profile />} />
         <Route path="/item/:itemId" element={<ItemPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
