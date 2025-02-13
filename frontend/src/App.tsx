@@ -4,6 +4,7 @@ import Home from './components/Home';
 import About from './components/About';
 // import Login from './components/Login';
 import imagePath from "./assets/logo.svg";
+import BrandLogo from './assets/Logo_PixelMart_2.svg';
 import Dashboard from './components/Dashboard';
 import Overview from './components/dashboard/Overview';
 import Orders from './components/dashboard/Orders';
@@ -68,7 +69,7 @@ function App() {
   return (
     <div className="App">
       <Navbar
-        brandName="PixelMart"
+        brandName={BrandLogo}
         imageSrcPath={imagePath}
       />
       <Routes>

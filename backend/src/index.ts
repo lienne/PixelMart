@@ -1,11 +1,10 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-// import productRoutes from './routes/productRoutes';
-// import authRoutes from './routes/authRoutes';
 import dotenv from 'dotenv';
 import { testConnection } from './database';
 import userRoutes from './routes/userRoutes';
 import fileRoutes from './routes/fileRoutes';
+import stripeRoutes from './routes/stripeRoutes';
 
 console.log('Database module imported.');
 testConnection();
@@ -24,10 +23,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send('Something went wrong!');
 });
 
-// Use product routes
-// app.use('/api/auth', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/files', fileRoutes);
+app.use('/api/stripe', stripeRoutes);
 
 app.get('/', (req, res) => {
     res.send('Welcome to the Digital Marketplace PixelMart!');

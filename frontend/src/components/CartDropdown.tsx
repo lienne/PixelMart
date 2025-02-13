@@ -99,11 +99,11 @@ const CartDropdown = () => {
               <Button
                 variant="contained"
                 component={RouterLink}
-                to="/cart"
+                to="/checkout"
                 fullWidth
                 onClick={handleCartMenuClose}
               >
-                View Cart
+                Check Out
               </Button>
             </Box>
           </>

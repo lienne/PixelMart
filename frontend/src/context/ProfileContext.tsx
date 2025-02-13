@@ -19,7 +19,10 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         if (isAuthenticated && user && user.sub) {
             fetchUserProfile(user.sub)
-                .then((data) => setProfile(data))
+                .then((data) => {
+                    const is_seller = !!data.stripe_account_id;
+                    setProfile({ ...data, is_seller });
+                })
                 .catch((err) => console.error('Error fetching profile:', err));
         }
     }, [isAuthenticated, user]);

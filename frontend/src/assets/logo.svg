@@ -1,33 +1,26 @@
 <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-  <!-- Row 0: Columns 0-3 -->
+
   <rect x="0" y="0" width="10" height="10" fill="#FF5733" />
   <rect x="10" y="0" width="10" height="10" fill="#FFC300" />
   <rect x="20" y="0" width="10" height="10" fill="#DAF7A6" />
   <rect x="30" y="0" width="10" height="10" fill="#33FF57" />
   
-  <!-- Row 1: Columns 0 and 3 -->
   <rect x="0" y="10" width="10" height="10" fill="#33FFF3" />
   <rect x="30" y="10" width="10" height="10" fill="#335BFF" />
   
-  <!-- Row 2: Columns 0 and 3 -->
   <rect x="0" y="20" width="10" height="10" fill="#8C33FF" />
   <rect x="30" y="20" width="10" height="10" fill="#FF33EC" />
   
-  <!-- Row 3: Columns 0-3 -->
   <rect x="0" y="30" width="10" height="10" fill="#FF5733" />
   <rect x="10" y="30" width="10" height="10" fill="#FFC300" />
   <rect x="20" y="30" width="10" height="10" fill="#DAF7A6" />
   <rect x="30" y="30" width="10" height="10" fill="#33FF57" />
   
-  <!-- Row 4: Column 0 -->
   <rect x="0" y="40" width="10" height="10" fill="#33FFF3" />
   
-  <!-- Row 5: Column 0 -->
   <rect x="0" y="50" width="10" height="10" fill="#335BFF" />
   
-  <!-- Row 6: Column 0 -->
   <rect x="0" y="60" width="10" height="10" fill="#8C33FF" />
   
-  <!-- Row 7: Column 0 -->
   <rect x="0" y="70" width="10" height="10" fill="#FF33EC" />
 </svg>

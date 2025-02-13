@@ -2,7 +2,7 @@ import pool from "../database";
 
 export interface User {
   id: string;
-  auth0_id?: string;
+  auth0_id: string;
   email: string;
   name?: string;
   username?: string;
@@ -10,6 +10,7 @@ export interface User {
   created_at: Date;
   username_changed_at: Date;
   is_deleted: boolean;
+  stripe_account_id?: string;
 }
 
 export const createUser = async (
@@ -82,6 +83,20 @@ export const reactivateUserByAuth0Id = async (auth0Id: string): Promise<User | n
     const result = await pool.query(
         "UPDATE users SET is_deleted = FALSE WHERE auth0_id = $1",
         [auth0Id]
+    );
+    return result.rows[0] || null;
+}
+
+export const updateStripeAccountIdByAuth0Id = async (
+    auth0Id: string,
+    stripeAccountId: string
+): Promise<User | null> => {
+    const result = await pool.query(
+        `UPDATE users
+        SET stripe_account_id = $2
+        WHERE auth0_id = $1
+        RETURNING *`,
+        [auth0Id, stripeAccountId]
     );
     return result.rows[0] || null;
 }

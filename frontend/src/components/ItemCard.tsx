@@ -62,7 +62,7 @@ function ItemCard({ item, noShadow }: ItemCardProps) {
                         {item.title}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Price: ${item.price}
+                        ${item.price}
                     </Typography>
                 </CardContent>
             </CardActionArea>

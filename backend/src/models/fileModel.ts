@@ -44,7 +44,7 @@ export const insertFileMetadata = async (
         [newFileId, user_id, file_url, file_type, file_size]
     );
     return result.rows[0];
-};
+}
 
 export const insertFileDetails = async (
     file_id: string, // UUID from files_metadata
@@ -64,7 +64,7 @@ export const insertFileDetails = async (
         [file_id, user_id, title, description, price, currency, is_public, category, showcase_img_urls]
     );
     return result.rows[0];
-};
+}
 
 export const insertShowcaseImage = async (
     file_id: string,
@@ -77,7 +77,7 @@ export const insertShowcaseImage = async (
         [file_id, image_url]
     );
     return result.rows[0];
-};
+}
 
 export const getPopularItems = async (): Promise<FileDetails[]> => {
     const result = await pool.query(
@@ -95,7 +95,7 @@ export const getUserFilesByUserId = async (user_id: string): Promise<FileDetails
         [user_id]
     );
     return result.rows;
-};
+}
 
 export const getFileMetadataById = async (id: string): Promise<FileMetadata | null> => {
     const result = await pool.query(
@@ -103,7 +103,7 @@ export const getFileMetadataById = async (id: string): Promise<FileMetadata | nu
         [id]
     );
     return result.rows[0] || null;
-};
+}
 
 export const getFileDetailsById = async (id: string): Promise<FileDetails | null> => {
     const result = await pool.query(
@@ -111,7 +111,7 @@ export const getFileDetailsById = async (id: string): Promise<FileDetails | null
         [id]
     );
     return result.rows[0] || null;
-};
+}
 
 export const getShowcaseImagesByFileId = async (file_id: string): Promise<ShowcaseImage[]> => {
     const result = await pool.query(
@@ -128,4 +128,4 @@ export const deleteFile = async (id: string): Promise<boolean> => {
         [id]
     );
     return (result?.rowCount ?? 0) > 0;
-};
+}

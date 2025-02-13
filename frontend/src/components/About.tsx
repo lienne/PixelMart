@@ -72,8 +72,8 @@ function About() {
             personal website
           </Link>{' '}
           here. You can also{' '}
-          <Link href="#" target="_blank" rel="noopener">
-            donate
+          <Link href="https://buymeacoffee.com/heymissbelle" target="_blank" rel="noopener">
+            buy me a coffee
           </Link>{' '}
           here!
         </Typography>

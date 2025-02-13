@@ -107,7 +107,7 @@ export const getPublicUserFiles = async (req: Request, res: Response) => {
         let user;
 
         user = await findUserByUsername(identifier);
-        console.log(user);
+
         if (!user) {
             user = await getUserIdByAuth0Id(identifier);
         }

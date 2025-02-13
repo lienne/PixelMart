@@ -118,15 +118,18 @@ function Navbar({ brandName, imageSrcPath }: NavbarProps) {
               color="inherit"
               sx={{ textTransform: 'none', padding: 0, marginRight: 2 }}
             >
-              <Avatar
+              {/* <Avatar
                 src={imageSrcPath}
-                alt={brandName}
+                alt="PixelMart"
                 sx={{ width: 60, height: 60, marginRight: 1 }}
                 variant="square"
+              /> */}
+              <Box
+                component="img"
+                src={brandName}
+                alt="PixelMart Logo"
+                sx={{ width: 100, height: 'auto' }}
               />
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                {brandName}
-              </Typography>
             </Button>
 
             {/* Desktop: Navigation Buttons */}

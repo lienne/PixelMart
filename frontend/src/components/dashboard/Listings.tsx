@@ -1,11 +1,16 @@
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Container, Grid, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { ProfileContext } from '../../context/ProfileContext';
 
 function Listings() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const { user, getAccessTokenSilently } = useAuth0();
+    const { profile } = useContext(ProfileContext);
+    const stripeOauthUrl = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${import.meta.env.VITE_STRIPE_CLIENT_ID}&scope=read_write&redirect_uri=${import.meta.env.VITE_STRIPE_REDIRECT_URI}&state=${encodeURIComponent(user?.sub || '')}`;
+
+    console.log(import.meta.env.VITE_STRIPE_REDIRECT_URI);
 
     const [listings, setListings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -72,16 +77,27 @@ function Listings() {
               }}
             >
                 <Typography variant="h5" gutterBottom>
-                    You don't have any listings yet...
+                {profile?.is_seller ? "You don't have any listings yet..." : "Become a seller to start listing your products!"}
                 </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component={RouterLink}
-                  to="/dashboard/upload"
-                >
-                    List Something
-                </Button>
+                {profile?.is_seller ? (
+                    <Button
+                    variant="contained"
+                    color="primary"
+                    component={RouterLink}
+                    to="/dashboard/upload"
+                  >
+                      List Something
+                  </Button>
+                ) : (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      component="a"
+                      href={stripeOauthUrl}
+                    >
+                        Become a Seller
+                    </Button>
+                )}
             </Container>
         );
     }

@@ -6,6 +6,8 @@ export interface UserProfile {
     username?: string;
     avatar?: string;
     created_at: Date;
+    is_seller?: boolean;
+    stripe_account_id?: string;
 }
 
 // This function calls the backend to fetch a user's profile
@@ -19,5 +21,8 @@ export const fetchUserProfile = async (identifier: string): Promise<UserProfile>
     }
 
     const data: UserProfile = await response.json();
+
+    console.log("Fetched profile data:", data);
+
     return data;
 };
