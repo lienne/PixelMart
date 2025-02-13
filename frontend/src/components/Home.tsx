@@ -1,7 +1,8 @@
 import { Container, Box, Typography, TextField } from '@mui/material';
 import Products from './Products';
+import { LogoProps } from '../types/logoTypes';
 
-function Home() {
+function Home({ brandName, imageSrcPath }: LogoProps) {
   return (
     <Container sx={{ py: 4, pt: 14 }}>
       {/* Header Section */}
@@ -12,9 +13,12 @@ function Home() {
           mb: 4,
         }}
       >
-        <Typography variant="h3" component="h1" gutterBottom>
-          Welcome to PixelMart!
-        </Typography>
+        <Box
+                component="img"
+                src={brandName}
+                alt="PixelMart Logo"
+                sx={{ width: 200, height: 'auto', mb: 2 }}
+              />
         <Typography variant="subtitle1">
           Your marketplace for digital products.
         </Typography>

@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Card, CardMedia, IconButton, Box } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import { Item } from "../types";
+import WishlistButton from "./WishlistButton";
 
 interface Props {
     images: string[];
+    item?: Item;
 }
 
-function ItemImageCarousel({ images }: Props) {
+function ItemImageCarousel({ images, item }: Props) {
     const [currentImage, setCurrentImage] = useState(0);
 
     // Image carousel navigation
@@ -42,6 +45,12 @@ function ItemImageCarousel({ images }: Props) {
                 >
                     <ArrowForwardIos />
                 </IconButton>
+                {/* Wishlist Button Overlay */}
+                {item && (
+                    <Box sx={{ position: 'absolute', bottom: 10, right: 10 }}>
+                        <WishlistButton item={item} />
+                    </Box>
+                )}
             </Card>
 
             {/* Image Thumbnails */}

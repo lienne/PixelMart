@@ -7,7 +7,6 @@ import {
   IconButton,
   Button,
   TextField,
-  Typography,
   Avatar,
   Menu,
   MenuItem,
@@ -18,11 +17,7 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import { Link as RouterLink } from 'react-router-dom';
 import { ProfileContext } from '../context/ProfileContext';
 import CartDropdown from './CartDropdown';
-
-interface NavbarProps {
-  brandName: string;
-  imageSrcPath: string;
-}
+import { LogoProps } from '../types/logoTypes';
 
 interface NavItem {
   label: string;
@@ -34,7 +29,7 @@ const navItems: NavItem[] = [
   { label: "About", to: "/about" },
 ];
 
-function Navbar({ brandName, imageSrcPath }: NavbarProps) {
+function Navbar({ brandName, imageSrcPath }: LogoProps) {
 //   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
   const { profile } = useContext(ProfileContext);
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();

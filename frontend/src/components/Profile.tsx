@@ -105,7 +105,7 @@ function Profile() {
                 </Grid>
               ))
             ) : (
-              !error && <Typography>No items for sale.</Typography>
+              !error && <Typography sx={{ display: 'flex', justifyContent: 'center', m: 3 }}>No items for sale.</Typography>
             )}
           </Grid>
           )}

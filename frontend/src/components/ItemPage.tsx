@@ -1,7 +1,5 @@
 import { useParams } from "react-router-dom";
 import { Container, Typography, Grid, CircularProgress } from "@mui/material";
-import useLocalStorageState from 'use-local-storage-state';
-import { CartProps } from "../types/cartTypes";
 import { useSingleItemFetch } from "../hooks/useSingleItemFetch";
 import ItemDetails from "./ItemDetails";
 import ItemImageCarousel from "./ItemImageCarousel";
@@ -9,17 +7,6 @@ import ItemImageCarousel from "./ItemImageCarousel";
 function ItemPage() {
     const { itemId } = useParams<{ itemId: string }>();
     const { item, loading, error } = useSingleItemFetch(itemId);
-    const [cart, setCart] = useLocalStorageState<CartProps>('cart', { defaultValue: {} });
-
-    // Handle adding to cart
-    const addToCart = () => {
-        if (item) {
-            setCart((prevCart) => ({
-                ...prevCart,
-                [item.id]: { ...item },
-            }));
-        }
-    };
 
     if (loading) {
         return (
@@ -51,12 +38,12 @@ function ItemPage() {
             <Grid container spacing={4}>
                 {/* Left side: Image Carousel */}
                 <Grid item xs={12} md={6}>
-                    <ItemImageCarousel images={item.showcase_img_urls} />
+                    <ItemImageCarousel images={item.showcase_img_urls} item={item} />
                 </Grid>
 
                 {/* Right side: item Details */}
                 <Grid item xs={12} md={6}>
-                    <ItemDetails item={item} cart={cart} addToCart={addToCart} />
+                    <ItemDetails item={item} />
                 </Grid>
             </Grid>
         </Container>

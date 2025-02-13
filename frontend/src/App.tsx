@@ -73,7 +73,7 @@ function App() {
         imageSrcPath={imagePath}
       />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home brandName={BrandLogo} imageSrcPath={imagePath} />} />
         <Route path="/about" element={<About />} />
         {/* <Route path="/auth" element={<Login />} /> */}
         <Route element={<ProtectedRoute />}>

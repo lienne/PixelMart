@@ -1,13 +1,8 @@
-import { CardContent, Typography, Button } from "@mui/material";
-import { Item, CartProps } from "../types";
+import { CardContent, Typography } from "@mui/material";
+import { Item } from "../types";
+import AddToCartButton from "./AddToCartButton";
 
-interface Props {
-    item: Item;
-    cart: CartProps;
-    addToCart: () => void;
-}
-
-function ItemDetails({ item, cart, addToCart }: Props) {
+function ItemDetails({ item }: { item: Item }) {
     return (
         <CardContent>
             <Typography variant="h4" gutterBottom>
@@ -21,15 +16,7 @@ function ItemDetails({ item, cart, addToCart }: Props) {
             </Typography>
 
             {/* Add to Cart Button */}
-            <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                onClick={addToCart}
-                disabled={(cart ?? {})[item.id] !== undefined}
-            >
-                {(cart ?? {})[item.id] ? "In Cart" : "Add to Cart"}
-            </Button>
+            <AddToCartButton item={item} />
         </CardContent>
 );
 }
