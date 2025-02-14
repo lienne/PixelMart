@@ -9,15 +9,13 @@ import {
   Button,
 } from "@mui/material";
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
-import useLocalStorageState from "use-local-storage-state";
-import { CartProps, Item } from "../types";
+import { Item } from "../types";
 import { Link as RouterLink } from "react-router-dom";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import useCart from "../hooks/useCart";
 
 const CartDropdown = () => {
-  const [cart, setCart] = useLocalStorageState<CartProps>("cart", {
-    defaultValue: {},
-  });
+  const { cartItems, removeFromCart, fetchCart } = useCart();
 
   const [cartAnchorEl, setCartAnchorEl] = useState<null | HTMLElement>(null);
   const openCart = Boolean(cartAnchorEl);
@@ -30,15 +28,10 @@ const CartDropdown = () => {
     setCartAnchorEl(null);
   };
 
-  const removeFromCart = (itemId: number) => {
-    setCart((prevCart) => {
-      const updatedCart = { ...prevCart };
-      delete updatedCart[itemId];
-      return updatedCart;
-    });
+  const handleRemove = async (itemId: number) => {
+    await removeFromCart(itemId);
+    fetchCart();
   };
-
-  const cartItems = Object.values(cart || {});
 
   return (
     <>
@@ -67,7 +60,7 @@ const CartDropdown = () => {
         </Box>
         <Divider />
 
-        {cartItems.length > 0 ? (
+        {cartItems && cartItems.length > 0 ? (
           cartItems.map((item: Item) => (
             <MenuItem key={item.id} sx={{ display: "flex", justifyContent: "space-between" }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -77,7 +70,7 @@ const CartDropdown = () => {
               <Button
                 size="small"
                 color="error"
-                onClick={() => removeFromCart(item.id)}
+                onClick={() => handleRemove(item.id)}
               >
                 <DeleteOutlineIcon />
               </Button>
@@ -92,7 +85,7 @@ const CartDropdown = () => {
         )}
 
         {/* Checkout Button */}
-        {cartItems.length > 0 && (
+        {cartItems && cartItems.length > 0 && (
           <>
             <Divider />
             <Box sx={{ padding: 2, textAlign: "center" }}>

@@ -5,6 +5,8 @@ import { testConnection } from './database';
 import userRoutes from './routes/userRoutes';
 import fileRoutes from './routes/fileRoutes';
 import stripeRoutes from './routes/stripeRoutes';
+import cartRoutes from './routes/cartRoutes';
+import wishlistRoutes from './routes/wishlistRoutes';
 
 console.log('Database module imported.');
 testConnection();
@@ -26,6 +28,8 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 app.use('/api/users', userRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/stripe', stripeRoutes);
+app.use('/api/users', cartRoutes);
+app.use('/api/users', wishlistRoutes);
 
 app.get('/', (req, res) => {
     res.send('Welcome to the Digital Marketplace PixelMart!');

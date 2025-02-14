@@ -1,5 +1,5 @@
 export interface UserProfile {
-    id: number;
+    id: string;
     auth0_id?: string;
     email: string;
     name?: string;
