@@ -8,7 +8,11 @@ export interface WishlistItem {
 
 export const getWishlistItemsByUserId = async (userId: string): Promise<WishlistItem[]> => {
     const result = await pool.query(
-        `SELECT * FROM wishlist_items WHERE user_id = $1 ORDER BY added_at DESC`,
+        `SELECT fd.id, fd.title, fd.description, fd.price, fd.showcase_img_urls, wi.added_at
+        FROM wishlist_items wi
+        JOIN files_details fd ON wi.file_id = fd.id
+        WHERE wi.user_id = $1
+        ORDER BY wi.added_at DESC`,
         [userId]
     );
     return result.rows;
@@ -26,7 +30,7 @@ export const addWishlistItem = async (userId: string, fileId: string): Promise<W
 
 export const deleteWishlistItem = async (userId: string, fileId: string): Promise<void> => {
     await pool.query(
-        `DELETE FROM wishlist_item WHERE user_id = $1 AND file_id = $2`,
+        `DELETE FROM wishlist_items WHERE user_id = $1 AND file_id = $2`,
         [userId, fileId]
     );
 }

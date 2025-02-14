@@ -15,16 +15,9 @@ export const getUserCart = async (req: Request, res: Response) => {
 };
 
 export const addItemToCart = async (req: Request, res: Response) => {
-    console.log("addItemToCart hit", req.params, req.body);
     try {
-        const auth0Id = req.auth?.payload?.sub;
-        if (!auth0Id) {
-            res.status(401).json({ message: "Unauthorized: auth0Id is missing. "});
-            return;
-        }
-
-        const user = await findUserByAuth0Id(auth0Id);
-        if (!user) {
+        const { userId } = req.params;
+        if (!userId) {
             res.status(404).json({ message: "User not found." });
             return;
         }
@@ -35,7 +28,7 @@ export const addItemToCart = async (req: Request, res: Response) => {
             return;
         }
 
-        const newCartItem = await addCartItem(user.id, fileId);
+        const newCartItem = await addCartItem(userId, fileId);
         res.status(201).json({ newCartItem });
     } catch (err) {
         console.error("Error adding item to cart:", err);

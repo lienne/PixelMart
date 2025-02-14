@@ -9,11 +9,20 @@ interface WishlistButtonProps {
 }
 
 function WishlistButton ({ item }: WishlistButtonProps) {
-    const { toggleWishlist, isInWishlist } = useWishlist();
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+    const inWishlist = isInWishlist(item.id);
+
+    const handleClick = async () => {
+        if (inWishlist) {
+            await removeFromWishlist(item.id);
+        } else {
+            await addToWishlist(item);
+        }
+    }
 
     return (
-        <IconButton onClick={() => toggleWishlist(item)} color="error">
-            {isInWishlist(item.id) ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        <IconButton onClick={handleClick} color="error">
+            {inWishlist ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </IconButton>
     );
 }

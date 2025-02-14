@@ -1,13 +1,10 @@
 import { Container, Typography, Grid, Box } from "@mui/material";
-import useLocalStorageState from "use-local-storage-state";
 import { Item } from "../../types";
 import ItemCard from "../ItemCard";
+import useWishlist from "../../hooks/useWishlist";
 
 function Wishlist() {
-    const [wishlist] = useLocalStorageState<{ [key: number]: Item }>('wishlist', { defaultValue: {} });
-
-    // Convert wishlist object to array
-    const wishlistItems = Object.values(wishlist);
+    const { wishlistItems } = useWishlist();
 
     return (
         <Container maxWidth="lg" sx={{ py: 4, pt: 14 }}>
@@ -15,9 +12,9 @@ function Wishlist() {
                 Your Wishlist
             </Typography>
 
-            {wishlistItems.length > 0 ? (
+            {wishlistItems && wishlistItems.length > 0 ? (
                 <Grid container spacing={3}>
-                    {wishlistItems.map((item) => (
+                    {wishlistItems.map((item: Item) => (
                         <Grid item xs={12} sm={6} md={4} key={item.id}>
                             <ItemCard item={item} />
                         </Grid>
