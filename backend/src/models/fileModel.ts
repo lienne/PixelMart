@@ -121,11 +121,32 @@ export const getShowcaseImagesByFileId = async (file_id: string): Promise<Showca
     return result.rows;
 }
 
-// Delete a file and associated metadata
-export const deleteFile = async (id: string): Promise<boolean> => {
+export const deleteFileMetadata = async (file_id: string): Promise<boolean> => {
     const result = await pool.query(
-        `DELETE FROM files_metadata WHERE id = $1 RETURNING *`,
-        [id]
+        `DELETE FROM files_metadata
+        WHERE id = $1
+        RETURNING *`,
+        [file_id]
+    );
+    return (result?.rowCount ?? 0) > 0;
+}
+
+export const deleteShowcaseImagesMetadata = async (file_id: string): Promise<boolean> => {
+    const result = await pool.query(
+        `DELETE FROM showcase_imgs_metadata
+        WHERE file_id = $1
+        RETURNING *`,
+        [file_id]
+    );
+    return (result?.rowCount ?? 0) > 0;
+}
+
+export const deleteFileDetails = async (file_id: string): Promise<boolean> => {
+    const result = await pool.query(
+        `DELETE FROM files_details
+        WHERE id = $1
+        RETURNING *`,
+        [file_id]
     );
     return (result?.rowCount ?? 0) > 0;
 }

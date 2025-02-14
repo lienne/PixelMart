@@ -1,8 +1,25 @@
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Container, Grid, Typography } from '@mui/material';
+import {
+    Box,
+    Button,
+    Card,
+    CardActions,
+    CardContent,
+    CardMedia,
+    Container,
+    Grid,
+    Typography,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle
+} from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useContext, useEffect, useState } from 'react';
 import { ProfileContext } from '../../context/ProfileContext';
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 function Listings() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -10,11 +27,11 @@ function Listings() {
     const { profile } = useContext(ProfileContext);
     const stripeOauthUrl = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${import.meta.env.VITE_STRIPE_CLIENT_ID}&scope=read_write&redirect_uri=${import.meta.env.VITE_STRIPE_REDIRECT_URI}&state=${encodeURIComponent(user?.sub || '')}`;
 
-    console.log(import.meta.env.VITE_STRIPE_REDIRECT_URI);
-
     const [listings, setListings] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedListing, setSelectedListing] = useState<any | null>(null);
+    const [openDialog, setOpenDialog] = useState(false);
 
     useEffect(() => {
         const fetchListings = async () => {
@@ -22,7 +39,6 @@ function Listings() {
 
             try {
                 const token = await getAccessTokenSilently();
-                console.log("access token: ", token);
                 const response = await fetch(`${API_BASE_URL}/files/user/${user.sub}`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -45,6 +61,44 @@ function Listings() {
 
         fetchListings();
     }, [user, getAccessTokenSilently, API_BASE_URL]);
+
+    const handleDeleteListing = async () => {
+        if (!selectedListing) return;
+
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${API_BASE_URL}/files/${selectedListing.id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to delete listing.");
+            }
+
+            setListings((prevListings) => prevListings.filter((item) => item.id !== selectedListing.id));
+
+            toast.success("Listing deleted successfully!", {
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
+        } catch (err) {
+            console.error("Error deleting listing:", err);
+            toast.error("An error occurred while deleting the listing.", {
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
+        } finally {
+            setOpenDialog(false);
+            setSelectedListing(null);
+        }
+    };
 
     if (loading) {
         return (
@@ -81,13 +135,13 @@ function Listings() {
                 </Typography>
                 {profile?.is_seller ? (
                     <Button
-                    variant="contained"
-                    color="primary"
-                    component={RouterLink}
-                    to="/dashboard/upload"
-                  >
+                      variant="contained"
+                      color="primary"
+                      component={RouterLink}
+                      to="/dashboard/upload"
+                    >
                       List Something
-                  </Button>
+                    </Button>
                 ) : (
                     <Button
                       variant="contained"
@@ -104,6 +158,8 @@ function Listings() {
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
+            <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
+
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2}}>
                 <Typography variant="h4" gutterBottom>
                     My Listings
@@ -117,7 +173,8 @@ function Listings() {
                     Add a Listing
                 </Button>
             </Box>
-            {/* Map to render listings */}
+
+            {/* Listings Grid */}
             <Grid container spacing={3}>
                 {listings.map((listing) => (
                     <Grid item xs={12} sm={6} md={4} key={listing.id}>
@@ -137,12 +194,26 @@ function Listings() {
                             </CardContent>
                             <CardActions>
                                 <Button size="small" component={RouterLink} to={`/item/${listing.id}`} color="primary">View</Button>
-                                <Button size="small" color="secondary">Delete</Button>
+                                <Button size="small" color="secondary" onClick={() => { setSelectedListing(listing); setOpenDialog(true); }}>Delete</Button>
                             </CardActions>
                         </Card>
                     </Grid>
                 ))}
             </Grid>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+                <DialogTitle>Confirm Delete</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete this listing? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDialog(false)} color="primary">Cancel</Button>
+                    <Button onClick={handleDeleteListing} color="error">Delete</Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 }

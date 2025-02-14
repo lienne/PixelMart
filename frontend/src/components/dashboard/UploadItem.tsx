@@ -4,6 +4,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useFileUpload } from "../../hooks/useFileUpload";
 import FileDropzone from "./FileDropzone";
 import ShowcaseUploader from "./ShowcaseUploader";
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 function UploadItem() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -31,7 +33,12 @@ function UploadItem() {
 
             // Prevent adding more than 5 images
             if (showcaseImages.length + files.length > 5) {
-                alert("You can upload a max of 5 images.");
+                toast.error("You can upload a max of 5 images.", {
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    theme: "colored",
+                });
                 return;
             }
 
@@ -89,18 +96,33 @@ function UploadItem() {
             const data = await response.json();
             if (!response.ok) {
                 console.error("Upload failed:", data);
-                alert("Upload failed: " + data.message || "Unknown error");
+                toast.error("Upload failed: " + data.message || "Unknown error", {
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    theme: "colored",
+                });
                 return;
             }
 
-            alert("File uploaded successfully!");
+            toast.success("File uploaded successfully!", {
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
             setTitle("");
             setDescription("");
             setPrice("");
             setShowcaseImages([]);
         } catch (error) {
             console.error("Upload error:", error);
-            alert("An error occurred while attempting to upload your file.");
+            toast.error("An error occurred while attempting to upload your file.", {
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
         } finally {
             setUploading(false);
         }
@@ -110,6 +132,8 @@ function UploadItem() {
 
     return (
         <Container maxWidth="md" sx={{ py: 4, pt: 14 }}>
+            <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
+
             <Typography variant="h4" gutterBottom>Upload a File</Typography>
 
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}

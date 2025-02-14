@@ -15,6 +15,8 @@ import {
 } from '@mui/material';
 import { useAuth0 } from "@auth0/auth0-react";
 import { ProfileContext } from "../../context/ProfileContext";
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 function Settings() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -119,7 +121,12 @@ function Settings() {
             logout({ logoutParams: { returnTo: window.location.origin } });
         } catch (err) {
             console.error("Error deleting account:", err);
-            alert("An error occurred while deleting your account.");
+            toast.error("An error occurred while deleting your account.", {
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
         }
     };
 
@@ -129,6 +136,8 @@ function Settings() {
 
     return (
         <Container maxWidth="sm" sx={{ py: 4 }}>
+            <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
+            
             <Typography variant="h4" gutterBottom>
                 Account Settings
             </Typography>
