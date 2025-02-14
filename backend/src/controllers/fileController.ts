@@ -18,8 +18,9 @@ import multer from "multer";
 import { uploadFileToS3, deleteFileFromS3 } from "../services/s3Service";
 
 const MAX_ITEMS_PER_USER = 200;
+const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB
 const MAX_IMAGE_LIMIT = 5;
-const MAX_IMAGE_SIZE = MAX_IMAGE_LIMIT * 1024 * 1024;
+const MAX_IMAGE_SIZE = MAX_IMAGE_LIMIT * 1024 * 1024; // 5MB
 const upload = multer({ storage: multer.memoryStorage() });
 
 export const uploadFile = async (req: Request, res: Response) => {
@@ -55,6 +56,12 @@ export const uploadFile = async (req: Request, res: Response) => {
         const userFileCount = await countUserFiles(user_id);
         if (userFileCount >= MAX_ITEMS_PER_USER) {
             res.status(403).json({ message: `Upload limit reached. You can only upload up to ${MAX_ITEMS_PER_USER} items.` });
+            return;
+        }
+
+        if (uploadedFile.size > MAX_FILE_SIZE) {
+            console.error("File too large:", uploadedFile.originalname, uploadedFile.size);
+            res.status(400).json({ message: `File size exceeds the 5GB limit.` });
             return;
         }
 

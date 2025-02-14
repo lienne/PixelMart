@@ -29,7 +29,7 @@ function FileDropzone({ getRootProps, getInputProps, preview, error }: FileDropz
             <Typography variant="body1">Drag & Drop a file here</Typography>
             <Button variant="outlined" sx={{ mt: 2 }}>Browse Files</Button>
             <Typography variant="caption" sx={{ mt: 1, color: "text.secondary" }}>
-                Max file size: 50MB
+                Max file size: 5GB
             </Typography>
 
             {/* File Preview */}

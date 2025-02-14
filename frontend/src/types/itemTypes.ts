@@ -6,4 +6,5 @@ export interface Item {
     currency?: number;
     category?: string;
     showcase_img_urls: string[];
+    uploader_username: string;
 }

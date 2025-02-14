@@ -26,13 +26,13 @@ function Overview() {
 
     const handlePrev = () => {
         setCurrentPopularIndex((prev) =>
-            prev === 0 ? popularItems.length - 1 : prev - 1
+            prev === 0 ? displayPopularItems.length - 1 : prev - 1
         );
     };
 
     const handleNext = () => {
         setCurrentPopularIndex((prev) =>
-            prev === popularItems.length - 1 ? 0 : prev + 1
+            prev === displayPopularItems.length - 1 ? 0 : prev + 1
         );
     };
 
@@ -77,7 +77,7 @@ function Overview() {
                 ) : displayPopularItems.length > 0 ? (
                   <AnimatePresence mode="wait">
                     <motion.div
-                      key={popularItems[currentPopularIndex].id}
+                      key={displayPopularItems[currentPopularIndex].id}
                       initial={{ opacity: 0, x: 100 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -100 }}

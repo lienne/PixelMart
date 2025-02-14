@@ -1,7 +1,9 @@
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024;
+const MAX_FILE_SIZE = 50 * 1024 * 1024 * 1024;
 
 export function useFileUpload() {
     const [file, setFile] = useState<File | null>(null);
@@ -12,6 +14,17 @@ export function useFileUpload() {
     const handleFileDrop = useCallback((acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
             const newFile = acceptedFiles[0];
+
+            if (newFile.size > MAX_FILE_SIZE) {
+                toast.error("File size exceeds the 5GB limit.", {
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    theme: "colored",
+                });
+                return;
+            }
+
             setFile(newFile);
             setError(null);
 
@@ -40,7 +53,7 @@ export function useFileUpload() {
         maxSize: MAX_FILE_SIZE,
         onDrop: handleFileDrop,
         onDropRejected: () => {
-            setError("Invalid file type or size. Only images, PDFs, videos, and text files up to 50MB are allowed.");
+            setError("Invalid file type or size. Only images, PDFs, videos, and text files up to 5GB are allowed.");
         }
     });
 

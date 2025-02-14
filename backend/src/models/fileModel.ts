@@ -90,9 +90,12 @@ export const insertShowcaseImage = async (
 
 export const getPopularItems = async (): Promise<FileDetails[]> => {
     const result = await pool.query(
-        `SELECT * FROM files_details
-        WHERE is_public = true
-        ORDER BY created_at DESC
+        `SELECT fd.id, fd.title, fd.description, fd.price, fd.currency, fd.is_public, fd.category, fd.created_at, fd.showcase_img_urls,
+            u.username AS uploader_username
+        FROM files_details fd
+        JOIN users u ON fd.user_id = u.id
+        WHERE fd.is_public = true
+        ORDER BY fd.created_at DESC
         LIMIT 100`
     );
     return result.rows;
@@ -116,7 +119,11 @@ export const getFileMetadataById = async (id: string): Promise<FileMetadata | nu
 
 export const getFileDetailsById = async (id: string): Promise<FileDetails | null> => {
     const result = await pool.query(
-        `SELECT * FROM files_details WHERE id = $1`,
+        `SELECT fd.id, fd.title, fd.description, fd.price, fd.currency, fd.is_public, fd.category, fd.created_at, fd.showcase_img_urls,
+            u.username AS uploader_username     
+        FROM files_details fd
+        JOIN users u ON fd.user_id = u.id
+        WHERE fd.id = $1`,
         [id]
     );
     return result.rows[0] || null;

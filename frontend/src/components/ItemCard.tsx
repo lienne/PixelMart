@@ -26,6 +26,9 @@ function ItemCard({ item, noShadow }: ItemCardProps) {
                     <Typography variant="h6" component="div">
                         {item.title}
                     </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                        {item.uploader_username ? `by ${item.uploader_username}` : ""}
+                    </Typography>
                     <Typography variant="body2" color="text.secondary">
                         ${item.price}
                     </Typography>
