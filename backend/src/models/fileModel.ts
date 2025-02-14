@@ -29,6 +29,15 @@ export interface ShowcaseImage {
     uploaded_at: Date;
 }
 
+export const countUserFiles = async (user_id: string): Promise<number> => {
+    const result = await pool.query(
+        `SELECT COUNT(*) FROM files_details
+        WHERE user_id = $1`,
+        [user_id]
+    );
+    return parseInt(result.rows[0].count, 10);
+}
+
 export const insertFileMetadata = async (
     user_id: string,
     file_url: string,

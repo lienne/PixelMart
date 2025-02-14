@@ -16,8 +16,8 @@ function UploadItem() {
     const [price, setPrice] = useState("");
     const [showcaseImages, setShowcaseImages] = useState<File[]>([]);
     const [uploading, setUploading] = useState(false);
+    const [usage, setUsage] = useState<{ uploaded: number; max: number } | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    
     const { file, preview, error, getRootProps, getInputProps } = useFileUpload();
 
     // Redirect if not logged in
@@ -26,6 +26,34 @@ function UploadItem() {
             window.location.href = "/";
         }
     }, [isAuthenticated, isLoading]);
+
+    const fetchUsage = async () => {
+        if (!user) return;
+
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${API_BASE_URL}/files/user/${user.sub}/usage`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setUsage(data);
+            } else {
+                throw new Error("Failed to fetch usage.");
+            }
+        } catch (err) {
+            console.error("Error fetching usage:", err);
+        }
+    };
+
+    useEffect(() => {
+        if (user) {
+            fetchUsage();
+        }
+    }, [user, getAccessTokenSilently]);
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
@@ -111,6 +139,7 @@ function UploadItem() {
                 draggable: true,
                 theme: "colored",
             });
+            fetchUsage();
             setTitle("");
             setDescription("");
             setPrice("");
@@ -140,7 +169,12 @@ function UploadItem() {
 
             <Box sx={{ display: "flex", gap: 4, alignItems: "center" }}>
                 {/* Drag & Drop File Upload */}
-                <FileDropzone getRootProps={getRootProps} getInputProps={getInputProps} preview={preview} error={error} />
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1, alignItems: "center", width: "100%" }}>
+                    <FileDropzone getRootProps={getRootProps} getInputProps={getInputProps} preview={preview} error={error} />
+                    <Typography variant="body2" color="textSecondary">
+                        {usage ? `You have uploaded ${usage.uploaded}/${usage.max} listings.` : "Loading usage..."}
+                    </Typography>
+                </Box>
 
                 {/* Form Fields */}
                 <Box sx={{ width: "50%", display: "flex", flexDirection: "column", gap: 2 }}>

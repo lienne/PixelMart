@@ -10,12 +10,16 @@ import {
     deleteFileMetadata,
     getPopularItems,
     deleteShowcaseImagesMetadata,
-    deleteFileDetails
+    deleteFileDetails,
+    countUserFiles
 } from "../models/fileModel";
 import { findUserByUsername, getUserIdByAuth0Id } from "../models/userModel";
 import multer from "multer";
 import { uploadFileToS3, deleteFileFromS3 } from "../services/s3Service";
 
+const MAX_ITEMS_PER_USER = 200;
+const MAX_IMAGE_LIMIT = 5;
+const MAX_IMAGE_SIZE = MAX_IMAGE_LIMIT * 1024 * 1024;
 const upload = multer({ storage: multer.memoryStorage() });
 
 export const uploadFile = async (req: Request, res: Response) => {
@@ -48,6 +52,11 @@ export const uploadFile = async (req: Request, res: Response) => {
             return;
         }
         const user_id = user.id;
+        const userFileCount = await countUserFiles(user_id);
+        if (userFileCount >= MAX_ITEMS_PER_USER) {
+            res.status(403).json({ message: `Upload limit reached. You can only upload up to ${MAX_ITEMS_PER_USER} items.` });
+            return;
+        }
 
         // Upload main file to S3 first
         const s3Result = await uploadFileToS3(uploadedFile.buffer, uploadedFile.originalname, uploadedFile.mimetype, false /* isPublic */);
@@ -62,7 +71,28 @@ export const uploadFile = async (req: Request, res: Response) => {
         if (req.files["showcase_images"]) {
             const showcaseImages = req.files["showcase_images"] as Express.Multer.File[];
 
+            // Hard limit check - reject if more than 5
+            if (showcaseImages.length > MAX_IMAGE_LIMIT) {
+                console.error("Too many showcase images uploaded");
+                res.status(400).json({ message: "You can only upload up to 5 showcase images." });
+                return;
+            }
+
+            const allowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
+
             for (const image of showcaseImages) {
+                if (image.size > MAX_IMAGE_SIZE) {
+                    console.error("File too large:", image.originalname, image.size);
+                    res.status(400).json({ message: `Each showcase image must be smaller than 5MB.` });
+                    return;
+                }
+
+                if (!allowedImageTypes.includes(image.mimetype)) {
+                    console.error("Invalid file type:", image.mimetype);
+                    res.status(400).json({ message: "Only JPEG, PNG, and WebP images are allowed for showcase images." });
+                    return;
+                }
+
                 // Upload showcase image to S3
                 const s3ShowcaseResult = await uploadFileToS3(image.buffer, image.originalname, image.mimetype, true /* isPublic */);
                 const image_url = s3ShowcaseResult.Location;
@@ -80,6 +110,24 @@ export const uploadFile = async (req: Request, res: Response) => {
         res.status(201).json({ fileMetadata, fileDetails, showcaseImagesMetadata });
     } catch (err) {
         console.error("Error uploading file and/or showcase images: ", err);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+export const getUserFileUsage = async (req: Request, res: Response) => {
+    const { user_id: auth0_id } = req.params;
+
+    try {
+        const user = await getUserIdByAuth0Id(auth0_id);
+        if (!user) {
+            res.status(404).json({ message: "User not found." });
+            return;
+        }
+
+        const userFileCount = await countUserFiles(user.id);
+        res.status(200).json({ uploaded: userFileCount, max: MAX_ITEMS_PER_USER });
+    } catch (err) {
+        console.error("Error fetching user file usage:", err);
         res.status(500).json({ message: "Internal server error." });
     }
 };
@@ -207,5 +255,5 @@ export const deleteFileAndMetadata = async (req: Request, res: Response) => {
 // Export multer upload middleware
 export const uploadMiddleware = upload.fields([
     { name: "file", maxCount: 1 }, // Single file
-    { name: "showcase_images", maxCount: 5 } // Multiple showcase images
+    { name: "showcase_images", maxCount: MAX_IMAGE_LIMIT } // Multiple showcase images
 ]);
