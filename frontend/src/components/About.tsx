@@ -21,14 +21,14 @@ function About() {
           <b>Q:</b> How do I sell my content here?
         </Typography>
         <Typography variant="body1" paragraph>
-          Selling your content on PixelMart is easy! Simply upload your files in your dashboard and they'll appear in your profile. Payments are processed securely via a payment processing service for your convenience.
+          Selling your content on PixelMart is easy! Simply upload your files in your dashboard and they'll appear in your profile. Payments are processed securely via Stripe for your convenience.
         </Typography>
 
         <Typography variant="h5" component="h3" gutterBottom>
           <b>Q:</b> Does it cost anything to sell on PixelMart?
         </Typography>
         <Typography variant="body1" paragraph>
-          For the time being, PixelMart is free to use, but donations are highly encouraged! I developed this website by myself and it took a lot of time and effort. In the future, if PixelMart becomes more popular and the running costs increase, I might implement a service fee or something similar. But nothing will be done without proper notice.
+          For the time being, PixelMart is free to use, but donations are highly encouraged! I developed this website by myself and it took a lot of time and effort. In the future, if PixelMart becomes more popular and the running costs increase, I might implement a service fee per item sold or something similar. But nothing will be done without proper notice.
         </Typography>
 
         <Typography variant="h5" component="h3" gutterBottom>
@@ -74,8 +74,7 @@ function About() {
           here. You can also{' '}
           <Link href="https://buymeacoffee.com/heymissbelle" target="_blank" rel="noopener">
             buy me a coffee
-          </Link>{' '}
-          here!
+          </Link>!
         </Typography>
       </Box>
     </Container>

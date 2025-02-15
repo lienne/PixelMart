@@ -137,6 +137,22 @@ export const getShowcaseImagesByFileId = async (file_id: string): Promise<Showca
     return result.rows;
 }
 
+export const editFileDetailsByFileId = async (
+    title: string,
+    description: string,
+    price: number,
+    file_id: string
+): Promise<boolean> => {
+    const result = await pool.query(
+        `UPDATE files_details
+        SET title = $1, description = $2, price = $3
+        WHERE id = $4
+        RETURNING *`,
+        [title, description, price, file_id]
+    );
+    return result.rows[0] || null;
+}
+
 export const deleteFileMetadata = async (file_id: string): Promise<boolean> => {
     const result = await pool.query(
         `DELETE FROM files_metadata

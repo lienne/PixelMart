@@ -11,7 +11,8 @@ import {
     getPopularItems,
     deleteShowcaseImagesMetadata,
     deleteFileDetails,
-    countUserFiles
+    countUserFiles,
+    editFileDetailsByFileId
 } from "../models/fileModel";
 import { findUserByUsername, getUserIdByAuth0Id } from "../models/userModel";
 import multer from "multer";
@@ -218,6 +219,20 @@ export const getShowcaseImages = async (req: Request, res: Response) => {
     } catch (err) {
         console.error("Error fetching showcase images:", err);
         res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+export const editFileDetails = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        const { title, description, price } = req.body;
+        editFileDetailsByFileId(title, description, price, id);
+        
+        res.status(200).json({ message: "Item updated successfully." });
+    } catch (err) {
+        console.error("Error updating item:", err);
+        res.status(500).json({ message: "Internal server error. Failed to update item." });
     }
 };
 

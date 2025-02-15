@@ -20,6 +20,7 @@ import NotFound from './components/NotFound';
 import ItemPage from './components/ItemPage';
 import UploadItem from './components/dashboard/UploadItem';
 import ProtectedRoute from './components/ProtectedRoute';
+import EditItem from './components/dashboard/EditItem';
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -83,6 +84,7 @@ function App() {
             <Route path="orders" element={<Orders />} />
             <Route path="listings" element={<Listings />} />
             <Route path="upload" element={<UploadItem />} />
+            <Route path="edit-item/:itemId" element={<EditItem />} />
             <Route path="metrics" element={<Metrics />} />
             <Route path="inbox" element={<Inbox />} />
             <Route path="wishlist" element={<Wishlist />} />

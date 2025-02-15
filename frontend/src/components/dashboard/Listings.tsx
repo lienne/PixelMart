@@ -194,6 +194,7 @@ function Listings() {
                             </CardContent>
                             <CardActions>
                                 <Button size="small" component={RouterLink} to={`/item/${listing.id}`} color="primary">View</Button>
+                                <Button size="small" component={RouterLink} to={`/dashboard/edit-item/${listing.id}`} color="secondary">Edit</Button>
                                 <Button size="small" color="secondary" onClick={() => { setSelectedListing(listing); setOpenDialog(true); }}>Delete</Button>
                             </CardActions>
                         </Card>

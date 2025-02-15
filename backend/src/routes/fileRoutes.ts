@@ -8,7 +8,8 @@ import {
     getUserFiles,
     uploadFile,
     uploadMiddleware,
-    getUserFileUsage
+    getUserFileUsage,
+    editFileDetails
 } from "../controllers/fileController";
 import { authenticatedUser, checkFileUploadPermissions } from "../middleware/authMiddleware";
 import { requiredScopes } from "express-oauth2-jwt-bearer";
@@ -29,5 +30,6 @@ router.get("/:id/showcase", getShowcaseImages);
 router.delete("/:id", authenticatedUser, deleteFileAndMetadata);
 router.get("/public/popular", getPopularItemsController);
 router.get("/user/:user_id/usage", authenticatedUser, getUserFileUsage);
+router.put("/edit-item/:id", authenticatedUser, editFileDetails);
 
 export default router;
