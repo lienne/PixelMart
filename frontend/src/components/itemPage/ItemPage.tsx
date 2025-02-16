@@ -3,10 +3,29 @@ import { Container, Typography, Grid, CircularProgress } from "@mui/material";
 import { useSingleItemFetch } from "../../hooks/useSingleItemFetch";
 import ItemDetails from "./ItemDetails";
 import ItemImageCarousel from "./ItemImageCarousel";
+import ReviewsSection, { Review } from "./ReviewsSection";
 
 function ItemPage() {
     const { itemId } = useParams<{ itemId: string }>();
     const { item, loading, error } = useSingleItemFetch(itemId);
+
+    // Dummy review data for now
+    const dummyReviews: Review[] =[
+        {
+            id: "1",
+            reviewer: "Alice",
+            rating: 5,
+            comment: "Amazing product!",
+            createdAt: "2023-02-01T12:00:00Z",
+        },
+        {
+            id: "2",
+            reviewer: "Bob",
+            rating: 4,
+            comment: "Good value for the price.",
+            createdAt: "2023-02-05T15:30:00Z",
+        }
+    ]
 
     if (loading) {
         return (
@@ -46,6 +65,9 @@ function ItemPage() {
                     <ItemDetails item={item} />
                 </Grid>
             </Grid>
+
+            {/* Reviews Section */}
+            <ReviewsSection reviews={dummyReviews} />
         </Container>
     );
 }

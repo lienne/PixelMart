@@ -22,7 +22,6 @@ const useWishlist = () => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log(data);
                     setWishlistItems(Array.isArray(data.wishlistItems) ? data.wishlistItems : []);
                 } else {
                     console.error("Failed to fetch wishlist items.");

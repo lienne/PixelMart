@@ -22,7 +22,6 @@ const useCart = () => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log(data);
                     setCartItems(Array.isArray(data.cartItems) ? data.cartItems : []);
                 } else {
                     console.error("Failed to fetch cart items.");

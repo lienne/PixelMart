@@ -4,12 +4,12 @@ import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import { Item } from "../../types";
 import WishlistButton from "../WishlistButton";
 
-interface Props {
+interface ImageCarouselProps {
     images: string[];
     item?: Item;
 }
 
-function ItemImageCarousel({ images, item }: Props) {
+function ItemImageCarousel({ images, item }: ImageCarouselProps) {
     const [currentImage, setCurrentImage] = useState(0);
 
     // Image carousel navigation
@@ -23,35 +23,42 @@ function ItemImageCarousel({ images, item }: Props) {
 
     return (
         <>
-            <Card sx={{ position: 'relative' }}>
-                <CardMedia
-                    component="img"
-                    height="400"
-                    image={images[currentImage]}
-                    alt="Product Image"
-                    sx={{ objectFit: 'cover' }}
-                />
-
-                {/* Navigation Arrows */}
-                <IconButton
-                    onClick={handlePrevImage}
-                    sx={{ position: "absolute", top: "50%", left: 10, backgroundColor: "rgba(0,0,0,0.5)", color: "#fff" }}
-                >
+            {/* Carousel Container */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+                {/* Left Navigation Arrow */}
+                <IconButton onClick={handlePrevImage} sx={{ mr: 2 }}>
                     <ArrowBackIos />
                 </IconButton>
-                <IconButton
-                    onClick={handleNextImage}
-                    sx={{ position: "absolute", top: "50%", right: 10, backgroundColor: "rgba(0,0,0,0.5)", color: "#fff" }}
-                >
+
+                {/* Image Card */}
+                <Card sx={{ position: "relative", overflow: "visible" }}>
+                    <CardMedia
+                        component="img"
+                        height="400"
+                        image={images[currentImage]}
+                        alt="Product Image"
+                        sx={{ objectFit: 'cover' }}
+                    />
+
+                    {/* Wishlist Button Overlay */}
+                    {item && (
+                        <Box sx={{ position: 'absolute', bottom: 10, right: 10 }}>
+                            <WishlistButton item={item} />
+                        </Box>
+                    )}
+                </Card>
+
+                {/* Right Navigation Arrow */}
+                <IconButton onClick={handleNextImage} sx={{ ml: 2 }}>
                     <ArrowForwardIos />
                 </IconButton>
-                {/* Wishlist Button Overlay */}
-                {item && (
-                    <Box sx={{ position: 'absolute', bottom: 10, right: 10 }}>
-                        <WishlistButton item={item} />
-                    </Box>
-                )}
-            </Card>
+            </Box>
 
             {/* Image Thumbnails */}
             <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>

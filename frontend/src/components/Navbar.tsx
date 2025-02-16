@@ -82,7 +82,7 @@ function Navbar({ brandName, imageSrcPath }: LogoProps) {
         onClose={handleMobileMenuClose}
       >
         {navItems.map((item) => (
-          <MenuItem component={RouterLink} to={item.to} onClick={handleMobileMenuClose}>
+          <MenuItem key={item.label} component={RouterLink} to={item.to} onClick={handleMobileMenuClose}>
             {item.label}
           </MenuItem>
         ))}

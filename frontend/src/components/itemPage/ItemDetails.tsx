@@ -1,9 +1,10 @@
-import { CardContent, Typography } from "@mui/material";
+import { Box, CardContent, IconButton, Typography } from "@mui/material";
 import { Item } from "../../types";
 import AddToCartButton from "../AddToCartButton";
 import MuiLink from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 import RatingBreakdown from "./RatingBreakdown";
+import FlagIcon from "@mui/icons-material/Flag";
 
 // Mock rating - fetch from API once ready
 const overallRating = 4.5;
@@ -16,19 +17,23 @@ const ratingBreakdown = {
 };
 
 function ItemDetails({ item }: { item: Item }) {
+    const handleReportProduct = () => {
+        console.log("Report product: ", item.id);
+    }
     return (
-        <CardContent>
+        <CardContent sx={{ position: 'relative' }}>
             <Typography variant="h4" gutterBottom>
                 {item.title}
             </Typography>
 
+            {/* Report Button */}
+            <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
+                <IconButton onClick={handleReportProduct} size="small" color="error">
+                    <FlagIcon fontSize="small" />
+                </IconButton>
+            </Box>
+
             {/* Star Rating Display */}
-            {/* <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Rating value={overallRating} precision={0.1} readOnly />
-                <Typography variant="body2" sx={{ ml: 1 }}>
-                    {overallRating}
-                </Typography>
-            </Box> */}
             <RatingBreakdown overallRating={overallRating} breakdown={ratingBreakdown} />
 
             <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
