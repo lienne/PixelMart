@@ -7,6 +7,7 @@ import fileRoutes from './routes/fileRoutes';
 import stripeRoutes from './routes/stripeRoutes';
 import cartRoutes from './routes/cartRoutes';
 import wishlistRoutes from './routes/wishlistRoutes';
+import contactRoutes from './routes/contactRoutes';
 
 console.log('Database module imported.');
 testConnection();
@@ -30,6 +31,7 @@ app.use('/api/files', fileRoutes);
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/users', cartRoutes);
 app.use('/api/users', wishlistRoutes);
+app.use("/api", contactRoutes);
 
 app.get('/', (req, res) => {
     res.send('Welcome to the Digital Marketplace PixelMart!');

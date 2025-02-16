@@ -56,7 +56,8 @@ function About() {
           <b>Q:</b> Are you going to continue improving the website?
         </Typography>
         <Typography variant="body1" paragraph>
-          Yes, this is a ongoing project and I plan on continuing to add features and improve it as time goes on.
+          Yes, this is a ongoing project and I plan on continuing to add features and improve it as time goes on. If you have requests for site improvement, please send me your thoughts{' '}
+          <Link href="/contact" target="_blank" rel="noopener">here</Link>.
         </Typography>
 
         <Typography variant="h5" component="h3" gutterBottom>

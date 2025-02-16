@@ -25,8 +25,8 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: "Browse", to: "/" },
   { label: "About", to: "/about" },
+  { label: "Contact", to: "/contact" },
 ];
 
 function Navbar({ brandName, imageSrcPath }: LogoProps) {
@@ -34,7 +34,7 @@ function Navbar({ brandName, imageSrcPath }: LogoProps) {
   const { profile } = useContext(ProfileContext);
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // breakpoint for small screens
+  const isMobile = useMediaQuery(theme.breakpoints.down('md')); // breakpoint for small screens
 
   const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileAnchorEl, setMobileAnchorEl] = useState<null | HTMLElement>(null);
@@ -64,34 +64,37 @@ function Navbar({ brandName, imageSrcPath }: LogoProps) {
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileAnchorEl}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'right',
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={openMobileMenu}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem component={RouterLink} to="/" onClick={handleMobileMenuClose}>
-        <p>Browse</p>
-      </MenuItem>
-      <MenuItem component={RouterLink} to="/about" onClick={handleMobileMenuClose}>
-        <p>About</p>
-      </MenuItem>
-    </Menu>
+    <>
+    {isMobile && (
+      <Menu
+        anchorEl={mobileAnchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        id={mobileMenuId}
+        keepMounted
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        open={openMobileMenu}
+        onClose={handleMobileMenuClose}
+      >
+        {navItems.map((item) => (
+          <MenuItem component={RouterLink} to={item.to} onClick={handleMobileMenuClose}>
+            {item.label}
+          </MenuItem>
+        ))}
+      </Menu>
+    )}
+    </>
   );
 
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" sx={{ backgroundColor: '#fff', color: 'black' }}>
-        <Toolbar sx={{ display: "flex", alignItems: "center" }}>
+        <Toolbar sx={{ display: "flex" }}>
           <Box sx={{ display: { xs: 'flex', md: 'none '} }}>
             <IconButton
               size="large"
@@ -106,7 +109,7 @@ function Navbar({ brandName, imageSrcPath }: LogoProps) {
           </Box>
 
           {/* Left side: Logo and Brand */}
-          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'left' }}>
             <Button
               component={RouterLink}
               to="/"
@@ -147,21 +150,23 @@ function Navbar({ brandName, imageSrcPath }: LogoProps) {
 
           {/* Center: Search bar */}
           {!isMobile && (
-              <Box sx={{ flexGrow: 2, display: 'flex' }}>
+              <Box sx={{ flexGrow: 2, display: 'flex', justifyContent: 'center' }}>
                   <TextField
                   variant="outlined"
                   placeholder="Search"
                   size="small"
                   sx={{
-                      width: { xs: '650px', sm: '700px', md: '750px' },
+                      width: { xs: '450px', sm: '500px', md: '550px' },
                       marginRight: 2,
                   }}
-                  inputProps={{ 'aria-label': 'search' }}
+                  slotProps={{
+                    htmlInput: { 'aria-label': 'search' }
+                  }}
                   />
               </Box>
           )}
 
-          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'right' }}>
             {/* Right side: Cart Button */}
             <CartDropdown />
 

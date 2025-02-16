@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Card, CardMedia, IconButton, Box } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import { Item } from "../types";
-import WishlistButton from "./WishlistButton";
+import { Item } from "../../types";
+import WishlistButton from "../WishlistButton";
 
 interface Props {
     images: string[];

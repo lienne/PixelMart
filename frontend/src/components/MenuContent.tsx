@@ -48,7 +48,7 @@ function MenuContent ({ handleDrawerToggle }: { handleDrawerToggle: () => void }
     const secondaryListItems: NavItem[] = [
         { label: 'Settings', path: '/dashboard/settings', icon: <SettingsRoundedIcon /> },
         // { label: 'About', path: '/about', icon: <InfoRoundedIcon /> },
-        { label: 'Feedback', path: '/feedback', icon: <HelpRoundedIcon /> },
+        { label: 'Contact Us', path: '/contact', icon: <HelpRoundedIcon /> },
     ];
 
     const mainListItems: NavItem[] = [

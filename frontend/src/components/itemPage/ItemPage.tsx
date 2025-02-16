@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { Container, Typography, Grid, CircularProgress } from "@mui/material";
-import { useSingleItemFetch } from "../hooks/useSingleItemFetch";
+import { useSingleItemFetch } from "../../hooks/useSingleItemFetch";
 import ItemDetails from "./ItemDetails";
 import ItemImageCarousel from "./ItemImageCarousel";
 

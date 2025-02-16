@@ -17,10 +17,11 @@ import Profile from './components/Profile';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect } from 'react';
 import NotFound from './components/NotFound';
-import ItemPage from './components/ItemPage';
+import ItemPage from './components/itemPage/ItemPage';
 import UploadItem from './components/dashboard/UploadItem';
 import ProtectedRoute from './components/ProtectedRoute';
 import EditItem from './components/dashboard/EditItem';
+import ContactUs from './components/ContactUs';
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -93,6 +94,7 @@ function App() {
         </Route>
         <Route path="/profile/:identifier" element={<Profile />} />
         <Route path="/item/:itemId" element={<ItemPage />} />
+        <Route path="/contact" element={<ContactUs />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

@@ -83,8 +83,8 @@ function UploadItem() {
         }
     };
 
-    const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
+    const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
         // Allow only numbers and decimal points
         if (/^\d*\.?\d{0,2}$/.test(value) || value === "") {
             setPrice(value);
