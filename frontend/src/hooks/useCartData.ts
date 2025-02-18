@@ -1,12 +1,12 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Item } from "../types";
+import { Item, CartItem } from "../types";
 import { useContext } from "react";
 import { ProfileContext } from "../context/ProfileContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const fetchCart = async (userId: string, token: string): Promise<Item[]> => {
+const fetchCart = async (userId: string, token: string): Promise<CartItem[]> => {
     const response = await fetch(`${API_BASE_URL}/users/${userId}/cart`, {
         headers: {
             Authorization: `Bearer ${token}`,
@@ -22,7 +22,7 @@ const useCartData = () => {
     const { profile } = useContext(ProfileContext);
     const queryClient = useQueryClient();
 
-    const { data: cartItems = [], refetch } = useQuery<Item[]>({
+    const { data: cartItems = [], refetch } = useQuery<CartItem[]>({
         queryKey: ['cart', profile?.id],
         queryFn: async () => {
             if (!isAuthenticated || ! profile?.id) {

@@ -1,7 +1,7 @@
 import { Box, Card, CardActionArea, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
 import { Link as RouterLink } from 'react-router-dom';
 import { Item } from "../types";
-import AddToCartButton from "./AddToCartButton";
+import AddToCartButton from "./cart/AddToCartButton";
 import WishlistButton from "./WishlistButton";
 
 interface ItemCardProps {

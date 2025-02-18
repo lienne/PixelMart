@@ -1,6 +1,6 @@
 import { Box, CardContent, IconButton, Typography } from "@mui/material";
 import { Item } from "../../types";
-import AddToCartButton from "../AddToCartButton";
+import AddToCartButton from "../cart/AddToCartButton";
 import MuiLink from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 import RatingBreakdown from "./RatingBreakdown";

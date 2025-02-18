@@ -16,7 +16,7 @@ import {
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { Link as RouterLink } from 'react-router-dom';
 import { ProfileContext } from '../context/ProfileContext';
-import CartDropdown from './CartDropdown';
+import CartDropdown from './cart/CartDropdown';
 import { LogoProps } from '../types/logoTypes';
 
 interface NavItem {

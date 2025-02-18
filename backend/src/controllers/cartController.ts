@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { addCartItem, deleteCartItem, getCartItemsByUserId } from "../models/cartModel";
-import { findUserByAuth0Id } from "../models/userModel";
 
 export const getUserCart = async (req: Request, res: Response) => {
     const { userId } = req.params;

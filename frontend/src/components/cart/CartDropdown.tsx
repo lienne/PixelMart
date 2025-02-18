@@ -9,10 +9,10 @@ import {
   Button,
 } from "@mui/material";
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
-import { Item } from "../types";
+import { CartItem } from "../../types";
 import { Link as RouterLink } from "react-router-dom";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import useCartData from "../hooks/useCartData";
+import useCartData from "../../hooks/useCartData";
 
 const CartDropdown = () => {
   const { cartItems, removeFromCart, refetchCart } = useCartData();
@@ -61,7 +61,7 @@ const CartDropdown = () => {
         <Divider />
 
         {cartItems && cartItems.length > 0 ? (
-          cartItems.map((item: Item) => (
+          cartItems.map((item: CartItem) => (
             <MenuItem key={item.id} sx={{ display: "flex", justifyContent: "space-between" }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <img src={item.showcase_img_urls && item.showcase_img_urls.length > 0 ? item.showcase_img_urls[0] : 'fallback-image-url.jpg'} alt={item.title} width="40" height="40" />
@@ -84,7 +84,7 @@ const CartDropdown = () => {
           </Box>
         )}
 
-        {/* Checkout Button */}
+        {/* Go to Cart Page Button */}
         {cartItems && cartItems.length > 0 && (
           <>
             <Divider />
@@ -92,11 +92,11 @@ const CartDropdown = () => {
               <Button
                 variant="contained"
                 component={RouterLink}
-                to="/checkout"
+                to="/cart"
                 fullWidth
                 onClick={handleCartMenuClose}
               >
-                Check Out
+                Go to Cart
               </Button>
             </Box>
           </>

@@ -1,14 +1,27 @@
 import pool from "../database";
 
 export interface CartItem {
+    id: number;
     user_id: string;
     file_id: string;
     added_at: Date;
+    title: string;
+    description: string;
+    price: number;
+    showcase_img_urls: string[];
+    seller_id: string;
 }
 
 export const getCartItemsByUserId = async (userId: string): Promise<CartItem[]> => {
     const result = await pool.query(
-        `SELECT fd.id, fd.title, fd.description, fd.price, fd.showcase_img_urls, ci.added_at
+        `SELECT
+            fd.id AS id,
+            fd.title,
+            fd.description,
+            fd.price,
+            fd.showcase_img_urls,
+            fd.user_id AS seller_id,
+            ci.added_at
         FROM cart_items ci
         JOIN files_details fd ON ci.file_id = fd.id
         WHERE ci.user_id = $1

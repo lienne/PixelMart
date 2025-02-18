@@ -1,6 +1,6 @@
 import { Button } from "@mui/material";
-import useCartData from "../hooks/useCartData";
-import { Item } from "../types";
+import useCartData from "../../hooks/useCartData";
+import { Item } from "../../types";
 
 interface AddToCartButtonProps {
     item: Item;

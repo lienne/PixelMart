@@ -22,6 +22,8 @@ import UploadItem from './components/dashboard/UploadItem';
 import ProtectedRoute from './components/ProtectedRoute';
 import EditItem from './components/dashboard/EditItem';
 import ContactUs from './components/ContactUs';
+import CartPage from './components/cart/CartPage';
+import CheckoutSuccess from './components/cart/CheckoutSuccess';
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -91,6 +93,9 @@ function App() {
             <Route path="wishlist" element={<Wishlist />} />
             <Route path="settings" element={<Settings />} />
           </Route>
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout-cancel" element={<Navigate to="/cart" replace />} />
+          <Route path="/checkout-success" element={<CheckoutSuccess />} />
         </Route>
         <Route path="/profile/:identifier" element={<Profile />} />
         <Route path="/item/:itemId" element={<ItemPage />} />
