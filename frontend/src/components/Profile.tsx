@@ -10,15 +10,13 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchUserProfile, UserProfile } from '../api/profile';
-import { ProfileContext } from '../context/ProfileContext';
 import ItemCard from './ItemCard';
 import useMultipleItemsFetch from '../hooks/useMultipleItemsFetch';
 
 function Profile() {
   const { identifier } = useParams<{ identifier: string}>();
-  const { profile } = useContext(ProfileContext);
   const [ profileData, setProfileData ] = useState<UserProfile | null>(null);
   const { products, isLoading, error } = useMultipleItemsFetch(identifier || "");
 
@@ -53,8 +51,8 @@ function Profile() {
         >
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <Avatar
-              src={profile?.avatar || profileData.avatar}
-              alt={profile?.name || profileData.name}
+              src={profileData.avatar}
+              alt={profileData.name}
               sx={{ width: 80, height: 80, mr: 2 }}
             />
             <Typography variant="h4">{profileData.name}</Typography>
