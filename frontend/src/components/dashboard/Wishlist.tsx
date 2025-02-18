@@ -1,10 +1,10 @@
 import { Container, Typography, Grid, Box } from "@mui/material";
 import { Item } from "../../types";
 import ItemCard from "../ItemCard";
-import useWishlist from "../../hooks/useWishlist";
+import useWishlistData from "../../hooks/useWishlistData";
 
 function Wishlist() {
-    const { wishlistItems } = useWishlist();
+    const { wishlistItems } = useWishlistData();
 
     return (
         <Container maxWidth="lg" sx={{ py: 4, pt: 14 }}>

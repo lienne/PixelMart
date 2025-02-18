@@ -1,5 +1,5 @@
 import { IconButton } from "@mui/material";
-import useWishlist from "../hooks/useWishlist";
+import useWishlistData from "../hooks/useWishlistData";
 import { Item } from "../types";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -9,7 +9,7 @@ interface WishlistButtonProps {
 }
 
 function WishlistButton ({ item }: WishlistButtonProps) {
-    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlistData();
     const inWishlist = isInWishlist(item.id);
 
     const handleClick = async () => {

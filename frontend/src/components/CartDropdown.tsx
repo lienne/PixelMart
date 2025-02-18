@@ -12,10 +12,10 @@ import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
 import { Item } from "../types";
 import { Link as RouterLink } from "react-router-dom";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import useCart from "../hooks/useCart";
+import useCartData from "../hooks/useCartData";
 
 const CartDropdown = () => {
-  const { cartItems, removeFromCart, fetchCart } = useCart();
+  const { cartItems, removeFromCart, refetchCart } = useCartData();
 
   const [cartAnchorEl, setCartAnchorEl] = useState<null | HTMLElement>(null);
   const openCart = Boolean(cartAnchorEl);
@@ -30,7 +30,7 @@ const CartDropdown = () => {
 
   const handleRemove = async (itemId: number) => {
     await removeFromCart(itemId);
-    fetchCart();
+    refetchCart();
   };
 
   return (

@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import useCart from "../hooks/useCart";
+import useCartData from "../hooks/useCartData";
 import { Item } from "../types";
 
 interface AddToCartButtonProps {
@@ -7,7 +7,7 @@ interface AddToCartButtonProps {
 }
 
 function AddToCartButton ({ item }: AddToCartButtonProps) {
-    const { addToCart, isInCart } = useCart();
+    const { addToCart, isInCart } = useCartData();
     const inCart = isInCart(item.id);
 
     return (
