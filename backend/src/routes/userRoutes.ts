@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { syncUser, getUserProfile, updateUserProfile, checkUsernameAvailability, deleteUser, reactivateUser } from "../controllers/userController";
+import { syncUser, getPublicUserProfile, updateUserProfile, checkUsernameAvailability, deleteUser, reactivateUser, getPrivateUserProfile } from "../controllers/userController";
 import { authenticatedUser } from "../middleware/authMiddleware";
 
 const router = Router();
 
 router.post('/sync', authenticatedUser, syncUser);
-router.get('/profile/:identifier', getUserProfile);
+router.get('/public-profile/:identifier', getPublicUserProfile);
+router.get('/profile/:identifier', authenticatedUser, getPrivateUserProfile);
 router.put('/profile/:auth0Id', authenticatedUser, updateUserProfile);
 router.get('/username-availability/:username', authenticatedUser, checkUsernameAvailability);
 router.delete("/delete/:auth0Id", authenticatedUser, deleteUser); // Soft delete user

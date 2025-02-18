@@ -14,19 +14,30 @@ import { useEffect, useState } from 'react';
 import { fetchUserProfile, UserProfile } from '../api/profile';
 import ItemCard from './ItemCard';
 import useMultipleItemsFetch from '../hooks/useMultipleItemsFetch';
+import { useAuth0 } from '@auth0/auth0-react';
 
 function Profile() {
   const { identifier } = useParams<{ identifier: string}>();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [ profileData, setProfileData ] = useState<UserProfile | null>(null);
   const { products, isLoading, error } = useMultipleItemsFetch(identifier || "");
 
   useEffect(() => {
     if (identifier) {
+      if (isAuthenticated && user && user.sub === identifier) {
+        // Logged in user viewing their own profile: get all information
+        getAccessTokenSilently()
+          .then((token) => fetchUserProfile(identifier, token))
+          .then((data) => setProfileData(data))
+          .catch((err) => console.error('Error fetching profile: ', err));
+      } else {
+        // Public profile fetch: hide sensitive information
         fetchUserProfile(identifier)
-            .then((data) => setProfileData(data))
-            .catch((err) => console.error('Error fetching profile: ', err));
+          .then((data) => {console.log(data); setProfileData(data);})
+          .catch((err) => console.error('Error fetching public profile: ', err));
+      }
     }
-  }, [identifier]);
+  }, [identifier, isAuthenticated, user, getAccessTokenSilently]);
 
   if (!profileData) {
     return (

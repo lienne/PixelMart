@@ -10,11 +10,17 @@ export interface UserProfile {
     stripe_account_id?: string;
 }
 
-// This function calls the backend to fetch a user's profile
-export const fetchUserProfile = async (identifier: string): Promise<UserProfile> => {
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-    const response = await fetch(`${API_BASE_URL}/users/profile/${identifier}`);
+// This function calls the backend to fetch a user's profile
+export const fetchUserProfile = async (identifier: string, token?: string): Promise<UserProfile> => {
+    const url = token
+        ? `${API_BASE_URL}/users/profile/${identifier}`
+        : `${API_BASE_URL}/users/public-profile/${identifier}`;
+    const headers: Record<string, string> = token
+        ? { Authorization: `Bearer ${token}` }
+        : {};
+    const response = await fetch(url, { headers });
 
     if (!response.ok) {
         throw new Error('Failed to fetch user profile.');

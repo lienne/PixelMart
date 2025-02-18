@@ -36,7 +36,7 @@ function App() {
           const syncData = {
             auth0_id: user.sub,
             email: user.email,
-            name: user.name,
+            name: user.name === user.email ? "New User" : user.name,
             avatar: user.picture,
           };
 

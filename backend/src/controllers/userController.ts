@@ -29,7 +29,7 @@ export const syncUser = async (req: Request, res: Response) => {
         if (user) {
             const updatedData = {
                 email,
-                name: user.name ? user.name : name,
+                name: user.name ? (user.name === user.email ? "New User" : user.name) : name,
                 avatar: user.avatar ? user.avatar : avatar,
             };
 
@@ -47,11 +47,37 @@ export const syncUser = async (req: Request, res: Response) => {
     }
 };
 
-export const getUserProfile = async (req: Request, res: Response) => {
+const sanitizeUserProfile = (user: User) => {
+    return {
+        name: user.name,
+        username: user.username,
+        avatar: user.avatar
+    };
+};
+
+export const getPrivateUserProfile = async (req: Request, res: Response) => {
+    const auth0Id = (req.auth as any).payload.sub;
+    if (!auth0Id) {
+        res.status(401).json({ message: 'Unauthorized.' });
+        return;
+    }
+
+    try {
+        const user = await findUserByAuth0Id(auth0Id);
+        if (!user) {
+            res.status(404).json({ message: 'User not found.' });
+            return;
+        }
+        res.status(200).json(user);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error fetching user profile.' });
+    }
+};
+
+export const getPublicUserProfile = async (req: Request, res: Response) => {
     const { identifier } = req.params;
-
     const isAuth0Id = identifier.includes('|');
-
     let user: User | null = null;
 
     try {
@@ -67,7 +93,7 @@ export const getUserProfile = async (req: Request, res: Response) => {
             return;
         }
 
-        res.status(200).json(user);
+        res.status(200).json(sanitizeUserProfile(user));
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Error fetching user profile.' });

@@ -13,19 +13,22 @@ export const ProfileContext = createContext<ProfileContextType>({
 });
 
 export const ProfileProvider = ({ children }: { children: ReactNode }) => {
-    const { user, isAuthenticated } = useAuth0();
+    const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
     const [profile, setProfile] = useState<UserProfile | null>(null);
 
     useEffect(() => {
         if (isAuthenticated && user && user.sub) {
-            fetchUserProfile(user.sub)
+            getAccessTokenSilently()
+                .then((token) => {
+                    return fetchUserProfile(user.sub!, token);
+                })
                 .then((data) => {
                     const is_seller = !!data.stripe_account_id;
                     setProfile({ ...data, is_seller });
                 })
                 .catch((err) => console.error('Error fetching profile:', err));
         }
-    }, [isAuthenticated, user]);
+    }, [isAuthenticated, user, getAccessTokenSilently]);
 
     return (
         <ProfileContext.Provider value={{ profile, setProfile }}>
