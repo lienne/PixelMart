@@ -12,7 +12,9 @@ import {
     deleteShowcaseImagesMetadata,
     deleteFileDetails,
     countUserFiles,
-    editFileDetailsByFileId
+    editFileDetailsByFileId,
+    deleteCartItemsByFileId,
+    deleteWishlistItemsByFileId
 } from "../models/fileModel";
 import { findUserByUsername, getUserIdByAuth0Id } from "../models/userModel";
 import multer from "multer";
@@ -257,6 +259,10 @@ export const deleteFileAndMetadata = async (req: Request, res: Response) => {
         for (const image of showcaseImages) {
             await deleteFileFromS3(image.image_url);
         }
+
+        // Delete dependent cart & wishlist items before deleting file
+        await deleteCartItemsByFileId(id);
+        await deleteWishlistItemsByFileId(id);
 
         // Delete metadata records from the database
         await deleteShowcaseImagesMetadata(id);

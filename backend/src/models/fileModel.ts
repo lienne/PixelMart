@@ -183,3 +183,19 @@ export const deleteFileDetails = async (file_id: string): Promise<boolean> => {
     );
     return (result?.rowCount ?? 0) > 0;
 }
+
+export const deleteCartItemsByFileId = async (file_id: string): Promise<boolean> => {
+    const result = await pool.query(
+        `DELETE FROM cart_items WHERE file_id = $1 RETURNING *`,
+        [file_id]
+    );
+    return (result?.rowCount ?? 0) > 0;
+}
+
+export const deleteWishlistItemsByFileId = async (file_id: string): Promise<boolean> => {
+    const result = await pool.query(
+        `DELETE FROM wishlist_items WHERE file_id = $1 RETURNING *`,
+        [file_id]
+    );
+    return (result?.rowCount ?? 0) > 0;
+}

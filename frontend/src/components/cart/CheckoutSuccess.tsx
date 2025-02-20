@@ -40,7 +40,7 @@ function CheckoutSuccess() {
         const fetchOrderDetails = async () => {
             try {
                 const token = await getAccessTokenSilently();
-                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/orders/session/${sessionId}`, {
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/orders/session/${sessionId}?includeDownloadLinks=true`, {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,

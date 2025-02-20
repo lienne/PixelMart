@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Stripe from "stripe";
 import dotenv from "dotenv";
 import { createOrder, createOrderItem, getOrderBySessionId, getOrderDetailsById } from "../models/orderModel";
+import { generatePresignedUrl } from "../services/s3Service";
 
 dotenv.config();
 
@@ -68,10 +69,29 @@ export const getOrderDetails = async (req: Request, res: Response): Promise<void
 
 export const getOrderBySession = async (req: Request, res: Response): Promise<void> => {
     const { sessionId } = req.params;
+    const includeDownloadLinks = req.query.includeDownloadLinks === "true"; // Check if frontend requests download links
 
     try {
         const order = await getOrderBySessionId(sessionId);
-        res.status(200).json(order);
+        if (!order) {
+            res.status(404).json({ message: "Order not found." });
+            return;
+        }
+
+        let itemsWithDownloadLinks = order.items;
+        const items = order.items ?? [];
+        
+        if (includeDownloadLinks) {
+            // Generate pre-signed URLs if requested
+            itemsWithDownloadLinks = await Promise.all(
+                items.map(async (item) => ({
+                    ...item,
+                    downloadLink: await generatePresignedUrl(item.file_key),
+                }))
+            );
+        }
+
+        res.status(200).json({ ...order, items: itemsWithDownloadLinks });
     } catch(err: any) {
         console.error("Error fetching order by session id: ", err);
         res.status(500).json({ message: err.message });

@@ -58,3 +58,16 @@ export const deleteFileFromS3 = async (fileUrl: string) => {
         console.error("Error deleting file from S3:", err);
     }
 };
+
+/**
+ * Generate a pre-signed URL for downloading a purchased file
+ */
+export const generatePresignedUrl = async (fileKey: string): Promise<string> => {
+    const params = {
+        Bucket: process.env.S3_BUCKET_NAME!,
+        Key: fileKey,
+        Expires: 60 * 10, // URL expires in 10min
+    };
+
+    return s3.getSignedUrlPromise("getObject", params);
+};
