@@ -65,22 +65,35 @@ Users can **sign up as buyers or sellers**, **upload and sell digital products**
 ## Technologies Used
 
 - **Frontend:**
+
   ✅ **React** (with Vite for optimized build)
+
   ✅ **Material UI** (for modern UI components)
+
   ✅ **React Router** (for client-side navigation)
+
   ✅ **Auth0 React SDK** (for authentication)
 
 - **Backend:**
+
   ✅ **Node.js & Express** (for API server)
+
   ✅ **PostgreSQL** (for relational database)
+
   ✅ **pg (node-postgres)** (for database interaction)
+
   ✅ **Amazon S3** (for file blob storage)
+
   ✅ **Auth0** (for user authentication)
+
   ✅ **Stripe** (for secure payment processing)
+
   ✅ **Multer** (for file handling)
 
 - **Other Tools:**
+
   ✅ **Git & GitHub** (for version control & source code hosting)
+
   ✅ **dotenv** (for environment variables)
 
 ## Project Structure
