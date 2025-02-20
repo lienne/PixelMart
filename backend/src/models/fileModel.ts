@@ -64,13 +64,14 @@ export const insertFileDetails = async (
     currency: string,
     is_public: boolean,
     category: string,
-    showcase_img_urls: string[] = []
+    showcase_img_urls: string[] = [],
+    file_key: string
 ): Promise<FileDetails> => {
     const result = await pool.query(
-        `INSERT INTO files_details (id, user_id, title, description, price, currency, is_public, category, showcase_img_urls)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        `INSERT INTO files_details (id, user_id, title, description, price, currency, is_public, category, showcase_img_urls, file_key)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING *`,
-        [file_id, user_id, title, description, price, currency, is_public, category, showcase_img_urls]
+        [file_id, user_id, title, description, price, currency, is_public, category, showcase_img_urls, file_key]
     );
     return result.rows[0];
 }

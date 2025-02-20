@@ -69,6 +69,7 @@ export const uploadFile = async (req: Request, res: Response) => {
         // Upload main file to S3 first
         const s3Result = await uploadFileToS3(uploadedFile.buffer, uploadedFile.originalname, uploadedFile.mimetype, false /* isPublic */);
         const file_url = s3Result.Location;
+        const file_key = s3Result.Key;
 
         // Store file metadata
         const fileMetadata = await insertFileMetadata(user_id, file_url, uploadedFile.mimetype, uploadedFile.size);
@@ -113,7 +114,7 @@ export const uploadFile = async (req: Request, res: Response) => {
         }
 
         // Store file details linked to the metadata ID
-        const fileDetails = await insertFileDetails(fileMetadata.id, user_id, title, description, price, currency, is_public, category, showcaseImgUrls);
+        const fileDetails = await insertFileDetails(fileMetadata.id, user_id, title, description, price, currency, is_public, category, showcaseImgUrls, file_key);
 
         res.status(201).json({ fileMetadata, fileDetails, showcaseImagesMetadata });
     } catch (err) {

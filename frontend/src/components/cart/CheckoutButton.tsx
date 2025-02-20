@@ -4,7 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 function CheckoutButton ({ cartItems }: { cartItems: any[] }) {
     const stripe = useStripe();
-    const { getAccessTokenSilently } = useAuth0();
+    const { user, getAccessTokenSilently } = useAuth0();
 
     const handleCheckout = async () => {
         try {
@@ -15,7 +15,7 @@ function CheckoutButton ({ cartItems }: { cartItems: any[] }) {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ cartItems }),
+                body: JSON.stringify({ auth0Id: user?.sub, cartItems }),
             });
 
             const session = await response.json();

@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface OrderDetails {
-    sessionId: string;
+    id: string;
+    user_id: string;
+    stripe_session_id: string;
+    total_amount: number;
+    status: string;
+    created_at: string;
     items: Array<{
         id: number;
         title: string;
@@ -15,10 +20,10 @@ interface OrderDetails {
 function CheckoutSuccess() {
     const location = useLocation();
     const navigate = useNavigate();
+    const { getAccessTokenSilently } = useAuth0();
     const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const { getAccessTokenSilently } = useAuth0();
 
     // Extract session_id from the query string
     const queryParams = new URLSearchParams(location.search);
@@ -35,7 +40,7 @@ function CheckoutSuccess() {
         const fetchOrderDetails = async () => {
             try {
                 const token = await getAccessTokenSilently();
-                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/checkout/session?session_id=${sessionId}`, {
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/orders/session/${sessionId}`, {
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
@@ -55,7 +60,7 @@ function CheckoutSuccess() {
         };
 
         fetchOrderDetails();
-    }, [sessionId]);
+    }, [sessionId, getAccessTokenSilently]);
 
     if (loading) {
         return (
