@@ -10,6 +10,11 @@ interface ItemCardProps {
 }
 
 function ItemCard({ item, noShadow }: ItemCardProps) {
+
+    const MAX_TITLE_LENGTH = 30;
+    const truncatedTitle = item.title.length > MAX_TITLE_LENGTH
+        ? item.title.slice(0, MAX_TITLE_LENGTH) + "..."
+        : item.title;
     
     return (
         <Card sx={{ minHeight: 300, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxShadow: noShadow ? 'none' : undefined }}>
@@ -24,7 +29,7 @@ function ItemCard({ item, noShadow }: ItemCardProps) {
                 )}
                 <CardContent sx={{ flexGrow: 1 }}>
                     <Typography variant="h6" component="div">
-                        {item.title}
+                        {truncatedTitle}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
                         {item.uploader_username ? `by ${item.uploader_username}` : ""}
