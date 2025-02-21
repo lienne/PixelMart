@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import Stripe from "stripe";
 import dotenv from "dotenv";
-import { createOrder, createOrderItem, getOrderBySessionId, getOrderDetailsById } from "../models/orderModel";
+import { createOrder, createOrderItem, getOrderBySessionId, getOrderDetailsById, getOrdersByUserId } from "../models/orderModel";
 import { generatePresignedUrl } from "../services/s3Service";
+import { getUserIdByAuth0Id } from "../models/userModel";
 
 dotenv.config();
 
@@ -95,5 +96,37 @@ export const getOrderBySession = async (req: Request, res: Response): Promise<vo
     } catch(err: any) {
         console.error("Error fetching order by session id: ", err);
         res.status(500).json({ message: err.message });
+    }
+}
+
+export const getUserOrders = async (req: Request, res: Response) => {
+    const { user_id: auth0_id } = req.params;
+
+    try {
+        const user = await getUserIdByAuth0Id(auth0_id);
+        if (!user) {
+            res.status(404).json({ message: "User not found." });
+            return;
+        }
+
+        let orders = await getOrdersByUserId(user.id);
+
+        // Generate pre-signed URLs for download links
+        orders = await Promise.all(
+            orders.map(async (order) => ({
+                ...order,
+                items: await Promise.all(
+                    (order.items ?? []).map(async (item) => ({
+                        ...item,
+                        downloadLink: await generatePresignedUrl(item.file_key),
+                    }))
+                ),
+            }))
+        );
+
+        res.status(200).json({ orders });
+    } catch (err) {
+        console.error("Error fetching user orders: ", err);
+        res.status(500).json({ message: "Internal server error." });
     }
 }

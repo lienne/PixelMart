@@ -82,3 +82,34 @@ export const getOrderBySessionId = async (sessionId: string): Promise<Order> => 
     order.items = itemsResult.rows;
     return order;
 }
+
+export const getOrdersByUserId = async (userId: string): Promise<Order[]> => {
+    const result = await pool.query(
+        `SELECT o.id, o.total_amount, o.status, o.created_at,
+            COALESCE(json_agg(
+                CASE WHEN oi.id IS NOT NULL THEN json_build_object(
+                    'id', oi.id,
+                    'order_id', oi.order_id,
+                    'file_id', oi.file_id,
+                    'file_key', oi.file_key,
+                    'title', oi.title,
+                    'price', oi.price,
+                    'seller_id', oi.seller_id,
+                    'seller_name', u.name,
+                    'previewImage', (SELECT si.image_url FROM showcase_imgs_metadata si WHERE si.file_id = oi.file_id LIMIT 1),
+                    'created_at', oi.created_at
+                ) ELSE NULL END
+            ) FILTER (WHERE oi.id IS NOT NULL), '[]') AS items
+        FROM orders o
+        LEFT JOIN order_items oi ON o.id = oi.order_id
+        LEFT JOIN users u ON oi.seller_id = u.id
+        WHERE o.user_id = $1
+        GROUP BY o.id
+        ORDER BY o.created_at DESC`,
+        [userId]
+    );
+    return result.rows.map((order) => ({
+        ...order,
+        items: order.items ?? [], // Ensure items is always an array
+    }));
+}
