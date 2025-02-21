@@ -1,4 +1,5 @@
 import pool from "../database";
+import { generatePresignedUrl } from "../services/s3Service";
 
 export interface Order {
     id: string; // UUID
@@ -54,14 +55,33 @@ export const createOrderItem = async (
 }
 
 export const getOrderDetailsById = async (orderId: string): Promise<Order> => {
-    const orderResult = await pool.query(`SELECT * FROM orders WHERE id = $1`, [orderId]);
+    const orderResult = await pool.query(
+        `SELECT * FROM orders WHERE id = $1`,
+        [orderId]
+    );
     if (orderResult.rowCount === 0) {
         throw new Error("Order not found.");
     }
 
     const order: Order = orderResult.rows[0];
-    const itemsResult = await pool.query(`SELECT * FROM order_items WHERE order_id = $1`, [orderId]);
-    order.items = itemsResult.rows;
+
+    const itemsResult = await pool.query(
+        `SELECT oi.id, oi.file_id, oi.file_key, oi.title, oi.price,
+                u.id AS seller_id, u.name AS seller_name,
+                (SELECT si.image_url FROM showcase_imgs_metadata si WHERE si.file_id = oi.file_id LIMIT 1) AS "previewImage"
+        FROM order_items oi
+        LEFT JOIN users u ON oi.seller_id = u.id
+        WHERE oi.order_id = $1`,
+        [orderId]
+    );
+
+    // Add pre-signed URLs for downloading files
+    order.items = await Promise.all(
+        itemsResult.rows.map(async (item) => ({
+            ...item,
+            downloadLink: await generatePresignedUrl(item.file_key),
+        }))
+    );
     
     return order;
 }

@@ -8,21 +8,19 @@ import { ProfileContext } from "../../context/ProfileContext";
 import { motion, AnimatePresence } from "framer-motion";
 import ItemCard from "../ItemCard";
 import usePopularItemsFetch from "../../hooks/usePopularItemsFetch";
+import useOrdersFetch from "../../hooks/useOrdersFetch";
 
 function Overview() {
     const { user } = useAuth0();
     const { profile } = useContext(ProfileContext);
     const { popularItems, isLoading, error } = usePopularItemsFetch();
+    const { orders, loading: loadingOrders, error: orderError } = useOrdersFetch();
     const [currentPopularIndex, setCurrentPopularIndex] = useState(0);
 
     const displayPopularItems = popularItems.length > 5 ? popularItems.slice(0,5) : popularItems;
 
     // Mock data for recent orders
-    const recentOrders = [
-        { id: 1, title: 'Order #1', date: '2023-01-01', amount: '$9.99' },
-        { id: 2, title: 'Order #2', date: '2023-01-05', amount: '$14.99' },
-        { id: 3, title: 'Order #3', date: '2023-01-10', amount: '$4.99' },
-    ];
+    const recentOrders = orders.slice(0, 5);
 
     const handlePrev = () => {
         setCurrentPopularIndex((prev) =>
@@ -138,27 +136,56 @@ function Overview() {
                 <Typography variant="h5" gutterBottom>
                   Recent Orders
                 </Typography>
-                <Box>
-                  {recentOrders.map((order) => (
-                    <Box
-                      key={order.id}
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        p: 1,
-                        borderBottom: '1px solid #eee',
-                      }}
-                    >
-                      <Typography variant="body1">{order.title}</Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {order.date}
-                      </Typography>
-                      <Typography variant="body1">{order.amount}</Typography>
-                    </Box>
-                  ))}
-                </Box>
+
+                {loadingOrders ? (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}>
+                    <CircularProgress />
+                  </Box>
+                ) : orderError ? (
+                  <Alert severity="error">{orderError}</Alert>
+                ) : recentOrders.length === 0 ? (
+                  <Typography>No recent orders.</Typography>
+                ) : (
+                  <Box>
+                    {recentOrders.map((order) => (
+                      <Box
+                        key={order.id}
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          p: 2,
+                          borderBottom: '1px solid #ddd',
+                          backgroundColor: '#f8f9fa',
+                          borderRadius: 1,
+                          mb: 2,
+                        }}
+                      >
+                        {/* Left Side: Order Date & Total */}
+                        <Box>
+                          <Typography variant="body2" color="text.secondary">
+                            Order placed on <strong>{new Date(order.created_at).toLocaleDateString()}</strong>
+                          </Typography>
+                          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                            Total: ${Number(order.total_amount).toFixed(2)}
+                          </Typography>
+                        </Box>
+
+                        {/* Right Side: Order # and View Details */}
+                        <Box sx={{ textAlign: 'right' }}>
+                          <Typography variant="body2" color="text.secondary">
+                            Order #{order.id}
+                          </Typography>
+                          <Button variant="text" component={RouterLink} to={`/dashboard/orders/${order.id}`} sx={{ mt: 1 }}>
+                            View Order Details
+                          </Button>
+                        </Box>
+                      </Box>
+                    ))}
+                  </Box>
+                )}
               </CardContent>
+
               <Box sx={{ textAlign: 'right', p: 2 }}>
                 <Button
                   component={RouterLink}

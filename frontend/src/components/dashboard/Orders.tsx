@@ -77,8 +77,8 @@ function Orders() {
                                     <Button variant="outlined" color="secondary">
                                         Help with Order
                                     </Button>
-                                    <Button variant="text" component={Link} to={`/receipt/${order.id}`}>
-                                        View Receipt
+                                    <Button variant="text" component={Link} to={`/dashboard/orders/${order.id}`}>
+                                        View Details
                                     </Button>
                                 </Box>
                             </CardContent>

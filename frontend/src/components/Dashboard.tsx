@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { Box, IconButton, useMediaQuery, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import SideMenu from './SideMenu';
+import SideMenu from './dashboard/SideMenu';
 import { useState } from 'react';
 
 function Dashboard() {

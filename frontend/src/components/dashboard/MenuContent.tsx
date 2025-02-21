@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { ProfileContext } from "../context/ProfileContext";
+import { ProfileContext } from "../../context/ProfileContext";
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Stack } from "@mui/material";
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import FormatListBulletedRoundedIcon from '@mui/icons-material/FormatListBulletedRounded';

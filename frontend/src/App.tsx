@@ -24,6 +24,7 @@ import EditItem from './components/dashboard/EditItem';
 import ContactUs from './components/ContactUs';
 import CartPage from './components/cart/CartPage';
 import CheckoutSuccess from './components/cart/CheckoutSuccess';
+import OrderDetails from './components/dashboard/OrderDetails';
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -85,6 +86,7 @@ function App() {
             <Route index element={<Navigate to="overview" replace />} />
             <Route path="overview" element={<Overview />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="orders/:orderId" element={<OrderDetails />} />
             <Route path="listings" element={<Listings />} />
             <Route path="upload" element={<UploadItem />} />
             <Route path="edit-item/:itemId" element={<EditItem />} />
