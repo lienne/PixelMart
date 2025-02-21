@@ -71,7 +71,7 @@ function OrderDetails() {
                             <Typography
                               variant="body1"
                               component={RouterLink}
-                              to={`/item/${item.file_id}`}
+                              to={`/listing/${item.file_id}`}
                               sx={{
                                 textDecoration: 'none',
                                 color: 'primary.main',

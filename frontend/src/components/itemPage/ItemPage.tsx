@@ -52,12 +52,22 @@ function ItemPage() {
         );
     }
 
+    if (!item.is_active) {
+        return (
+            <Container sx={{ textAlign: 'center', pt: 14 }}>
+                <Typography variant="h5" color="error">
+                    This listing is no longer available.
+                </Typography>
+            </Container>
+        );
+    }
+
     return (
         <Container sx={{ py: 4, pt: 14 }}>
             <Grid container spacing={4}>
                 {/* Left side: Image Carousel */}
                 <Grid item xs={12} md={6}>
-                    <ItemImageCarousel images={item.showcase_img_urls} item={item} />
+                    <ItemImageCarousel images={item.showcase_img_urls[0] ? item.showcase_img_urls : ['https://placehold.co/600x400?text=No+Image+Here']} item={item} />
                 </Grid>
 
                 {/* Right side: item Details */}

@@ -20,6 +20,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ProfileContext } from '../../context/ProfileContext';
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import { Item } from '../../types';
 
 function Listings() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -61,6 +62,50 @@ function Listings() {
 
         fetchListings();
     }, [user, getAccessTokenSilently, API_BASE_URL]);
+
+    const handleDeactivateListing = async (listing: Item) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${API_BASE_URL}/files/${listing.id}/deactivate`, {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to deactivate listing.");
+            }
+
+            setListings((prev) => prev.map((item) =>
+                item.id === listing.id ? { ...item, is_active: false } : item
+            ));
+        } catch (err) {
+            console.error("Error deactivating listing: ", err);
+        }
+    }
+
+    const handleReactivateListing = async (listing: Item) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${API_BASE_URL}/files/${listing.id}/reactivate`, {
+                method: "PATCH",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to reactivate listing.");
+            }
+
+            setListings((prev) => prev.map((item) =>
+                item.id === listing.id ? { ...item, is_active: true } : item
+            ));
+        } catch (err) {
+            console.error("Error reactivating listing: ", err);
+        }
+    }
 
     const handleDeleteListing = async () => {
         if (!selectedListing) return;
@@ -182,20 +227,25 @@ function Listings() {
                             <CardMedia
                               component="img"
                               height="140"
-                              image={listing.showcase_img_urls && listing.showcase_img_urls.length > 0 ? listing.showcase_img_urls[0] : 'fallback-image-url.jpg'}
+                              image={listing.showcase_img_urls && listing.showcase_img_urls.length > 0 ? listing.showcase_img_urls[0] : 'https://placehold.co/600x400?text=No+Image+Here'}
                               alt={listing.title}
                             />
                             <CardContent>
-                                <Typography variant="h6" gutterBottom>{listing.title}</Typography>
+                                <Typography variant="h6" gutterBottom>{listing.title.length > 30 ? listing.title.slice(0, 30) + "..." : listing.title}</Typography>
                                 <Typography variant="body2" color="textSecondary">
-                                    {listing.description.length > 100 ? listing.description.slice(0, 100) + "..." : listing.description}
+                                    {listing.description.length > 100 ? listing.description.slice(0, 50) + "..." : listing.description}
                                 </Typography>
                                 <Typography variant="h6" sx={{ mt: 1 }}>${listing.price}</Typography>
                             </CardContent>
-                            <CardActions>
-                                <Button size="small" component={RouterLink} to={`/item/${listing.id}`} color="primary">View</Button>
+                            <CardActions sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: "space-between" }}>
+                                <Button size="small" component={RouterLink} to={`/listing/${listing.id}`} color="primary">View</Button>
                                 <Button size="small" component={RouterLink} to={`/dashboard/edit-item/${listing.id}`} color="secondary">Edit</Button>
-                                <Button size="small" color="secondary" onClick={() => { setSelectedListing(listing); setOpenDialog(true); }}>Delete</Button>
+                                {/* <Button size="small" color="secondary" onClick={() => { setSelectedListing(listing); setOpenDialog(true); }}>Delete</Button> */}
+                                {listing.is_active ? (
+                                    <Button size="small" color="secondary" onClick={() => { setSelectedListing(listing); setOpenDialog(true); }}>Deactivate</Button>
+                                ) : (
+                                    <Button size="small" color="secondary" onClick={() => handleReactivateListing(listing)}>Reactivate</Button>
+                                )}
                             </CardActions>
                         </Card>
                     </Grid>
@@ -207,12 +257,21 @@ function Listings() {
                 <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to delete this listing? This action cannot be undone.
+                        Are you sure you want to deactivate this listing? This action will remove the product from users' carts and wishlists.
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenDialog(false)} color="primary">Cancel</Button>
-                    <Button onClick={handleDeleteListing} color="error">Delete</Button>
+                    {/* <Button onClick={handleDeleteListing} color="error">Delete</Button> */}
+                    <Button
+                      onClick={() => {
+                        if (selectedListing) handleDeactivateListing(selectedListing);
+                        setOpenDialog(false);
+                      }}
+                      color="error"
+                    >
+                        Deactivate
+                    </Button>
                 </DialogActions>
             </Dialog>
         </Container>

@@ -14,7 +14,9 @@ import {
     countUserFiles,
     editFileDetailsByFileId,
     deleteCartItemsByFileId,
-    deleteWishlistItemsByFileId
+    deleteWishlistItemsByFileId,
+    deactivateListingByFileId,
+    reactivateListingByFileId
 } from "../models/fileModel";
 import { findUserByUsername, getUserIdByAuth0Id } from "../models/userModel";
 import multer from "multer";
@@ -280,6 +282,40 @@ export const deleteFileAndMetadata = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
+
+export const deactivateListing = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        const success = await deactivateListingByFileId(id);
+        if (!success) {
+            res.status(404).json({ message: "Listing not found." });
+            return;
+        }
+
+        res.status(200).json({ message: "Listing deactivated successfully." });
+    } catch (err) {
+        console.error("Error deactivating listing: ", err);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const reactivateListing = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        const success = await reactivateListingByFileId(id);
+        if (!success) {
+            res.status(404).json({ message: "Listing not found." });
+            return;
+        }
+
+        res.status(200).json({ message: "Listing deactivated successfully." });
+    } catch (err) {
+        console.error("Error deactivating listing: ", err);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
 
 // Export multer upload middleware
 export const uploadMiddleware = upload.fields([

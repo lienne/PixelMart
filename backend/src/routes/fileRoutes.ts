@@ -9,7 +9,9 @@ import {
     uploadFile,
     uploadMiddleware,
     getUserFileUsage,
-    editFileDetails
+    editFileDetails,
+    deactivateListing,
+    reactivateListing
 } from "../controllers/fileController";
 import { authenticatedUser, checkFileUploadPermissions } from "../middleware/authMiddleware";
 import { requiredScopes } from "express-oauth2-jwt-bearer";
@@ -31,5 +33,7 @@ router.delete("/:id", authenticatedUser, deleteFileAndMetadata);
 router.get("/public/popular", getPopularItemsController);
 router.get("/user/:user_id/usage", authenticatedUser, getUserFileUsage);
 router.put("/edit-item/:id", authenticatedUser, editFileDetails);
+router.patch("/:id/deactivate", authenticatedUser, deactivateListing);
+router.patch("/:id/reactivate", authenticatedUser, reactivateListing);
 
 export default router;

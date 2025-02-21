@@ -100,7 +100,7 @@ function App() {
           <Route path="/checkout-success" element={<CheckoutSuccess />} />
         </Route>
         <Route path="/profile/:identifier" element={<Profile />} />
-        <Route path="/item/:itemId" element={<ItemPage />} />
+        <Route path="/listing/:itemId" element={<ItemPage />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

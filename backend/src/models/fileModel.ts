@@ -96,7 +96,7 @@ export const getPopularItems = async (): Promise<FileDetails[]> => {
             u.username AS uploader_username
         FROM files_details fd
         JOIN users u ON fd.user_id = u.id
-        WHERE fd.is_public = true
+        WHERE fd.is_active = true
         ORDER BY fd.created_at DESC
         LIMIT 100`
     );
@@ -121,7 +121,7 @@ export const getFileMetadataById = async (id: string): Promise<FileMetadata | nu
 
 export const getFileDetailsById = async (id: string): Promise<FileDetails | null> => {
     const result = await pool.query(
-        `SELECT fd.id, fd.title, fd.description, fd.price, fd.currency, fd.is_public, fd.category, fd.created_at, fd.showcase_img_urls, fd.file_key,
+        `SELECT fd.id, fd.title, fd.description, fd.price, fd.currency, fd.category, fd.created_at, fd.showcase_img_urls, fd.file_key, fd.is_active,
             u.username AS uploader_username
         FROM files_details fd
         JOIN users u ON fd.user_id = u.id
@@ -153,6 +153,48 @@ export const editFileDetailsByFileId = async (
         [title, description, price, file_id]
     );
     return result.rows[0] || null;
+}
+
+export const deactivateListingByFileId = async (id: string): Promise<boolean> => {
+    const client = await pool.connect();
+
+    try {
+        await client.query("BEGIN");
+
+        // Set listing as inactive
+        const result = await pool.query(
+            `UPDATE files_details SET is_active = FALSE WHERE id = $1 RETURNING *`,
+            [id]
+        );
+
+        if (result.rowCount === 0) {
+            throw new Error("Listing not found.");
+        }
+
+        // Remove from cart
+        await client.query(`DELETE FROM cart_items WHERE file_id = $1`, [id]);
+
+        // Remove from wishlist
+        await client.query(`DELETE FROM wishlist_items WHERE file_id = $1`, [id]);
+
+        await client.query("COMMIT");
+        return true;
+    } catch (err) {
+        await client.query("ROLLBACK");
+        console.error("Error deactivating listing: ", err);
+        return false;
+    } finally {
+        client.release();
+    }
+}
+
+export const reactivateListingByFileId = async (id: string): Promise<boolean> => {
+    const result = await pool.query(
+        `UPDATE files_details SET is_active = TRUE WHERE id = $1 RETURNING *`,
+        [id]
+    );
+
+    return (result.rowCount ?? 0) > 0;
 }
 
 export const deleteFileMetadata = async (file_id: string): Promise<boolean> => {

@@ -28,6 +28,7 @@ export const getCartItemsByUserId = async (userId: string): Promise<CartItem[]> 
         FROM cart_items ci
         JOIN files_details fd ON ci.file_id = fd.id
         WHERE ci.user_id = $1
+        AND fd.is_active = TRUE
         ORDER BY ci.added_at DESC;`,
         [userId]
     );
@@ -35,12 +36,23 @@ export const getCartItemsByUserId = async (userId: string): Promise<CartItem[]> 
 }
 
 export const addCartItem = async (userId: string, fileId: string): Promise<CartItem> => {
+    // Check if file is active
+    const fileCheck = await pool.query(
+        `SELECT is_active FROM files_details WHERE id = $1`,
+        [fileId]
+    );
+
+    if (fileCheck.rowCount === 0 || !fileCheck.rows[0].is_active) {
+        throw new Error("Cannot add this item. It is no longer available.");
+    }
+
     const result = await pool.query(
         `INSERT INTO cart_items (user_id, file_id, added_at)
         VALUES ($1, $2, now())
         RETURNING *`,
         [userId, fileId]
     );
+    
     return result.rows[0];
 }
 
@@ -69,9 +81,25 @@ export const getCheckoutCart = async (cartId: string): Promise<CartItem[]> => {
         `SELECT cart_data FROM checkout_carts WHERE id = $1`,
         [cartId]
     );
+
     if (result.rowCount === 0) {
         throw new Error("Cart snapshot not found.");
     }
-    const cartData = result.rows[0].cart_data;
-    return typeof cartData === "string" ? JSON.parse(cartData) : cartData;
+
+    let cartData: CartItem[] = typeof result.rows[0].cart_data === "string"
+        ? JSON.parse(result.rows[0].cart_data)
+        : result.rows[0].cart_data;
+
+    // Fetch active status of items from database
+    const activeItemsResult = await pool.query(
+        `SELECT id FROM files_details WHERE is_active = TRUE AND id = ANY($1)`,
+        [cartData.map(item => item.file_id)]
+    );
+
+    const activeFileIds = new Set(activeItemsResult.rows.map(row => row.id));
+
+    // Filter out deactivated items
+    cartData = cartData.filter(item => activeFileIds.has(item.file_id));
+
+    return cartData;
 }

@@ -18,12 +18,12 @@ function ItemCard({ item, noShadow }: ItemCardProps) {
     
     return (
         <Card sx={{ minHeight: 300, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', boxShadow: noShadow ? 'none' : undefined }}>
-            <CardActionArea component={RouterLink} to={`/item/${item.id}`} sx={{ flexGrow: 1 }}>
+            <CardActionArea component={RouterLink} to={`/listing/${item.id}`} sx={{ flexGrow: 1 }}>
                 {(
                     <CardMedia
                       component="img"
                       height="140"
-                      image={item.showcase_img_urls && item.showcase_img_urls.length > 0 ? item.showcase_img_urls[0] : 'fallback-image-url.jpg'}
+                      image={item.showcase_img_urls && item.showcase_img_urls.length > 0 ? item.showcase_img_urls[0] : 'https://placehold.co/600x400?text=No+Image+Here'}
                       alt={item.title}
                     />
                 )}
