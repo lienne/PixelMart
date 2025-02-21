@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { createOrder, createOrderItem, getOrderBySessionId, getOrderDetailsById, getOrdersByUserId } from "../models/orderModel";
 import { generatePresignedUrl } from "../services/s3Service";
 import { getUserIdByAuth0Id } from "../models/userModel";
+import { getFileDetailsById } from "../models/fileModel";
 
 dotenv.config();
 
@@ -83,7 +84,7 @@ export const getOrderBySession = async (req: Request, res: Response): Promise<vo
         const items = order.items ?? [];
         
         if (includeDownloadLinks) {
-            // Generate pre-signed URLs if requested
+            // Generate pre-signed URLs
             itemsWithDownloadLinks = await Promise.all(
                 items.map(async (item) => ({
                     ...item,
@@ -111,22 +112,27 @@ export const getUserOrders = async (req: Request, res: Response) => {
 
         let orders = await getOrdersByUserId(user.id);
 
-        // Generate pre-signed URLs for download links
-        orders = await Promise.all(
-            orders.map(async (order) => ({
-                ...order,
-                items: await Promise.all(
-                    (order.items ?? []).map(async (item) => ({
-                        ...item,
-                        downloadLink: await generatePresignedUrl(item.file_key),
-                    }))
-                ),
-            }))
-        );
-
         res.status(200).json({ orders });
     } catch (err) {
         console.error("Error fetching user orders: ", err);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const generateDownloadLink = async (req: Request, res: Response) => {
+    const { fileId } = req.params;
+
+    try {
+        const fileDetails = await getFileDetailsById(fileId);
+        if (!fileDetails) {
+            res.status(404).json({ message: "File not found." });
+            return;
+        }
+
+        const downloadLink = await generatePresignedUrl(fileDetails.file_key);
+        res.status(200).json({ downloadLink });
+    } catch (err) {
+        console.error("Error generating presigned URL: ", err);
         res.status(500).json({ message: "Internal server error." });
     }
 }

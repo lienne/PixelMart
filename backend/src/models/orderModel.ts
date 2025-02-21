@@ -75,13 +75,7 @@ export const getOrderDetailsById = async (orderId: string): Promise<Order> => {
         [orderId]
     );
 
-    // Add pre-signed URLs for downloading files
-    order.items = await Promise.all(
-        itemsResult.rows.map(async (item) => ({
-            ...item,
-            downloadLink: await generatePresignedUrl(item.file_key),
-        }))
-    );
+    order.items = itemsResult.rows;
     
     return order;
 }

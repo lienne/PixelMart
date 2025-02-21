@@ -1,9 +1,32 @@
 import { Alert, Box, Button, Card, CardContent, CircularProgress, Container, Typography } from "@mui/material";
 import useOrdersFetch from "../../hooks/useOrdersFetch";
 import { Link } from "react-router-dom";
+import { OrderItem } from "../../types";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function Orders() {
     const { orders, loading, error } = useOrdersFetch();
+    const { getAccessTokenSilently } = useAuth0();
+
+    const handleDownloadButton = async (orderId: string, item: OrderItem) => {
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/orders/${orderId}/download/${item.file_id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to generate download link.");
+            }
+
+            const data = await response.json();
+            window.open(data.downloadLink, "_blank");
+        } catch (err) {
+            console.error("Error generating download link: ", err);
+        }
+    }
 
     if (loading) {
         return (
@@ -71,7 +94,7 @@ function Orders() {
 
                                 {/* Buttons Section */}
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                    <Button variant="contained" color="primary" href={item.downloadLink} target="_blank">
+                                    <Button variant="contained" color="primary" onClick={() => handleDownloadButton(order.id, item)}>
                                         Download
                                     </Button>
                                     <Button variant="outlined" color="secondary">

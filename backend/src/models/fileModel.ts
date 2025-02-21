@@ -20,6 +20,7 @@ export interface FileDetails {
     is_public: boolean;
     category?: string;
     created_at: Date;
+    file_key: string;
 }
 
 export interface ShowcaseImage {
@@ -120,8 +121,8 @@ export const getFileMetadataById = async (id: string): Promise<FileMetadata | nu
 
 export const getFileDetailsById = async (id: string): Promise<FileDetails | null> => {
     const result = await pool.query(
-        `SELECT fd.id, fd.title, fd.description, fd.price, fd.currency, fd.is_public, fd.category, fd.created_at, fd.showcase_img_urls,
-            u.username AS uploader_username     
+        `SELECT fd.id, fd.title, fd.description, fd.price, fd.currency, fd.is_public, fd.category, fd.created_at, fd.showcase_img_urls, fd.file_key,
+            u.username AS uploader_username
         FROM files_details fd
         JOIN users u ON fd.user_id = u.id
         WHERE fd.id = $1`,
