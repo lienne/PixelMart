@@ -14,7 +14,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { ProfileContext } from '../context/ProfileContext';
 import CartDropdown from './cart/CartDropdown';
 import { LogoProps } from '../types/logoTypes';
@@ -30,7 +30,6 @@ const navItems: NavItem[] = [
 ];
 
 function Navbar({ brandName, imageSrcPath }: LogoProps) {
-//   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
   const { profile } = useContext(ProfileContext);
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
   const theme = useTheme();
@@ -40,6 +39,9 @@ function Navbar({ brandName, imageSrcPath }: LogoProps) {
   const [mobileAnchorEl, setMobileAnchorEl] = useState<null | HTMLElement>(null);
   const openAvatar = Boolean(profileAnchorEl);
   const openMobileMenu = Boolean(mobileAnchorEl);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   const handleAvatarMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setProfileAnchorEl(event.currentTarget);
@@ -51,15 +53,21 @@ function Navbar({ brandName, imageSrcPath }: LogoProps) {
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileAnchorEl(event.currentTarget);
-  }
+  };
 
   const handleMobileMenuClose = () => {
     setMobileAnchorEl(null);
-  }
+  };
 
   const handleLogout = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
     handleAvatarMenuClose();
+  };
+
+  const handleSearchSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && searchQuery.trim() !== "") {
+      navigate(`/search?query=${encodeURIComponent(searchQuery)}`)
+    }
   };
 
   const mobileMenuId = 'primary-search-account-menu-mobile';
@@ -154,6 +162,8 @@ function Navbar({ brandName, imageSrcPath }: LogoProps) {
                   <TextField
                   variant="outlined"
                   placeholder="Search"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleSearchSubmit}
                   size="small"
                   sx={{
                       width: { xs: '450px', sm: '500px', md: '550px' },

@@ -77,11 +77,26 @@ function Listings() {
                 throw new Error("Failed to deactivate listing.");
             }
 
-            setListings((prev) => prev.map((item) =>
-                item.id === listing.id ? { ...item, is_active: false } : item
-            ));
+            setListings((prev) =>
+                prev.map((item) =>
+                    item.id === listing.id ? { ...item, is_active: false } : item
+                )
+            );
+
+            toast.success(`${listing.title} has been deactivated.`, {
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
         } catch (err) {
             console.error("Error deactivating listing: ", err);
+            toast.error("An error occurred while deactivating the list.", {
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
         }
     }
 
@@ -102,8 +117,21 @@ function Listings() {
             setListings((prev) => prev.map((item) =>
                 item.id === listing.id ? { ...item, is_active: true } : item
             ));
+
+            toast.success(`${listing.title} has been reactivated.`, {
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
         } catch (err) {
             console.error("Error reactivating listing: ", err);
+            toast.error("An error occurred while reactivating the list.", {
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
         }
     }
 

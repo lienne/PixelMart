@@ -21,6 +21,7 @@ function Profile() {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [ profileData, setProfileData ] = useState<UserProfile | null>(null);
   const { products, isLoading, error } = useMultipleItemsFetch(identifier || "");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (identifier) {
@@ -87,6 +88,8 @@ function Profile() {
               variant="outlined"
               placeholder="Search this shop"
               size="small"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               sx={{ width: { xs: '100%', sm: '50%', md: '33%' } }}
             />
           </Box>
@@ -100,23 +103,33 @@ function Profile() {
             </Alert>
           )}
 
-          {/* Product Listings */}
+          {/* Product Listings - Filter Products based on search query */}
           {isLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
               <CircularProgress />
             </Box>
           ) : (
             <Grid container spacing={3}>
-            {products.length > 0 ? (
-              products.map((item) => (
-                <Grid item xs={12} sm={6} md={4} key={item.id}>
-                  <ItemCard item={item} />
-                </Grid>
-              ))
-            ) : (
-              !error && <Typography sx={{ display: 'flex', justifyContent: 'center', m: 3 }}>No items for sale.</Typography>
-            )}
-          </Grid>
+              {products.filter(item =>
+                item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                item.description.toLowerCase().includes(searchQuery.toLowerCase())
+              ).length > 0 ? (
+                products.filter(item =>
+                  item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  item.description.toLowerCase().includes(searchQuery.toLowerCase())
+                ).map((item) => (
+                  <Grid item xs={12} sm={6} md={4} key={item.id}>
+                    <ItemCard item={item} />
+                  </Grid>
+                ))
+              ) : (
+                !error && (
+                  <Typography sx={{ display: 'flex', justifyContent: 'center', m: 3 }}>
+                    No matching items found.
+                  </Typography>
+                )
+              )}
+            </Grid>
           )}
         </Box>
       </Box>

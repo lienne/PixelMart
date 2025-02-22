@@ -12,6 +12,7 @@ import contactRoutes from './routes/contactRoutes';
 import checkoutRouter from './routes/checkoutRoutes';
 import orderRouter from './routes/orderRoutes';
 import webhookRouter from './routes/stripeWebhookRoutes';
+import searchRouter from './routes/searchRoutes';
 
 console.log('Database module imported.');
 testConnection();
@@ -47,6 +48,7 @@ app.use('/api/users', wishlistRoutes);
 app.use("/api", contactRoutes);
 app.use("/api/checkout", checkoutRouter);
 app.use("/api/orders", orderRouter);
+app.use("/api", searchRouter);
 
 app.get('/', (req, res) => {
     res.send('Welcome to the Digital Marketplace PixelMart!');

@@ -25,6 +25,7 @@ import ContactUs from './components/ContactUs';
 import CartPage from './components/cart/CartPage';
 import CheckoutSuccess from './components/cart/CheckoutSuccess';
 import OrderDetails from './components/dashboard/OrderDetails';
+import SearchResults from './components/SearchResults';
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -101,6 +102,7 @@ function App() {
         </Route>
         <Route path="/profile/:identifier" element={<Profile />} />
         <Route path="/listing/:itemId" element={<ItemPage />} />
+        <Route path="/search" element={<SearchResults />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

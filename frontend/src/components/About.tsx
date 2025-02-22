@@ -28,7 +28,11 @@ function About() {
           <b>Q:</b> Does it cost anything to sell on PixelMart?
         </Typography>
         <Typography variant="body1" paragraph>
-          For the time being, PixelMart is free to use, but donations are highly encouraged! I developed this website by myself and it took a lot of time and effort. In the future, if PixelMart becomes more popular and the running costs increase, I might implement a service fee per item sold or something similar. But nothing will be done without proper notice.
+          For the time being, PixelMart is free to use, but donations are highly encouraged! I developed this website by myself and it took a lot of time and effort. You can{' '}
+          <Link href="https://buymeacoffee.com/heymissbelle" target="_blank" rel="noopener">
+            buy me a coffee
+          </Link> if you like!
+          In the future, if PixelMart becomes more popular and the running costs increase, I might implement a service fee per item sold or something similar. But nothing will be done without proper notice.
         </Typography>
 
         <Typography variant="h5" component="h3" gutterBottom>
