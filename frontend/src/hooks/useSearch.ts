@@ -10,7 +10,10 @@ export const useSearch = (initialQuery = "", sellerId = null) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!query) return;
+        if (!query) {
+            setResults([]);
+            return;
+        }
 
         const fetchResults = async () => {
             setLoading(true);

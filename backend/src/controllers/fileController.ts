@@ -39,7 +39,7 @@ export const uploadFile = async (req: Request, res: Response) => {
 
         console.log("Received file:", uploadedFile.originalname);
 
-        const { auth0_id, title, description, price, currency, is_public, category } = req.body;
+        const { auth0_id, title, description, price, currency, category, is_active } = req.body;
 
         if (!auth0_id || !title || !price) {
             console.error("Missing required fields: ", { auth0_id, title, price });
@@ -113,7 +113,7 @@ export const uploadFile = async (req: Request, res: Response) => {
         }
 
         // Store file details linked to the metadata ID
-        const fileDetails = await insertFileDetails(fileMetadata.id, user_id, title, description, price, currency, is_public, category, showcaseImgUrls, file_key);
+        const fileDetails = await insertFileDetails(fileMetadata.id, user_id, title, description, price, currency, category, showcaseImgUrls, file_key, is_active);
 
         res.status(201).json({ fileMetadata, fileDetails, showcaseImagesMetadata });
     } catch (err) {

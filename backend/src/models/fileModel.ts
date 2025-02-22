@@ -17,10 +17,10 @@ export interface FileDetails {
     description: string;
     price: number;
     currency: string;
-    is_public: boolean;
     category?: string;
     created_at: Date;
     file_key: string;
+    is_active: boolean;
 }
 
 export interface ShowcaseImage {
@@ -63,16 +63,16 @@ export const insertFileDetails = async (
     description: string,
     price: number,
     currency: string,
-    is_public: boolean,
     category: string,
     showcase_img_urls: string[] = [],
-    file_key: string
+    file_key: string,
+    is_active: boolean,
 ): Promise<FileDetails> => {
     const result = await pool.query(
-        `INSERT INTO files_details (id, user_id, title, description, price, currency, is_public, category, showcase_img_urls, file_key)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        `INSERT INTO files_details (id, user_id, title, description, price, currency, category, showcase_img_urls, file_key, is_active, search_vector)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, to_tsvector('english', COALESCE($3::VARCHAR, '') || ' ' || COALESCE($4::VARCHAR, '') || ' ' || COALESCE($7::VARCHAR, '')))
         RETURNING *`,
-        [file_id, user_id, title, description, price, currency, is_public, category, showcase_img_urls, file_key]
+        [file_id, user_id, title, description, price, currency, category, showcase_img_urls, file_key, is_active]
     );
     return result.rows[0];
 }
@@ -92,7 +92,7 @@ export const insertShowcaseImage = async (
 
 export const getPopularItems = async (): Promise<FileDetails[]> => {
     const result = await pool.query(
-        `SELECT fd.id, fd.title, fd.description, fd.price, fd.currency, fd.is_public, fd.category, fd.created_at, fd.showcase_img_urls,
+        `SELECT fd.id, fd.title, fd.description, fd.price, fd.currency, fd.category, fd.created_at, fd.showcase_img_urls,
             u.username AS uploader_username
         FROM files_details fd
         JOIN users u ON fd.user_id = u.id

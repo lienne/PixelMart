@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import {
   AppBar,
@@ -14,7 +14,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import { ProfileContext } from '../context/ProfileContext';
 import CartDropdown from './cart/CartDropdown';
 import { LogoProps } from '../types/logoTypes';
@@ -42,6 +42,7 @@ function Navbar({ brandName }: LogoProps) {
 
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleAvatarMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setProfileAnchorEl(event.currentTarget);
@@ -64,9 +65,17 @@ function Navbar({ brandName }: LogoProps) {
     handleAvatarMenuClose();
   };
 
+  useEffect(() => {
+    // Clear the search bar when user navigates away from the search page
+    if (!location.pathname.startsWith("/search")) {
+      setSearchQuery("");
+    }
+  }, [location.pathname]);
+
   const handleSearchSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && searchQuery.trim() !== "") {
-      navigate(`/search?query=${encodeURIComponent(searchQuery)}`)
+      navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery(""); // Clear the search bar
     }
   };
 
@@ -154,18 +163,19 @@ function Navbar({ brandName }: LogoProps) {
           {!isMobile && (
               <Box sx={{ flexGrow: 2, display: 'flex', justifyContent: 'center' }}>
                   <TextField
-                  variant="outlined"
-                  placeholder="Search"
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={handleSearchSubmit}
-                  size="small"
-                  sx={{
+                    key={location.pathname}
+                    variant="outlined"
+                    placeholder="Search"
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleSearchSubmit}
+                    size="small"
+                    sx={{
                       width: { xs: '450px', sm: '500px', md: '550px' },
                       marginRight: 2,
-                  }}
-                  slotProps={{
-                    htmlInput: { 'aria-label': 'search' }
-                  }}
+                    }}
+                    slotProps={{
+                      htmlInput: { 'aria-label': 'search' }
+                    }}
                   />
               </Box>
           )}

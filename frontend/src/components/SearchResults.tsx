@@ -3,11 +3,17 @@ import { useSearch } from "../hooks/useSearch";
 import { Box, CircularProgress, Container, Typography } from "@mui/material";
 import ItemCard from "./ItemCard";
 import { Item } from "../types";
+import { useEffect } from "react";
 
 function SearchResults () {
     const [searchParams] = useSearchParams();
     const query = searchParams.get("query") || "";
-    const { results, loading } = useSearch(query);
+    const { results, loading, setQuery } = useSearch(query);
+
+    // When the URL changes, update the search
+    useEffect(() => {
+        setQuery(query);
+    }, [query, setQuery]);
 
     return (
         <Container sx={{ py: 4, pt: 14 }}>

@@ -106,7 +106,7 @@ function UploadItem() {
         formData.append("description", description);
         formData.append("price", price);
         formData.append("currency", "USD");
-        formData.append("is_public", "true"); // Default to public for now
+        formData.append("is_active", "true"); // Default to public for now
 
         if (file) formData.append("file", file);
         showcaseImages.forEach((img) => formData.append("showcase_images", img));
