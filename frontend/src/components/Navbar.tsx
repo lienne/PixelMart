@@ -29,7 +29,7 @@ const navItems: NavItem[] = [
   { label: "Contact", to: "/contact" },
 ];
 
-function Navbar({ brandName, imageSrcPath }: LogoProps) {
+function Navbar({ brandName }: LogoProps) {
   const { profile } = useContext(ProfileContext);
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
   const theme = useTheme();
@@ -124,12 +124,6 @@ function Navbar({ brandName, imageSrcPath }: LogoProps) {
               color="inherit"
               sx={{ textTransform: 'none', padding: 0, marginRight: 2 }}
             >
-              {/* <Avatar
-                src={imageSrcPath}
-                alt="PixelMart"
-                sx={{ width: 60, height: 60, marginRight: 1 }}
-                variant="square"
-              /> */}
               <Box
                 component="img"
                 src={brandName}

@@ -135,44 +135,6 @@ function Listings() {
         }
     }
 
-    const handleDeleteListing = async () => {
-        if (!selectedListing) return;
-
-        try {
-            const token = await getAccessTokenSilently();
-            const response = await fetch(`${API_BASE_URL}/files/${selectedListing.id}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to delete listing.");
-            }
-
-            setListings((prevListings) => prevListings.filter((item) => item.id !== selectedListing.id));
-
-            toast.success("Listing deleted successfully!", {
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                theme: "colored",
-            });
-        } catch (err) {
-            console.error("Error deleting listing:", err);
-            toast.error("An error occurred while deleting the listing.", {
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                theme: "colored",
-            });
-        } finally {
-            setOpenDialog(false);
-            setSelectedListing(null);
-        }
-    };
-
     if (loading) {
         return (
             <Container maxWidth="sm" sx={{ py: 4, textAlign: "center" }}>
@@ -268,7 +230,6 @@ function Listings() {
                             <CardActions sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: "space-between" }}>
                                 <Button size="small" component={RouterLink} to={`/listing/${listing.id}`} color="primary">View</Button>
                                 <Button size="small" component={RouterLink} to={`/dashboard/edit-item/${listing.id}`} color="secondary">Edit</Button>
-                                {/* <Button size="small" color="secondary" onClick={() => { setSelectedListing(listing); setOpenDialog(true); }}>Delete</Button> */}
                                 {listing.is_active ? (
                                     <Button size="small" color="secondary" onClick={() => { setSelectedListing(listing); setOpenDialog(true); }}>Deactivate</Button>
                                 ) : (
@@ -280,9 +241,9 @@ function Listings() {
                 ))}
             </Grid>
 
-            {/* Delete Confirmation Dialog */}
+            {/* Deactivate Confirmation Dialog */}
             <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-                <DialogTitle>Confirm Delete</DialogTitle>
+                <DialogTitle>Confirm Deactivate</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         Are you sure you want to deactivate this listing? This action will remove the product from users' carts and wishlists.
@@ -290,7 +251,6 @@ function Listings() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenDialog(false)} color="primary">Cancel</Button>
-                    {/* <Button onClick={handleDeleteListing} color="error">Delete</Button> */}
                     <Button
                       onClick={() => {
                         if (selectedListing) handleDeactivateListing(selectedListing);

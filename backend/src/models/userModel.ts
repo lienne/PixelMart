@@ -72,7 +72,6 @@ export const getUserIdByAuth0Id = async (auth0Id: string): Promise<User | null> 
 
 export const deleteUserByAuth0Id = async (auth0Id: string): Promise<User | null> => {
     const result = await pool.query(
-        // "DELETE FROM users WHERE auth0_id = $1 RETURNING *",
         "UPDATE users SET is_deleted = TRUE WHERE auth0_id = $1",
         [auth0Id]
     );

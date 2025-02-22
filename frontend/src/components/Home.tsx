@@ -4,7 +4,7 @@ import { LogoProps } from '../types/logoTypes';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Home({ brandName, imageSrcPath }: LogoProps) {
+function Home({ brandName }: LogoProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 

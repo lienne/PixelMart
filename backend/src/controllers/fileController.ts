@@ -7,20 +7,15 @@ import {
     getFileMetadataById,
     getFileDetailsById,
     getShowcaseImagesByFileId,
-    deleteFileMetadata,
     getPopularItems,
-    deleteShowcaseImagesMetadata,
-    deleteFileDetails,
     countUserFiles,
     editFileDetailsByFileId,
-    deleteCartItemsByFileId,
-    deleteWishlistItemsByFileId,
     deactivateListingByFileId,
     reactivateListingByFileId
 } from "../models/fileModel";
 import { findUserByUsername, getUserIdByAuth0Id } from "../models/userModel";
 import multer from "multer";
-import { uploadFileToS3, deleteFileFromS3 } from "../services/s3Service";
+import { uploadFileToS3 } from "../services/s3Service";
 
 const MAX_ITEMS_PER_USER = 200;
 const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB
@@ -238,48 +233,6 @@ export const editFileDetails = async (req: Request, res: Response) => {
     } catch (err) {
         console.error("Error updating item:", err);
         res.status(500).json({ message: "Internal server error. Failed to update item." });
-    }
-};
-
-export const deleteFileAndMetadata = async (req: Request, res: Response) => {
-    const { id } = req.params;
-
-    try {
-        const fileMetadata = await getFileMetadataById(id);
-        if (!fileMetadata) {
-            res.status(404).json({ message: "File not found." });
-            return;
-        }
-
-        // Fetch associated showcase images
-        const showcaseImages = await getShowcaseImagesByFileId(id);
-
-        // Delete main file from S3
-        await deleteFileFromS3(fileMetadata.file_url);
-
-        // Delete showcase images from S3
-        for (const image of showcaseImages) {
-            await deleteFileFromS3(image.image_url);
-        }
-
-        // Delete dependent cart & wishlist items before deleting file
-        await deleteCartItemsByFileId(id);
-        await deleteWishlistItemsByFileId(id);
-
-        // Delete metadata records from the database
-        await deleteShowcaseImagesMetadata(id);
-        await deleteFileDetails(id);
-        const deleted = await deleteFileMetadata(id);
-
-        if (!deleted) {
-            res.status(404).json({ message: "File not found." });
-            return;
-        }
-
-        res.status(200).json({ message: "File and related metadata deleted successfully." });
-    } catch (err) {
-        console.error("Error deleting file:", err);
-        res.status(500).json({ message: "Internal server error." });
     }
 };
 

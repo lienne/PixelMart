@@ -32,34 +32,6 @@ export const uploadFileToS3 = async (
 };
 
 /**
- * Delete file from S3
- */
-export const deleteFileFromS3 = async (fileUrl: string) => {
-    try {
-        const bucketName = process.env.S3_BUCKET_NAME!;
-
-        // Extract the S3 key from the file URL
-        const urlParts = new URL(fileUrl);
-        const key = decodeURIComponent(urlParts.pathname.replace(`/${bucketName}/`, "").replace(/^\/+/, ""));
-
-        if (!key) {
-            console.error(`Invalid file URL: ${fileUrl}`);
-            return;            
-        }
-
-        const params = {
-            Bucket: bucketName,
-            Key: key,
-        };
-
-        await s3.deleteObject(params).promise();
-        console.log(`Deleted from S3: ${fileUrl}`);
-    } catch (err) {
-        console.error("Error deleting file from S3:", err);
-    }
-};
-
-/**
  * Generate a pre-signed URL for downloading a purchased file
  */
 export const generatePresignedUrl = async (fileKey: string): Promise<string> => {

@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-    deleteFileAndMetadata,
     getFileDetails,
     getPublicUserFiles,
     getPopularItemsController,
@@ -29,7 +28,6 @@ router.get("/user/:user_id", authenticatedUser, requiredScopes("read:files"), ge
 router.get("/public/user/:identifier", getPublicUserFiles); // Public endpoint for user profiles
 router.get("/:id", getFileDetails);
 router.get("/:id/showcase", getShowcaseImages);
-router.delete("/:id", authenticatedUser, deleteFileAndMetadata);
 router.get("/public/popular", getPopularItemsController);
 router.get("/user/:user_id/usage", authenticatedUser, getUserFileUsage);
 router.put("/edit-item/:id", authenticatedUser, editFileDetails);
