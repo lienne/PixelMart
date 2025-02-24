@@ -1,5 +1,4 @@
 import pool from "../database";
-import { generatePresignedUrl } from "../services/s3Service";
 
 export interface Order {
     id: string; // UUID
@@ -126,4 +125,15 @@ export const getOrdersByUserId = async (userId: string): Promise<Order[]> => {
         ...order,
         items: order.items ?? [], // Ensure items is always an array
     }));
+}
+
+export const hasUserPurchasedItem = async (userId: string, fileId: string): Promise<boolean> => {
+    const result = await pool.query(
+        `SELECT 1 FROM order_items oi
+        JOIN orders o ON oi.order_id = o.id
+        WHERE o.user_id = $1 AND oi.file_id = $2
+        LIMIT 1`,
+        [userId, fileId]
+    );
+    return (result.rowCount ?? 0) > 0;
 }

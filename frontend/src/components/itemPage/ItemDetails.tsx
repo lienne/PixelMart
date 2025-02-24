@@ -5,6 +5,7 @@ import MuiLink from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 import RatingBreakdown from "./RatingBreakdown";
 import FlagIcon from "@mui/icons-material/Flag";
+import { useCheckPurchase } from "../../hooks/useCheckPurchase";
 
 // Mock rating - fetch from API once ready
 const overallRating = 4.5;
@@ -17,14 +18,23 @@ const ratingBreakdown = {
 };
 
 function ItemDetails({ item }: { item: Item }) {
+    const hasPurchased = useCheckPurchase(String(item.id));
+
     const handleReportProduct = () => {
         console.log("Report product: ", item.id);
     }
+
     return (
         <CardContent sx={{ position: 'relative' }}>
             <Typography variant="h4" gutterBottom>
                 {item.title}
             </Typography>
+
+            {hasPurchased && (
+                <Typography variant="body1" color="success" sx={{ mt: 2 }}>
+                    You already purchased this item!
+                </Typography>
+            )}
 
             {/* Report Button */}
             <Box sx={{ position: 'absolute', top: 8, right: 8 }}>

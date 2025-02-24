@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import Stripe from "stripe";
 import dotenv from "dotenv";
-import { createOrder, createOrderItem, getOrderBySessionId, getOrderDetailsById, getOrdersByUserId } from "../models/orderModel";
+import { createOrder, createOrderItem, getOrderBySessionId, getOrderDetailsById, getOrdersByUserId, hasUserPurchasedItem } from "../models/orderModel";
 import { generatePresignedUrl } from "../services/s3Service";
 import { getUserIdByAuth0Id } from "../models/userModel";
 import { getFileDetailsById } from "../models/fileModel";
@@ -133,6 +133,26 @@ export const generateDownloadLink = async (req: Request, res: Response) => {
         res.status(200).json({ downloadLink });
     } catch (err) {
         console.error("Error generating presigned URL: ", err);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const checkUserPurchase = async (req: Request, res: Response) => {
+    const { auth0Id, fileId } = req.params;
+
+    try {
+        const decodedAuth0Id = decodeURIComponent(auth0Id);
+        const user = await getUserIdByAuth0Id(decodedAuth0Id);
+        if (!user) {
+            res.status(404).json({ message: "User not found." });
+            return;
+        }
+        const userId = user.id;
+
+        const hasPurchased = await hasUserPurchasedItem(userId, fileId);
+        res.status(200).json({ hasPurchased });
+    } catch (err) {
+        console.error("Error checking purchase status: ", err);
         res.status(500).json({ message: "Internal server error." });
     }
 }
