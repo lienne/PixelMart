@@ -24,7 +24,15 @@ function OrderDetails() {
             }
 
             const data = await response.json();
-            window.open(data.downloadLink, "_blank");
+            const downloadUrl = data.downloadLink;
+
+            // Force file download
+            const link = document.createElement("a");
+            link.href = downloadUrl;
+            link.setAttribute("download", item.title);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         } catch (err) {
             console.error("Error generating download link: ", err);
         }

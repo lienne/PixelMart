@@ -39,6 +39,7 @@ export const generatePresignedUrl = async (fileKey: string): Promise<string> => 
         Bucket: process.env.S3_BUCKET_NAME!,
         Key: fileKey,
         Expires: 60 * 10, // URL expires in 10min
+        ResponseContentDisposition: `attachment; filename="${fileKey.split('/').pop()}"` // Force download
     };
 
     return s3.getSignedUrlPromise("getObject", params);

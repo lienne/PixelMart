@@ -35,7 +35,7 @@ export const getCartItemsByUserId = async (userId: string): Promise<CartItem[]> 
     return result.rows;
 }
 
-export const addCartItem = async (userId: string, fileId: string): Promise<CartItem> => {
+export const addCartItemByUserId = async (userId: string, fileId: string): Promise<CartItem> => {
     // Check if file is active
     const fileCheck = await pool.query(
         `SELECT is_active FROM files_details WHERE id = $1`,
@@ -56,7 +56,7 @@ export const addCartItem = async (userId: string, fileId: string): Promise<CartI
     return result.rows[0];
 }
 
-export const deleteCartItem = async (userId: string, fileId: string): Promise<void> => {
+export const deleteCartItemByUserId = async (userId: string, fileId: string): Promise<void> => {
     await pool.query(
         `DELETE FROM cart_items WHERE user_id = $1 AND file_id = $2`,
         [userId, fileId]

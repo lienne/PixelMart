@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Stripe from "stripe";
 import dotenv from "dotenv";
 import { createOrder, createOrderItem } from "../models/orderModel";
-import { CartItem, getCheckoutCart } from "../models/cartModel";
+import { CartItem, deleteCartItemByUserId, getCheckoutCart } from "../models/cartModel";
 
 dotenv.config();
 
@@ -68,7 +68,7 @@ export const stripeWebhook = async (req: Request, res: Response): Promise<void> 
         try {
             // Create the order record
             const order = await createOrder(userId, session.id, totalAmount, "paid");
-            console.log("Order creayed with ID: ", order.id);
+            console.log("Order created with ID: ", order.id);
 
             // Insert order items
             for (const item of cartItems) {
@@ -80,6 +80,10 @@ export const stripeWebhook = async (req: Request, res: Response): Promise<void> 
                     item.price,
                     item.seller_id
                 );
+
+                // Remove purchased items from the cart
+                await deleteCartItemByUserId(userId, item.file_id);
+                console.log(`Removed ${item.file_id} from cart for user: ${userId}`);
             }
             console.log("Order finalized: ", order.id);
         } catch (err) {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { addCartItem, deleteCartItem, getCartItemsByUserId } from "../models/cartModel";
+import { addCartItemByUserId, deleteCartItemByUserId, getCartItemsByUserId } from "../models/cartModel";
 
 export const getUserCart = async (req: Request, res: Response) => {
     const { userId } = req.params;
@@ -27,7 +27,7 @@ export const addItemToCart = async (req: Request, res: Response) => {
             return;
         }
 
-        const newCartItem = await addCartItem(userId, fileId);
+        const newCartItem = await addCartItemByUserId(userId, fileId);
         res.status(201).json({ newCartItem });
     } catch (err) {
         console.error("Error adding item to cart:", err);
@@ -39,7 +39,7 @@ export const removeItemFromCart = async (req: Request, res: Response) => {
     const { userId, itemId } = req.params;
 
     try {
-        await deleteCartItem(userId, itemId);
+        await deleteCartItemByUserId(userId, itemId);
         res.status(204).end();
     } catch (err) {
         console.error("Error removing item from cart:", err);
