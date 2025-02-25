@@ -26,10 +26,12 @@ import CartPage from './components/cart/CartPage';
 import CheckoutSuccess from './components/cart/CheckoutSuccess';
 import OrderDetails from './components/dashboard/OrderDetails';
 import SearchResults from './components/SearchResults';
+import useInactivityLogout from './hooks/useInactivityLogout';
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const { isAuthenticated, user, logout, getAccessTokenSilently } = useAuth0();
+  useInactivityLogout();
 
   useEffect(() => {
     const syncUser = async () => {
