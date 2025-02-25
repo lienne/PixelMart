@@ -182,7 +182,7 @@ function Navbar({ brandName }: LogoProps) {
 
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'right' }}>
             {/* Right side: Cart Button */}
-            <CartDropdown />
+            {isAuthenticated && <CartDropdown />}
 
             {/* Right side: Authenticated vs. Login */}
             {isAuthenticated ? (

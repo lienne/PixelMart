@@ -18,14 +18,14 @@ const fetchCart = async (userId: string, token: string): Promise<CartItem[]> => 
 };
 
 const useCartData = () => {
-    const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+    const { isAuthenticated, getAccessTokenSilently, loginWithRedirect } = useAuth0();
     const { profile } = useContext(ProfileContext);
     const queryClient = useQueryClient();
 
     const { data: cartItems = [], refetch } = useQuery<CartItem[]>({
         queryKey: ['cart', profile?.id],
         queryFn: async () => {
-            if (!isAuthenticated || ! profile?.id) {
+            if (!isAuthenticated || !profile?.id) {
                 return [];
             }
             const token = await getAccessTokenSilently();
@@ -37,7 +37,9 @@ const useCartData = () => {
     const addToCartMutation = useMutation<any, Error, Item>({
         mutationFn: async (item: Item) => {
             if (!isAuthenticated || !profile?.id) {
-                throw new Error("Not authenticated.");
+                console.log("User not authenticated. Redirecting to login...");
+                loginWithRedirect();
+                return;
             }
             const token = await getAccessTokenSilently();
             const response = await fetch(`${API_BASE_URL}/users/${profile.id}/cart`, {
