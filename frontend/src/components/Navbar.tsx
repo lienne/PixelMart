@@ -111,7 +111,7 @@ function Navbar({ brandName }: LogoProps) {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" sx={{ backgroundColor: '#fff', color: 'black' }}>
-        <Toolbar sx={{ display: "flex" }}>
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Box sx={{ display: { xs: 'flex', md: 'none '} }}>
             <IconButton
               size="large"
@@ -126,7 +126,7 @@ function Navbar({ brandName }: LogoProps) {
           </Box>
 
           {/* Left side: Logo and Brand */}
-          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'left' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
             <Button
               component={RouterLink}
               to="/"
@@ -157,28 +157,28 @@ function Navbar({ brandName }: LogoProps) {
                 ))}
               </Box>
             )}
-          </Box>
 
-          {/* Center: Search bar */}
-          {!isMobile && (
-              <Box sx={{ flexGrow: 2, display: 'flex', justifyContent: 'center' }}>
-                  <TextField
-                    key={location.pathname}
-                    variant="outlined"
-                    placeholder="Search"
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={handleSearchSubmit}
-                    size="small"
-                    sx={{
-                      width: { xs: '450px', sm: '500px', md: '550px' },
-                      marginRight: 2,
-                    }}
-                    slotProps={{
-                      htmlInput: { 'aria-label': 'search' }
-                    }}
-                  />
-              </Box>
-          )}
+            {/* Center: Search bar */}
+            {!isMobile && (
+                <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+                    <TextField
+                      key={location.pathname}
+                      variant="outlined"
+                      placeholder="Search"
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={handleSearchSubmit}
+                      size="small"
+                      sx={{
+                        width: '100%',
+                        maxWidth: '650px',
+                      }}
+                      slotProps={{
+                        htmlInput: { 'aria-label': 'search' }
+                      }}
+                    />
+                </Box>
+            )}
+          </Box>
 
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'right' }}>
             {/* Right side: Cart Button */}

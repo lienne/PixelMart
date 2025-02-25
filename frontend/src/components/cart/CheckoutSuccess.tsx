@@ -53,7 +53,7 @@ function CheckoutSuccess() {
                 const data = await response.json();
                 setOrderDetails(data);
             } catch (err: any) {
-                setError(err.message || "An error occurred.");
+                setError(err.message || "An error occurred while retrieving your order.");
             } finally {
                 setLoading(false);
             }
@@ -75,7 +75,7 @@ function CheckoutSuccess() {
         return (
           <Container sx={{ py: 4, pt: 14, textAlign: "center" }}>
             <Typography variant="h5" color="error">{error}</Typography>
-            <Button variant="contained" onClick={() => navigate("/cart")}>
+            <Button variant="contained" onClick={() => navigate("/cart")} sx={{ mt: 2 }}>
               Back to Cart
             </Button>
           </Container>
@@ -84,12 +84,15 @@ function CheckoutSuccess() {
 
     return (
         <Container sx={{ py: 4, pt: 14 }}>
-            <Typography variant="h4" gutterBottom>
-                Thank you for your purchase!
-            </Typography>
-            <Typography variant="subtitle1" gutterBottom>
-                Your order has been successfully processed. Below are the details:
-            </Typography>
+            <Box sx={{ textAlign: 'center', mb: 3 }}>
+                <Typography variant="h4" color="primary" gutterBottom>
+                    Thank you for your purchase!
+                </Typography>
+                <Typography variant="subtitle1">
+                    Your order has been successfully processed. Below are your downloads:
+                </Typography>
+            </Box>
+            
             {orderDetails?.items.map(item => (
                 <Box key={item.id} sx={{ border: '1px solid #ccc', p: 2, my: 2 }}>
                     <Typography variant="h6">{item.title}</Typography>
@@ -98,9 +101,12 @@ function CheckoutSuccess() {
                     </Button>
                 </Box>
             ))}
-            <Button variant="contained" color="primary" onClick={() => navigate("/dashboard")}>
-                Go to Dashboard
-            </Button>
+
+            <Box sx={{ textAlign: 'center', mt: 4 }}>
+                <Button variant="contained" color="primary" onClick={() => navigate("/dashboard")} sx={{ width: 200 }}>
+                    Go to Dashboard
+                </Button>
+            </Box>
         </Container>
     );
 }

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { addCartItemByUserId, deleteCartItemByUserId, getCartItemsByUserId } from "../models/cartModel";
+import { getFileOwnerByFileId } from "../models/fileModel";
 
 export const getUserCart = async (req: Request, res: Response) => {
     const { userId } = req.params;
@@ -24,6 +25,13 @@ export const addItemToCart = async (req: Request, res: Response) => {
         const { fileId } = req.body;
         if (!fileId) {
             res.status(400).json({ message: "fileId is required" });
+            return;
+        }
+
+        // Check if the item belongs to the logged-in user
+        const owner = await getFileOwnerByFileId(fileId);
+        if (owner?.user_id === userId) {
+            res.status(403).json({ message: "You cannot purchase your own item." });
             return;
         }
 

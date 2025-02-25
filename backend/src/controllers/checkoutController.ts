@@ -57,45 +57,9 @@ export const createCheckoutSession = async (req: Request, res: Response): Promis
 
         console.log("Client Reference ID:", session.client_reference_id);
         
-        res.status(200).json({ id: session.id });
+        res.status(200).json({ sessionId: session.id });
     } catch (err: any) {
         console.error("Error creating Checkout Session: ", err);
         res.status(500).json({ error: err.message });
     }
 };
-
-// export const getCheckoutSession = async (req: Request, res: Response): Promise<void> => {
-//     const { session_id } = req.query;
-//     if (!session_id || typeof session_id !== "string") {
-//         res.status(400).json({ message: "Missing session id." });
-//         return;
-//     }
-
-//     try {
-//         const session = await stripe.checkout.sessions.retrieve(session_id);
-//         const clientReference = session.client_reference_id;
-//         const authenticatedUserId = (req as any).auth?.payload?.sub;
-
-//         if (!clientReference || clientReference !== authenticatedUserId) {
-//             res.status(403).json({ message: "You are not authorized to access this session." });
-//             return;
-//         }
-
-//         // Alternatively, retrieve order details from database based on session id (need to implement)
-//         const orderDetails = {
-//             items: [
-//                 {
-//                     id: 1,
-//                     title: "Digital Product 1",
-//                     downloadLink: "https://my-s3-bucket-url.com/private/digital-product-1.pdf",
-//                 },
-//                 // more items
-//             ],
-//         };
-
-//         res.status(200).json(orderDetails);
-//     } catch (err: any) {
-//         console.error("Error retrieving checkout session: ", err);
-//         res.status(500).json({ message: err.message });
-//     }
-// };

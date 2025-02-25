@@ -20,14 +20,18 @@ function CheckoutButton ({ cartItems }: { cartItems: any[] }) {
 
             const session = await response.json();
 
-            if (stripe && session.id) {
+            if (!response.ok) {
+                throw new Error(session.message || "Failed to create checkout session.");
+            }
+
+            if (stripe && session.sessionId) {
                 // Redirect to the Stripe hosted checkout page
                 const result = await stripe.redirectToCheckout({
-                    sessionId: session.id,
+                    sessionId: session.sessionId,
                 });
 
                 if (result.error) {
-                    console.error(result.error.message);
+                    console.error("Stripe checkout error: ", result.error.message);
                 }
             }
         } catch (err) {

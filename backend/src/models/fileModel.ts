@@ -196,3 +196,11 @@ export const reactivateListingByFileId = async (id: string): Promise<boolean> =>
 
     return (result.rowCount ?? 0) > 0;
 }
+
+export const getFileOwnerByFileId = async (fileId: string): Promise<{ user_id: string } | null> => {
+    const result = await pool.query(
+        `SELECT user_id FROM files_details WHERE id = $1`,
+        [fileId]
+    );
+    return result.rows[0] || null;
+}
