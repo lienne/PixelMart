@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { checkIfUserBoughtItem, createReview, getReviewsByItemId } from "../models/reviewsModel";
+import { checkIfUserBoughtItem, createReview, getItemRatingsByItemId, getReviewsByItemId, hasUserReviewedItem } from "../models/reviewsModel";
 import { findUserByAuth0Id } from "../models/userModel";
 
 export const addReview = async (req: Request, res: Response) => {
@@ -20,8 +20,13 @@ export const addReview = async (req: Request, res: Response) => {
             return;
         }
 
-        const hasUserBoughtItem = await checkIfUserBoughtItem(user.id, itemId);
+        const alreadyReviewed = await hasUserReviewedItem(user.id, itemId);
+        if (alreadyReviewed) {
+            res.status(409).json({ message: "You have already reviewed this item." });
+            return;
+        }
 
+        const hasUserBoughtItem = await checkIfUserBoughtItem(user.id, itemId);
         if (!hasUserBoughtItem) {
             res.status(403).json({ message: "You cannot review an item you have not bought." });
             return;
@@ -48,5 +53,21 @@ export const getReviewsForListing = async (req: Request, res: Response) => {
     } catch (err) {
         console.error("Error fetching reviews: ", err);
         res.status(500).json({ message: "Internal server error. Failed to fetch reviews." });
+    }
+}
+
+export const getItemRatings = async (req: Request, res: Response) => {
+    try {
+        const { itemId } = req.params;
+        if (!itemId) {
+            res.status(400).json({ message: "itemId is required." });
+            return;
+        }
+
+        const ratings = await getItemRatingsByItemId(itemId);
+        res.status(200).json(ratings);
+    } catch (err) {
+        console.error("Error fetching item ratings: ", err);
+        res.status(500).json({ message: "Internal server error. Failed to fetch ratings." });
     }
 }

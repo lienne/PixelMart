@@ -43,6 +43,41 @@ export const checkIfUserBoughtItem = async (user_id: string, file_id: string): P
             AND o.status = 'paid'`,
         [user_id, file_id]
     );
-
     return parseInt(result.rows[0].count, 10) > 0;
+}
+
+export const hasUserReviewedItem = async (user_id: string, item_id: string): Promise<boolean> => {
+    const result = await pool.query(
+        `SELECT COUNT(*) AS count
+        FROM reviews
+        WHERE user_id = $1 AND item_id = $2`,
+        [user_id, item_id]
+    );
+    return parseInt(result.rows[0].count, 10) > 0;
+}
+
+export const getItemRatingsByItemId = async (item_id: string) => {
+    const result = await pool.query(
+        `SELECT rating, COUNT(*)::INTEGER AS count
+        FROM reviews
+        WHERE item_id = $1
+        GROUP BY rating
+        ORDER BY rating DESC`,
+        [item_id]
+    );
+
+    const breakdown: { [key: string]: number } ={};
+    let totalRating = 0;
+    let totalCount = 0;
+
+    result.rows.forEach((row) => {
+        breakdown[row.rating] = parseInt(row.count, 10);
+        totalRating += row.rating * row.count;
+        totalCount += row.count;
+    });
+
+    // Calculate average rating
+    const overallRating = totalCount > 0 ? totalRating / totalCount : 0;
+
+    return { overallRating, breakdown };
 }

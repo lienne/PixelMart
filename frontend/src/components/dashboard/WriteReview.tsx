@@ -35,6 +35,10 @@ function WriteReview() {
                 body: JSON.stringify({ itemId, rating, comment })
             });
 
+            if (response.status === 409) {
+                throw new Error("You have already reviewed this item.");
+            }
+
             if (!response.ok) {
                 throw new Error("Failed to submit review.");
             }
