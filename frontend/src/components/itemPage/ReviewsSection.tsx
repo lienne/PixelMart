@@ -1,14 +1,7 @@
 import { Box, Divider, IconButton, List, ListItem, ListItemText, Rating, Typography } from "@mui/material";
 import React from "react";
 import FlagIcon from "@mui/icons-material/Flag";
-
-export interface Review {
-    id: string;
-    reviewer: string;
-    rating: number;
-    comment: string;
-    createdAt: string;
-}
+import { Review } from "../../types";
 
 interface ReviewsSectionProps {
     reviews: Review[];
@@ -52,7 +45,7 @@ function ReviewsSection ({ reviews }: ReviewsSectionProps) {
                                             {review.comment}
                                         </Typography>
                                         <Typography variant="caption" color="textSecondary" component="span" sx={{ display: "block" }}>
-                                            {new Date(review.createdAt).toLocaleDateString()}
+                                            {new Date(review.created_at).toLocaleDateString()}
                                         </Typography>
                                     </>
                                   }

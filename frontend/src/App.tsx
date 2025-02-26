@@ -27,6 +27,7 @@ import CheckoutSuccess from './components/cart/CheckoutSuccess';
 import OrderDetails from './components/dashboard/OrderDetails';
 import SearchResults from './components/SearchResults';
 import useInactivityLogout from './hooks/useInactivityLogout';
+import WriteReview from './components/dashboard/WriteReview';
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -97,6 +98,7 @@ function App() {
             <Route path="inbox" element={<Inbox />} />
             <Route path="wishlist" element={<Wishlist />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="items/:itemId/write-review" element={<WriteReview />} />
           </Route>
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout-cancel" element={<Navigate to="/cart" replace />} />

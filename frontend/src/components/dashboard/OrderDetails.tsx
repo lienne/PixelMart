@@ -3,6 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 import useOrderDetailsFetch from "../../hooks/useOrderDetailsFetch";
 import { useAuth0 } from "@auth0/auth0-react";
 import { OrderItem } from "../../types";
+import { Link } from "react-router-dom";
 
 function OrderDetails() {
     const { order, loading, error } = useOrderDetailsFetch();
@@ -101,6 +102,9 @@ function OrderDetails() {
                             </Button>
                             <Button variant="outlined" color="secondary">
                                 Help with Order
+                            </Button>
+                            <Button variant="text" component={Link} to={`/dashboard/items/${item.file_id}/write-review`}>
+                                Write Review
                             </Button>
                         </Box>
                     </CardContent>

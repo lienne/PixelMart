@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Item } from "../types/itemTypes";
 
-// const API_URL = "https://dummyjson.com/products";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export function useSingleItemFetch(itemId: string | undefined) {

@@ -67,7 +67,7 @@ function Orders() {
                                 {/* Item Thumbnail */}
                                 <Box
                                   component="img"
-                                  src={item.previewImage || "https://via.placeholder.com/100"}
+                                  src={item.previewImage || "https://placehold.co/600x400?text=No+Image+Here"}
                                   alt={item.title}
                                   sx={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 1 }}
                                 />
@@ -102,6 +102,9 @@ function Orders() {
                                     </Button>
                                     <Button variant="text" component={Link} to={`/dashboard/orders/${order.id}`}>
                                         View Details
+                                    </Button>
+                                    <Button variant="text" component={Link} to={`/dashboard/items/${item.file_id}/write-review`}>
+                                        Write Review
                                     </Button>
                                 </Box>
                             </CardContent>
