@@ -8,4 +8,5 @@ export interface CartItem {
     price: number;
     showcase_img_urls: string[];
     seller_id: string;
+    seller_name: string;
 }

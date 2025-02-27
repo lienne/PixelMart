@@ -89,10 +89,33 @@ export const getOrderBySessionId = async (sessionId: string): Promise<Order> => 
     }
     const order: Order = result.rows[0];
     const itemsResult = await pool.query(
-        `SELECT * FROM order_items WHERE order_id = $1`,
+        `SELECT
+            oi.id,
+            oi.order_id,
+            oi.file_id,
+            oi.title,
+            oi.price,
+            oi.file_key,
+            oi.seller_id,
+            oi.created_at,
+            fd.showcase_img_urls
+        FROM order_items oi
+        JOIN files_details fd ON oi.file_id = fd.id
+        WHERE oi.order_id = $1`,
         [order.id]
     );
-    order.items = itemsResult.rows;
+    order.items = itemsResult.rows.map(row => ({
+        id: row.id,
+        order_id: row.order_id,
+        file_id: row.file_id,
+        title: row.title,
+        price: row.price,
+        file_key: row.file_key,
+        seller_id: row.seller_id,
+        created_at: row.created_at,
+        showcase_img_urls: row.showcase_img_urls || [],
+    }));
+
     return order;
 }
 

@@ -11,6 +11,7 @@ export interface CartItem {
     price: number;
     showcase_img_urls: string[];
     seller_id: string;
+    seller_name: string;
 }
 
 export const getCartItemsByUserId = async (userId: string): Promise<CartItem[]> => {
@@ -24,9 +25,11 @@ export const getCartItemsByUserId = async (userId: string): Promise<CartItem[]> 
             fd.showcase_img_urls,
             fd.file_key,
             fd.user_id AS seller_id,
+            u.name AS seller_name,
             ci.added_at
         FROM cart_items ci
         JOIN files_details fd ON ci.file_id = fd.id
+        JOIN users u ON fd.user_id = u.id
         WHERE ci.user_id = $1
         AND fd.is_active = TRUE
         ORDER BY ci.added_at DESC;`,
