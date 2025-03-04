@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Order } from '../types';
 
-const useOrderDetailsFetch = () => {
+function useOrderDetailsFetch() {
     const { getAccessTokenSilently } = useAuth0();
     const { orderId } = useParams();
     const [order, setOrder] = useState<Order | null>(null);

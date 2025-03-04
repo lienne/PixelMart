@@ -1,4 +1,4 @@
-import { Box, CardContent, IconButton, Typography } from "@mui/material";
+import { Box, Button, CardContent, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField, Typography } from "@mui/material";
 import { Item } from "../../types";
 import AddToCartButton from "../cart/AddToCartButton";
 import MuiLink from "@mui/material/Link";
@@ -7,27 +7,45 @@ import RatingBreakdown from "./RatingBreakdown";
 import FlagIcon from "@mui/icons-material/Flag";
 import { useCheckPurchase } from "../../hooks/useCheckPurchase";
 import useRatingsFetch from "../../hooks/useRatingsFetch";
-
-// Mock rating - fetch from API once ready
-// const overallRating = 4.5;
-// const ratingBreakdown = {
-//     "5": 20,
-//     "4": 10,
-//     "3": 5,
-//     "2": 2,
-//     "1": 3,
-// };
+import useReportsFetch from "../../hooks/useReportsFetch";
+import { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 
 function ItemDetails({ item }: { item: Item }) {
     const hasPurchased = useCheckPurchase(String(item.id));
     const { ratings, loading, error } = useRatingsFetch(String(item.id));
+    const { report } = useReportsFetch();
+    const [openReportDialog, setOpenReportDialog] = useState(false);
+    const [reportReason, setReportReason] = useState("");
 
     const handleReportProduct = () => {
-        console.log("Report product: ", item.id);
+        setOpenReportDialog(true);
+    }
+
+    const handleSubmitReport = async () => {
+        if (!reportReason.trim()) {
+            toast.info("Please enter a reason for reporting.", {
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: "colored",
+            });
+            return;
+        }
+
+        await report({
+            reportedUsername: item.uploader_username,
+            reason: reportReason,
+            reportedListingId: item.id
+        });
+        setOpenReportDialog(false);
+        setReportReason("");
     }
 
     return (
         <CardContent sx={{ position: 'relative' }}>
+            <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
+            
             <Typography variant="h4" gutterBottom>
                 {item.title}
             </Typography>
@@ -73,6 +91,32 @@ function ItemDetails({ item }: { item: Item }) {
 
             {/* Add to Cart Button */}
             <AddToCartButton item={item} />
+
+            {/* Report Dialog */}
+            <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)}>
+                <DialogTitle>Report Product</DialogTitle>
+                <DialogContent>
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      label="Reason for Reporting"
+                      type="text"
+                      fullWidth
+                      multiline
+                      rows={3}
+                      value={reportReason}
+                      onChange={(e) => setReportReason(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenReportDialog(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSubmitReport} color="error">
+                        Submit Report
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </CardContent>
 );
 }

@@ -48,8 +48,8 @@ export const uploadFile = async (req: Request, res: Response) => {
         }
 
         const user = await getUserIdByAuth0Id(auth0_id);
-        if (!user) {
-            res.status(404).json({ message: "User not found." });
+        if (!user || user.is_banned) {
+            res.status(404).json({ message: "User not found or user is banned." });
             return;
         }
         const user_id = user.id;

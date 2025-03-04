@@ -21,7 +21,7 @@ import "react-toastify/dist/ReactToastify.css";
 function Settings() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-    const { user, logout } = useAuth0();
+    const { user, logout, getAccessTokenSilently } = useAuth0();
     const { profile, setProfile } = useContext(ProfileContext);
     const [name, setName] = useState(profile?.name || "Jane Doe");
     const [username, setUsername] = useState(profile?.username || "");
@@ -39,7 +39,13 @@ function Settings() {
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/users/username-availability/${encodeURIComponent(username)}`);
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`${API_BASE_URL}/users/username-availability/${encodeURIComponent(username)}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+            });
             const data = await response.json();
 
             if (data.available) {
@@ -60,11 +66,14 @@ function Settings() {
         }
 
         try {
+            const token = await getAccessTokenSilently();
+            console.log("Token: ", token);
             const auth0Id = user.sub;
-            const response = await fetch(`${API_BASE_URL}/users/profile/${auth0Id}`, {
+            const response = await fetch(`${API_BASE_URL}/users/profile/update/${auth0Id}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ name, avatar: avatarUrl, username })
             });
@@ -100,11 +109,13 @@ function Settings() {
         }
 
         try {
+            const token = await getAccessTokenSilently();
             const response = await fetch(`${API_BASE_URL}/users/delete/${user.sub}`, {
                 method: "DELETE",
                 headers: {
-                    "Content-type": "application/json"
-                }
+                    "Content-type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
             });
 
             if (response.ok) {

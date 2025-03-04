@@ -32,6 +32,8 @@ const navItems: NavItem[] = [
 function Navbar({ brandName }: LogoProps) {
   const { profile } = useContext(ProfileContext);
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
+  const roles = user?.["https://pixelmart.dev/roles"] || [];
+  const isAdmin = roles.includes("admin");
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md')); // breakpoint for small screens
 
@@ -215,6 +217,11 @@ function Navbar({ brandName }: LogoProps) {
                   <MenuItem component={RouterLink} to={"/dashboard/settings"} onClick={handleAvatarMenuClose}>
                     Settings
                   </MenuItem>
+                  {isAdmin && (
+                    <MenuItem component={RouterLink} to={"/admin"} onClick={handleAvatarMenuClose}>
+                      Admin Panel
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 </Menu>
               </>

@@ -8,13 +8,21 @@ import {
   Avatar,
   Alert,
   CircularProgress,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@mui/material';
+import FlagIcon from "@mui/icons-material/Flag";
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchUserProfile, UserProfile } from '../api/profile';
 import ItemCard from './ItemCard';
 import useMultipleItemsFetch from '../hooks/useMultipleItemsFetch';
 import { useAuth0 } from '@auth0/auth0-react';
+import useReportsFetch from '../hooks/useReportsFetch';
+import { toast } from 'react-toastify';
 
 function Profile() {
   const { identifier } = useParams<{ identifier: string}>();
@@ -22,6 +30,9 @@ function Profile() {
   const [ profileData, setProfileData ] = useState<UserProfile | null>(null);
   const { products, isLoading, error } = useMultipleItemsFetch(identifier || "");
   const [searchQuery, setSearchQuery] = useState("");
+  const { report } = useReportsFetch();
+  const [openReportDialog, setOpenReportDialog] = useState(false);
+  const [reportReason, setReportReason] = useState("");
 
   useEffect(() => {
     if (identifier) {
@@ -39,6 +50,39 @@ function Profile() {
       }
     }
   }, [identifier, isAuthenticated, user, getAccessTokenSilently]);
+
+  const handleReportUser = () => {
+    setOpenReportDialog(true);
+  }
+
+  const handleSubmitReport = async () => {
+      if (!profileData || !profileData.username) {
+        toast.error("Invalid user profile. Cannot report.", {
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
+        return;
+      }
+
+      if (!reportReason.trim()) {
+          toast.info("Please enter a reason for reporting.", {
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "colored",
+          });
+          return;
+      }
+
+      await report({
+        reportedUsername: profileData?.username,
+        reason: reportReason
+      });
+      setOpenReportDialog(false);
+      setReportReason("");
+  }
 
   if (!profileData) {
     return (
@@ -59,8 +103,18 @@ function Profile() {
             p: 2,
             borderRadius: 2,
             boxShadow: 1,
+            position: 'relative',
           }}
         >
+          {/* Report Button */}
+          {user?.sub !== profileData.id && (
+            <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
+                <IconButton size="small" color="error" onClick={handleReportUser}>
+                    <FlagIcon fontSize="small" />
+                </IconButton>
+            </Box>
+          )}
+          
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <Avatar
               src={profileData.avatar}
@@ -133,6 +187,32 @@ function Profile() {
           )}
         </Box>
       </Box>
+
+      {/* Report Dialog */}
+      <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)}>
+          <DialogTitle>Report User</DialogTitle>
+          <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Reason for Reporting"
+                type="text"
+                fullWidth
+                multiline
+                rows={3}
+                value={reportReason}
+                onChange={(e) => setReportReason(e.target.value)}
+              />
+          </DialogContent>
+          <DialogActions>
+              <Button onClick={() => setOpenReportDialog(false)} color="primary">
+                  Cancel
+              </Button>
+              <Button onClick={handleSubmitReport} color="error">
+                  Submit Report
+              </Button>
+          </DialogActions>
+      </Dialog>
     </Container>
   );
 }

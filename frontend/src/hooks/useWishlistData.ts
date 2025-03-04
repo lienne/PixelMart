@@ -17,7 +17,7 @@ const fetchWishlist = async (userId: string, token: string): Promise<Item[]> => 
     return Array.isArray(data.wishlistItems) ? data.wishlistItems : [];
 };
 
-const useWishlistData = () => {
+function useWishlistData() {
     const { isAuthenticated, getAccessTokenSilently } = useAuth0();
     const { profile } = useContext(ProfileContext);
     const queryClient = useQueryClient();

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Item } from "../types";
 
-const usePopularItemsFetch = () => {
+function usePopularItemsFetch() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const [isLoading, setIsLoading] = useState(true);
     const [popularItems, setPopularItems] = useState<Item[]>([]);

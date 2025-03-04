@@ -17,7 +17,7 @@ const fetchCart = async (userId: string, token: string): Promise<CartItem[]> => 
     return Array.isArray(data.cartItems) ? data.cartItems : [];
 };
 
-const useCartData = () => {
+function useCartData() {
     const { isAuthenticated, getAccessTokenSilently, loginWithRedirect } = useAuth0();
     const { profile } = useContext(ProfileContext);
     const queryClient = useQueryClient();

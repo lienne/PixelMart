@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Order } from '../types';
 
 // Possibly rewrite with react query
-const useOrdersFetch = () => {
+function useOrdersFetch() {
     const { user, getAccessTokenSilently } = useAuth0();
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);

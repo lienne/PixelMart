@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 const INACTIVITY_LIMIT = 30 * 60 * 1000; // 30min in milliseconds
 
-const useInactivityLogout = () => {
+function useInactivityLogout() {
     const { logout } = useAuth0();
 
     useEffect(() => {

@@ -27,7 +27,19 @@ export const createReview = async (
 
 export const getReviewsByItemId = async (item_id: string): Promise<Review[]> => {
     const result = await pool.query(
-        `SELECT * FROM reviews WHERE item_id = $1 ORDER BY created_at DESC`,
+        // `SELECT * FROM reviews WHERE item_id = $1 ORDER BY created_at DESC`,
+        `SELECT reviews.id,
+                reviews.item_id,
+                reviews.user_id,
+                users.username AS reviewer_username,
+                reviews.rating,
+                reviews.comment,
+                reviews.created_at,
+                reviews.reported
+        FROM reviews
+        JOIN users ON reviews.user_id = users.id
+        WHERE reviews.item_id = $1
+        ORDER BY reviews.created_at DESC`,
         [item_id]
     );
     return result.rows;

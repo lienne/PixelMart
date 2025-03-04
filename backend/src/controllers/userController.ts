@@ -6,7 +6,8 @@ import {
     findUserByUsername,
     updateUserProfileByAuthId,
     deleteUserByAuth0Id,
-    reactivateUserByAuth0Id
+    reactivateUserByAuth0Id,
+    banUserByUserId
 } from "../models/userModel";
 
 export const syncUser = async (req: Request, res: Response) => {
@@ -51,7 +52,8 @@ const sanitizeUserProfile = (user: User) => {
     return {
         name: user.name,
         username: user.username,
-        avatar: user.avatar
+        avatar: user.avatar,
+        is_banned: user.is_banned
     };
 };
 
@@ -104,6 +106,13 @@ export const updateUserProfile = async (req: Request, res: Response) => {
     const { auth0Id } = req.params;
     const { name, avatar, username } = req.body;
 
+    // Ensure user is updating their own profile
+    const authenticatedAuth0Id = req.auth?.payload.sub;
+    if (!authenticatedAuth0Id || authenticatedAuth0Id !== auth0Id) {
+        res.status(403).json({ message: "Unauthorized request." });
+        return;
+    }
+
     try {
         const user = await findUserByAuth0Id(auth0Id);
         if (!user) {
@@ -122,7 +131,14 @@ export const updateUserProfile = async (req: Request, res: Response) => {
             }
         }
 
-        const updatedUser = await updateUserProfileByAuthId(auth0Id, { name, avatar, username });
+        const updatedFields: { name?: string; avatar?: string; username?: string } = { name, avatar };
+
+        // Only update username if it has a non-empty value
+        if (username && username.trim() !== "") {
+            updatedFields.username = username;
+        }
+
+        const updatedUser = await updateUserProfileByAuthId(auth0Id, updatedFields);
         if (!updatedUser) {
             res.status(404).json({ message: 'User not found.' });
             return;
@@ -199,3 +215,29 @@ export const reactivateUser = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal server error." });
     }
 };
+
+export const banUserAccount = async (req: Request, res: Response) => {
+    const { userId, reason } = req.body;
+    const auth0Id = req.auth?.payload.sub;
+    if (!auth0Id) {
+        return;
+    }
+    const admin = await findUserByAuth0Id(auth0Id);
+    if (!admin?.id) {
+        res.status(404).json({ message: "User not found." });
+        return;
+    }
+    
+    if (!userId || !reason) {
+        res.status(400).json({ message: "Invalid request." });
+        return;
+    }
+
+    try {
+        const bannedUser = await banUserByUserId(userId, admin.id, reason);
+        res.status(200).json({ message: "User banned successfully.", bannedUser });
+    } catch (err) {
+        console.error("Error banning user: ", err);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}

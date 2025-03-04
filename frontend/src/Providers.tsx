@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { ProfileProvider } from './context/ProfileContext';
+import useBanCheck from './hooks/useBanCheck';
 
 const domain = import.meta.env.VITE_AUTH0_DOMAIN;
 const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
@@ -22,6 +23,8 @@ interface ProvidersProps {
 }
 
 const Providers = ({ children }: ProvidersProps) => {
+  useBanCheck();
+  
   return (
     <QueryClientProvider client={queryClient}>
       <Auth0Provider

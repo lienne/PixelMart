@@ -20,8 +20,8 @@ export const createCheckoutSession = async (req: Request, res: Response): Promis
         }
 
         const userRecord = await findUserByAuth0Id(auth0Id);
-        if (!userRecord) {
-            res.status(400).json({ message: "User not found." });
+        if (!userRecord || userRecord.is_banned) {
+            res.status(400).json({ message: "User not found or user is banned." });
             return;
         }
         const userId = userRecord.id;

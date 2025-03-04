@@ -28,6 +28,7 @@ import OrderDetails from './components/dashboard/OrderDetails';
 import SearchResults from './components/SearchResults';
 import useInactivityLogout from './hooks/useInactivityLogout';
 import WriteReview from './components/dashboard/WriteReview';
+import AdminDashboard from './components/AdminDashboard';
 
 function App() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -103,6 +104,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout-cancel" element={<Navigate to="/cart" replace />} />
           <Route path="/checkout-success" element={<CheckoutSuccess />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Route>
         <Route path="/profile/:identifier" element={<Profile />} />
         <Route path="/listing/:itemId" element={<ItemPage />} />
