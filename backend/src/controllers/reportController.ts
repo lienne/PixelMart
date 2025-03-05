@@ -1,13 +1,25 @@
 import { Request, Response } from "express";
 import { createReport, dismissReportById, getAllReportsFromDatabase } from "../models/reportModel";
 import { findUserByAuth0Id, findUserByUsername } from "../models/userModel";
+import validator from "validator";
 
 export const reportUserOrListingOrReview = async (req: Request, res: Response) => {
-    const { reporterAuth0Id, reportedUsername, reportedListingId, reportedReviewId, reason } = req.body;
+    let { reporterAuth0Id, reportedUsername, reportedListingId, reportedReviewId, reason } = req.body;
 
     if (!reporterAuth0Id || !reason || !reportedUsername) {
         console.log("Invalid report details: ", req.body);
         res.status(400).json({ message: "Invalid report details" });
+        return;
+    }
+
+    if (!validator.isAlphanumeric(reportedUsername.replace(/_/g, ''))) {
+        res.status(400).json({ message: "Invalid username format." });
+        return;
+    }
+
+    reason = validator.escape(reason.trim());
+    if (!validator.isLength(reason, { min: 5, max: 2000 })) {
+        res.status(400).json({ message: "Reason must be between 5 and 2000 characters." });
         return;
     }
 
@@ -16,6 +28,21 @@ export const reportUserOrListingOrReview = async (req: Request, res: Response) =
     if (!reportedUser || !reporter) {
         console.log("User not found: ", { reporterAuth0Id, reportedUsername });
         res.status(404).json({ message: "User not found." });
+        return;
+    }
+
+    if (reporterAuth0Id === reportedUser.auth0_id) {
+        res.status(400).json({ message: "You cannot report yourself." });
+        return;
+    }
+
+    if (reportedListingId && !validator.isUUID(reportedListingId)) {
+        res.status(400).json({ message: "invalid listing ID." });
+        return;
+    }
+
+    if (reportedReviewId && !validator.isUUID(reportedReviewId)) {
+        res.status(400).json({ message: "Invalid review ID." });
         return;
     }
 

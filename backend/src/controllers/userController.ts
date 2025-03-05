@@ -9,12 +9,18 @@ import {
     reactivateUserByAuth0Id,
     banUserByUserId
 } from "../models/userModel";
+import validator from "validator";
 
 export const syncUser = async (req: Request, res: Response) => {
     const { auth0_id, email, name, avatar } = req.body;
 
     if (!auth0_id || !email) {
         res.status(400).json({ message: "Missing required fields." });
+        return;
+    }
+
+    if (!validator.isEmail(email)) {
+        res.status(400).json({ message: "Invalid email format." });
         return;
     }
 
@@ -104,13 +110,53 @@ export const getPublicUserProfile = async (req: Request, res: Response) => {
 
 export const updateUserProfile = async (req: Request, res: Response) => {
     const { auth0Id } = req.params;
-    const { name, avatar, username } = req.body;
+    let { name, avatar, username } = req.body;
 
     // Ensure user is updating their own profile
     const authenticatedAuth0Id = req.auth?.payload.sub;
     if (!authenticatedAuth0Id || authenticatedAuth0Id !== auth0Id) {
         res.status(403).json({ message: "Unauthorized request." });
         return;
+    }
+
+    // Sanitize name
+    if (name) {
+        name = validator.trim(name);
+        if (!validator.isLength(name, { min: 3, max: 50 })) {
+            res.status(400).json({ message: "Name must be between 3 and 50 characters." });
+            return;
+        }
+        name = validator.escape(name); // Escape HTML characters
+    }
+
+    // Sanitize username
+    if (username) {
+        username = validator.trim(username);
+        if (!validator.isAlphanumeric(username.replace(/_/g, ""))) {
+            res.status(400).json({ message: "Username can only contain letters, numbers, and underscores." });
+            return;
+        }
+        if (!validator.isLength(username, { min: 3, max: 20 })) {
+            res.status(400).json({ message: "Username must be between 3 and 20 characters." });
+            return;
+        }
+    }
+
+    // Sanitize avatar url
+    if (avatar) {
+        avatar = validator.trim(avatar);
+        if (!validator.isURL(avatar, { protocols: ["http", "https"], require_protocol: true })) {
+            res.status(400).json({ message: "Invalid avatar URL." });
+            return;
+        }
+        if (!/\.(jpg|jpeg|png|gif)$/i.test(avatar)) {
+            res.status(400).json({ message: "Avatar must be a valid image URL." });
+            return;
+        }
+        if (!validator.isLength(avatar, { max: 300 })) {
+            res.status(400).json({ message: "Avatar URL is too long." });
+            return;
+        }
     }
 
     try {
