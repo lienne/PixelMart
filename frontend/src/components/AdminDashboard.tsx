@@ -1,12 +1,14 @@
-import { Button, CircularProgress, Container, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
+import { Button, CircularProgress, Collapse, Container, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import MuiLink from "@mui/material/Link";
 import { Report } from "../types";
 import { ToastContainer } from "react-toastify";
 import { Link as RouterLink } from "react-router-dom";
 import useReportsFetch from "../hooks/useReportsFetch";
+import { useState } from "react";
 
 function AdminDashboard() {
-    const { reports, loading, error, isAdmin, handleBanUser, dismissReport } = useReportsFetch();
+    const { reports, dismissedReports, loading, error, isAdmin, handleBanUser, dismissReport, reactivateReport } = useReportsFetch();
+    const [showDismissed, setShowDismissed] = useState(false);
 
     if (!isAdmin) {
         return (
@@ -28,7 +30,7 @@ function AdminDashboard() {
     if (error) {
         return (
             <Container sx={{ py: 4, pt: 14, textAlign: "center" }}>
-                <Typography variant="h5" color="error">{error}</Typography>
+                <Typography variant="h5" color="error">{error.message || "An unexpected error occurred."}</Typography>
             </Container>
         );
     }
@@ -39,6 +41,7 @@ function AdminDashboard() {
             
             <Typography variant="h4" gutterBottom>User Reports</Typography>
 
+            {/* Active Reports Table */}
             <Paper sx={{ overflow: 'hidden' }}>
                 <Table sx={{ minWidth: 650 }} aria-label="user reports table">
                     <TableHead>
@@ -78,7 +81,7 @@ function AdminDashboard() {
                                     </TableCell>
                                     <TableCell>
                                         {report.reported_review_id ? (
-                                            <MuiLink component={RouterLink} to={`/listing/${report.listing_id_for_review}`} underline="hover">
+                                            <MuiLink component={RouterLink} to={`/listing/${report.listing_id_for_review}#review-${report.reported_review_id}`} underline="hover">
                                                 View Review
                                             </MuiLink>
                                         ) : (
@@ -95,7 +98,7 @@ function AdminDashboard() {
                                           sx={{
                                             mr: 2
                                           }}
-                                          onClick={() => handleBanUser(report.reported_user_id, report.reason)}
+                                          onClick={() => handleBanUser({userId: report.reported_user_id, reason: report.reason})}
                                         >
                                             Ban User
                                         </Button>
@@ -122,6 +125,40 @@ function AdminDashboard() {
                     </TableBody>
                 </Table>
             </Paper>
+
+            {/* Dismissed Reports (Collapsible) */}
+            <Button variant="contained" color="secondary" sx={{ mt: 2 }} onClick={() => setShowDismissed(!showDismissed)}>
+                {showDismissed ? "Hide" : "Show"} Dismissed Reports
+            </Button>
+
+            <Collapse in={showDismissed}>
+                <Paper sx={{ overflow: 'hidden', mt: 2 }}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Reporter</TableCell>
+                                <TableCell>Reported User</TableCell>
+                                <TableCell>Reason</TableCell>
+                                <TableCell>Actions</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {dismissedReports.map((report: Report) => (
+                                <TableRow key={report.id}>
+                                    <TableCell>{report.reporter_username}</TableCell>
+                                    <TableCell>{report.reported_username}</TableCell>
+                                    <TableCell>{report.reason}</TableCell>
+                                    <TableCell>
+                                        <Button variant="contained" color="primary" onClick={() => reactivateReport(report.id)}>
+                                            Reactivate
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </Paper>
+            </Collapse>
         </Container>
     );
 }

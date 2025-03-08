@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createReport, dismissReportById, getAllReportsFromDatabase } from "../models/reportModel";
+import { createReport, dismissReportById, getAllReportsFromDatabase, getDismissedReportsFromDatabase, reactivateReportById } from "../models/reportModel";
 import { findUserByAuth0Id, findUserByUsername } from "../models/userModel";
 import validator from "validator";
 
@@ -57,8 +57,8 @@ export const reportUserOrListingOrReview = async (req: Request, res: Response) =
 
 export const getAllReports = async (req: Request, res: Response) => {
     try {
-        const result = await getAllReportsFromDatabase();
-        res.status(200).json({ reports: result });
+        const allReports = await getAllReportsFromDatabase();
+        res.status(200).json({ reports: allReports });
     } catch (err) {
         console.error("Error fetching reports: ", err);
         res.status(500).json({ message: "Internal server error." });
@@ -73,6 +73,28 @@ export const dismissReport = async (req: Request, res: Response) => {
         res.status(200).json({ message: "Report dismissed successfully.", dismissedReport });
     } catch (err) {
         console.error("Error dismissing report: ", err);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const getDismissedReports = async (req: Request, res: Response) => {
+    try {
+        const dismissedReports = await getDismissedReportsFromDatabase();
+        res.status(200).json({ dismissedReports });
+    } catch (err) {
+        console.error("Error fetching dismissed reports: ", err);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const reactivateReport = async (req: Request, res: Response) => {
+    const { reportId } = req.params;
+
+    try {
+        const reactivatedReport = await reactivateReportById(reportId);
+        res.status(200).json({ message: "Report reactivated successfully.", reactivatedReport });
+    } catch (err) {
+        console.error("Error reactivating report: ", err);
         res.status(500).json({ message: "Internal server error." });
     }
 }

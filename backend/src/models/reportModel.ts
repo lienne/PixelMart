@@ -27,7 +27,7 @@ export const getAllReportsFromDatabase = async () => {
                 r.reported_listing_id,
                 r.reported_review_id,
                 listings.title AS reported_listing_title,
-                reviews.listing_id AS listing_id_for_review,
+                reviews.item_id AS listing_id_for_review,
                 reviews.comment AS reported_review_content
         FROM reports r
         JOIN users AS reporter ON r.reporter_id = reporter.id
@@ -44,6 +44,39 @@ export const dismissReportById = async (reportId: string) => {
     const result = await pool.query(
         `UPDATE reports
         SET status = 'dismissed'
+        WHERE id = $1
+        RETURNING *`,
+        [reportId]
+    );
+    return result.rows[0];
+}
+
+export const getDismissedReportsFromDatabase = async () => {
+    const result = await pool.query(
+        `SELECT r.id,
+                r.reason,
+                r.created_at,
+                reporter.username AS reporter_username,
+                reported_user.username AS reported_username,
+                r.reported_listing_id,
+                r.reported_review_id,
+                listings.title AS reported_listing_title,
+                reviews.item_id AS listing_id_for_review
+        FROM reports r
+        JOIN users AS reporter ON r.reporter_id = reporter.id
+        JOIN users AS reported_user ON r.reported_user_id = reported_user.id
+        LEFT JOIN files_details AS listings ON r.reported_listing_id = listings.id
+        LEFT JOIN reviews ON r.reported_review_id = reviews.id
+        WHERE r.status = 'dismissed'
+        ORDER BY r.created_at DESC`
+    );
+    return result.rows;
+}
+
+export const reactivateReportById = async (reportId: string) => {
+    const result = await pool.query(
+        `UPDATE reports
+        SET status = 'pending'
         WHERE id = $1
         RETURNING *`,
         [reportId]
