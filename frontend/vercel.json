@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+        {
+        "source": "/api/(.*)",
+        "destination": "https://<your-heroku-app>.herokuapp.com/api/$1"
+        }
+    ]
+}
