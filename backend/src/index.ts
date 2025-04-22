@@ -23,8 +23,12 @@ testConnection();
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
+const FRONTEND = process.env.FRONTEND_URL?.replace(/\/$/, '');
 
-app.use(cors());
+app.use(cors({
+  origin: FRONTEND,
+  credentials: true
+}));
 
 // For Stripe webhooks, use raw body parser
 app.use(

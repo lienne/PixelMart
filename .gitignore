@@ -8,3 +8,4 @@ dist/
 .eslintcache
 stats.html
 .vscode/
+full_dump.sql
