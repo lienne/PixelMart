@@ -24,19 +24,21 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 const FRONTEND_REGEX = /^https:\/\/(www\.)?pixelmart\.dev$/;
+const CORS_OPTIONS = {
+  origin: (origin: string | undefined, callback: Function) => {
+    // allow non-browser tools like curl (no origin)
+    if (!origin || FRONTEND_REGEX.test(origin)) {
+      return callback(null, true);
+    }
+    callback(new Error(`Origin ${origin} not allowed by CORS`));
+  },
+  credentials: true,
+  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"],
+};
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || FRONTEND_REGEX.test(origin)) {
-        return callback(null, true);
-      }
-      callback(new Error(`Origin ${origin} not allowed by CORS`));
-    },
-    credentials: true,
-  })
-);
-app.options("*", cors());
+app.use(cors(CORS_OPTIONS));
+app.options("*", cors(CORS_OPTIONS));
 
 // For Stripe webhooks, use raw body parser
 app.use(
