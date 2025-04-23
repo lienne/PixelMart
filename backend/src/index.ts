@@ -23,12 +23,20 @@ testConnection();
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
-const FRONTEND = process.env.FRONTEND_URL?.replace(/\/$/, '');
+const FRONTEND_REGEX = /^https:\/\/(www\.)?pixelmart\.dev$/;
 
-app.use(cors({
-  origin: FRONTEND,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || FRONTEND_REGEX.test(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    },
+    credentials: true,
+  })
+);
+app.options("*", cors());
 
 // For Stripe webhooks, use raw body parser
 app.use(
