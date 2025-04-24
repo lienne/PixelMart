@@ -16,6 +16,7 @@ import searchRouter from './routes/searchRoutes';
 import reviewsRouter from './routes/reviewsRoutes';
 import reportRouter from './routes/reportRoutes';
 import adminRouter from './routes/adminRoutes';
+import { stripeWebhook } from './controllers/stripeWebhookController';
 
 console.log('Database module imported.');
 testConnection();
@@ -45,9 +46,7 @@ app.options("*", cors(CORS_OPTIONS));
 app.use(
   "/api/webhooks/stripe",
   bodyParser.raw({ type: "application/json" }),
-  (req, res, next) => {
-    webhookRouter(req, res, next);
-  }
+  stripeWebhook
 );
 
 // Middleware to parse JSON requests
