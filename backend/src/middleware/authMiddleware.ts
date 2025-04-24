@@ -13,7 +13,7 @@ dotenv.config();
 //     issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
 // });
 
-const checkJwt = auth({
+export const checkJwt = auth({
     audience: process.env.AUTH0_AUDIENCE,
     issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
 });

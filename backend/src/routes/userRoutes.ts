@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { syncUser, getPublicUserProfile, updateUserProfile, checkUsernameAvailability, deleteUser, reactivateUser, getPrivateUserProfile } from "../controllers/userController";
-import { authenticatedUser } from "../middleware/authMiddleware";
+import { authenticatedUser, checkJwt } from "../middleware/authMiddleware";
 import rateLimit from "express-rate-limit";
 
 const profileUpdateLimiter = rateLimit({
@@ -11,7 +11,7 @@ const profileUpdateLimiter = rateLimit({
 
 const router = Router();
 
-router.post('/sync', authenticatedUser, syncUser);
+router.post('/sync', checkJwt, syncUser);
 router.get('/public-profile/:identifier', getPublicUserProfile);
 router.get('/profile/:identifier', authenticatedUser, getPrivateUserProfile);
 router.put('/profile/update/:auth0Id', authenticatedUser, profileUpdateLimiter, updateUserProfile);
