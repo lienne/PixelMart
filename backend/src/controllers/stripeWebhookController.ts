@@ -13,6 +13,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 // This endpoint should receive the raw body
 export const stripeWebhook = async (req: Request, res: Response): Promise<void> => {
+    console.log("Stripe webhook hit, event raw body: ", req.body.toString());
 
     const sig = req.headers["stripe-signature"];
     let event: Stripe.Event;
