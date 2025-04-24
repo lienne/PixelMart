@@ -37,6 +37,7 @@ const CORS_OPTIONS = {
   allowedHeaders: ["Content-Type","Authorization"],
 };
 
+app.set("trust proxy", 1);
 app.use(cors(CORS_OPTIONS));
 app.options("*", cors(CORS_OPTIONS));
 

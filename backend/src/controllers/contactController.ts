@@ -20,8 +20,6 @@ export const contactUs = async (req: Request, res: Response) => {
             res.status(400).json({ error: "Captcha failed. Are you a bot?" });
             return;
         }
-
-        res.status(200).json({ error: "Captcha verified, message sent!" });
     } catch (err) {
         console.error("reCAPTCHA verification error:", err);
         res.status(500).json({ error: "Failed to verify reCAPTCHA." });
@@ -45,7 +43,10 @@ export const contactUs = async (req: Request, res: Response) => {
     try {
         const result = await sendContactEmail(name, email, message);
         res.status(200).json(result);
+        return;
     } catch (err) {
+        console.log("Email send error: ", err);
         res.status(500).json({ error: "Failed to send email." });
+        return;
     }
 };
