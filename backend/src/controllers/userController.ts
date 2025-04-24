@@ -12,6 +12,8 @@ import {
 import validator from "validator";
 
 export const syncUser = async (req: Request, res: Response) => {
+    console.log(">>> syncUser handler invoked with body: ", req.body);
+
     const { auth0_id, email, name, avatar } = req.body;
 
     if (!auth0_id || !email) {
