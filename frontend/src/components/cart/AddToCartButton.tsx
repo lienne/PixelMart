@@ -13,7 +13,7 @@ function AddToCartButton ({ item }: AddToCartButtonProps) {
     const { addToCart, isInCart } = useCartData();
     const inCart = isInCart(item.id);
 
-    const isOwnListing = profile?.username === item.uploader_username;
+    const isOwnListing = profile?.id === item.uploader_id;
 
     return (
         <Button

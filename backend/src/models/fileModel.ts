@@ -92,7 +92,16 @@ export const insertShowcaseImage = async (
 
 export const getPopularItems = async (): Promise<FileDetails[]> => {
     const result = await pool.query(
-        `SELECT fd.id, fd.title, fd.description, fd.price, fd.currency, fd.category, fd.created_at, fd.showcase_img_urls,
+        `SELECT
+            fd.id,
+            fd.title,
+            fd.description,
+            fd.price,
+            fd.currency,
+            fd.category,
+            fd.created_at,
+            fd.showcase_img_urls,
+            fd.user_id AS uploader_id,
             u.username AS uploader_username
         FROM files_details fd
         JOIN users u ON fd.user_id = u.id
