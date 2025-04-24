@@ -33,6 +33,21 @@ export const stripeOauthCallback = async (req: Request, res: Response): Promise<
             grant_type: 'authorization_code',
             code,
         });
+        const acctId = response.stripe_user_id;
+        if (!acctId) {
+            throw new Error("Stripe OAuth did not return a connected account ID.");
+        }
+        
+        // Fetch the full account record
+        const acct = await stripe.accounts.retrieve(acctId);
+
+        // Only treat as a seller if they're fully enabled
+        if (!acct.charges_enabled) {
+            // Redirect them back to onboarding or show a "Complete your Stripe setup" page
+            return res.redirect(
+                `${FRONTEND_URL}/dashboard/overview?error=incomplete_stripe_setup`
+            );
+        }
 
         // Store the connectedAccountId in database and associate it with seller's record here
         // Here, req.query.state grabs the auth0 id directly from the oauth url that stripe sends back

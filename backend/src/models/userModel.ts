@@ -172,6 +172,15 @@ export const updateStripeAccountIdByAuth0Id = async (
     return result.rows[0] || null;
 }
 
+export const markUserAsSellerByStripeId = async (stripeAccountId: string): Promise<void> => {
+    await pool.query(
+        `UPDATE users
+        SET is_seller = TRUE
+        WHERE stripe_account_id = $1`,
+        [stripeAccountId]
+    );
+}
+
 async function revokeUserSessions(auth0Id: string) {
     const token = await getManagementToken();
 

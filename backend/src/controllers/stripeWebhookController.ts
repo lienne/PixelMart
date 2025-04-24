@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import dotenv from "dotenv";
 import { createOrder, createOrderItem } from "../models/orderModel";
 import { CartItem, deleteCartItemByUserId, getCheckoutCart } from "../models/cartModel";
+import { markUserAsSellerByStripeId } from "../models/userModel";
 
 dotenv.config();
 
@@ -25,6 +26,24 @@ export const stripeWebhook = async (req: Request, res: Response): Promise<void> 
     } catch (err: any) {
         console.error(`Webhook signature verification failed: ${err.message}`);
         res.status(400).send(`Webhook Error: ${err.message}`);
+        return;
+    }
+
+    // Handle Connect account updates
+    if (event.type === "account.updated") {
+        const acct = event.data.object as Stripe.Account;
+
+        // Only when the account is fully able to charge (onboarding completed)
+        if (acct.charges_enabled) {
+            try {
+                await markUserAsSellerByStripeId(acct.id);
+                console.log(`Marked user with Stripe ID ${acct.id} as a seller.`);
+            } catch (err: any) {
+                console.error("Failed to mark seller status: ", err);
+            }
+        }
+
+        res.status(200).json({ received: true });
         return;
     }
 
