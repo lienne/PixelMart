@@ -34,7 +34,7 @@ export const stripeWebhook = async (req: Request, res: Response): Promise<void> 
         const acct = event.data.object as Stripe.Account;
 
         // Only when the account is fully able to charge (onboarding completed)
-        if (acct.charges_enabled) {
+        if (acct.details_submitted && acct.charges_enabled) {
             try {
                 await markUserAsSellerByStripeId(acct.id);
                 console.log(`Marked user with Stripe ID ${acct.id} as a seller.`);
